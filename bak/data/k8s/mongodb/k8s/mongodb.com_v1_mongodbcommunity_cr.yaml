@@ -1,0 +1,308 @@
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: base-mongodb
+spec:
+  members: 3
+  type: ReplicaSet
+  # arbiters: 1
+  #version: "4.2.6"
+  version: "5.0.6"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+    - name: admin
+      db: admin
+      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
+        name: admin-password
+      roles:
+        - name: clusterAdmin
+          db: admin
+        - name: userAdminAnyDatabase
+          db: admin
+      scramCredentialsSecretName: my-scram
+    - name: logic
+      db: warmth
+      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
+        name: admin-password
+      roles:
+        - name: clusterAdmin
+          db: warmth
+        - name: userAdminAnyDatabase
+          db: warmth
+        - name: dbAdminAnyDatabase
+          db: warmth
+        - name: readWriteAnyDatabase
+          db: warmth
+        - name: dbOwner
+          db: warmth
+      scramCredentialsSecretName: my-scram
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+
+  statefulSet:
+    spec:
+      selector:
+        matchLabels:
+          app: base-mongodb-svc
+          # app: mongodb
+      template:
+        metadata:
+          # label the pod which is used by the "labelSelector" in podAntiAffinty
+          # you can label it witch some other labels as well -- make sure it change the podAntiAffinity labelselector accordingly
+          labels:
+            # app: mongodb
+            app: base-mongodb-svc
+        # volumeClaimTemplates:
+        # - metadata:
+        #     name: data-volume
+        #   spec:
+        #     accessModes:
+        #     - ReadWriteOnce
+        #     resources:
+        #       requests:
+        #         storage: 10G
+        #     selector:
+        #       matchLabels:
+        #         # We set this labels when creating the volume
+        #         # (see below)
+        #         type: data
+        #     storageClassName: default
+        # - metadata:
+        #     name: logs-volume
+        #   spec:
+        #     accessModes:
+        #     - ReadWriteOnce
+        #     resources:
+        #       requests:
+        #         storage: 10G
+        #     selector:
+        #       matchLabels:
+        #         type: logs
+        #     storageClassName: default
+        spec:
+          # affinity:
+          #   podAntiAffinity:
+          #     preferredDuringSchedulingIgnoredDuringExecution:
+          #       - weight: 100
+          #         podAffinityTerm:
+          #           labelSelector:
+          #             matchExpressions:
+          #               - key: app
+          #                 operator: In
+          #                 values:
+          #                   - k8s-master
+          #           topologyKey: kubernetes.io/hostname
+          #       - weight: 99 
+          #         podAffinityTerm:
+          #           labelSelector:
+          #             matchExpressions:
+          #               - key: app
+          #                 operator: In
+          #                 values:
+          #                   - worker-0
+          #           topologyKey: kubernetes.io/hostname
+          containers:
+            - name: mongod
+              resources:
+                limits:
+                  cpu: 300m
+                  memory: 300M
+                requests:
+                  cpu: 100m
+                  memory: 100M
+            - name: mongodb-agent
+              # readinessProbe:
+              #   failureThreshold: 50
+              #   initialDelaySeconds: 10
+              # readinessProbe:
+              #   failureThreshold: 6
+              #   initialDelaySeconds: 360
+              #   periodSeconds: 10
+              #   successThreshold: 1
+              #   timeoutSeconds: 5
+              resources:
+                limits:
+                  cpu: 300m
+                  memory: 300M
+                requests:
+                  cpu: 100m
+                  memory: 100M
+
+# the user credentials will be generated from this secret
+# once the credentials are generated, this secret is no longer required
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-password
+type: Opaque
+stringData:
+  name: logic
+  password: ccccc123
+
+# ---
+# # Here we create 6 PVs: two for each ReplicaSet member
+# # (one for data, one for logs)
+# apiVersion: v1
+# items:
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: data
+#     name: data-volume-0
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/01
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         # This is just an example for matchexpression
+#         # This field is required depends on the specific
+#         # of the environment the resource is deployed in
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - k8s-master
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: data
+#     name: data-volume-1
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/03
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - worker-0
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+#   status:
+#     phase: Available
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: data
+#     name: data-volume-2
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/05
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - worker-0
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: logs
+#     name: logs-volume-0
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/02
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - k8s-master
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: logs
+#     name: logs-volume-1
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/04
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - worker-0
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+# - apiVersion: v1
+#   kind: PersistentVolume
+#   metadata:
+#     labels:
+#       type: logs
+#     name: logs-volume-2
+
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     capacity:
+#       storage: 10G
+#     hostPath:
+#       path: /mnt/data/base/mongodb/06
+#       type: ""
+#     nodeAffinity:
+#       required:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#             - worker-0
+#     persistentVolumeReclaimPolicy: Retain
+#     storageClassName: default
+#     volumeMode: Filesystem
+# kind: List
+# ---

@@ -1,0 +1,81 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-warmth
+  namespace: warmth
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.rule.type: PathPrefixStrip
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/router.tls.certresolver: cloudflare
+spec:
+  rules:
+  - host: warmth.luojm.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: warmth-web
+            port: 
+              number: 80
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth
+            port:
+              number: 80
+      # - path: /account
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: account-service
+      #       port:
+      #         number: 80
+      # - path: /contacts
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: contacts
+      #       port:
+      #         number: 80
+      # - path: /pubsub
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: pubsub-service
+      #       port:
+      #         number: 80
+      # - path: /message
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: message-service
+      #       port:
+      #         number: 80
+      # - path: /p2p-signaling
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: p2p-signaling-service
+      #       port:
+      #         number: 80
+      # - path: /sfu
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: sfu-service
+      #       port:
+      #         number: 4443
+      # - path: /sfu-web
+      #   pathType: Prefix
+      #   backend:
+      #     service:
+      #       name: mediasoup-web-service
+      #       port:
+      #         number: 80
+      
+

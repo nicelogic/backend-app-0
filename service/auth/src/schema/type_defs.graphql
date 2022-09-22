@@ -1,0 +1,11 @@
+
+type Query {
+  hello(name: String): String
+  signInWithUserName(userName: String!, pwd: String!): String!
+}
+
+type Mutation {
+  signUpWithUserName(userName: String!, pwd: String!): String!
+}
+
+

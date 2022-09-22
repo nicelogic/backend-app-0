@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: ingressroutetcp-mongodb
+spec:
+  entryPoints:
+    - mongodb
+  routes:
+  # Match is the rule corresponding to an underlying router.
+  - match: HostSNI(`warmth-mongo.luojm.com`)
+    services:
+    - name: base-mongodb-svc
+      port: 27017
+  tls:
+    certResolver: cloudflare
+

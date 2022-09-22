@@ -1,0 +1,4 @@
+resources:
+  - dashboard.yaml
+  - dashboard-adminuser.yaml
+  #- ingress-k8s-dashboard.yaml

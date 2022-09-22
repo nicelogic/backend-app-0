@@ -1,0 +1,39 @@
+cassandra:
+  version: "3.11.10"
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+  cassandraLibDirVolume:
+    storageClass: local-path
+    size: 5Gi
+  allowMultipleNodesPerWorker: true
+  heap:
+   size: 100m
+   newGenSize: 100m
+  resources:
+    requests:
+      cpu: 200m
+      memory: 500Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
+      # cpu: 1000m
+      # memory: 2Gi
+  datacenters:
+  - name: dc1
+    size: 1
+    racks:
+    - name: default
+kube-prometheus-stack:
+  grafana:
+    adminUser: logic
+    adminPassword: ccccc123
+stargate:
+  enabled: true
+  replicas: 1
+  heapMB: 256
+  cpuReqMillicores: 200
+  cpuLimMillicores: 1000
+

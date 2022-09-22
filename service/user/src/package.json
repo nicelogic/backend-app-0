@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@graphql-tools/graphql-file-loader": "^7.0.4",
+    "@graphql-tools/load": "^7.1.6",
+    "@graphql-tools/schema": "^8.1.1",
+    "apollo-server": "^3.1.2",
+    "apollo-server-express": "^3.1.2",
+    "cors": "^2.8.5",
+    "graphql-subscriptions": "^1.2.1",
+    "mongoose": "^6.0.2",
+    "subscriptions-transport-ws": "^0.9.19",
+    "util": "^0.12.4"
+  }
+}

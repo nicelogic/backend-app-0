@@ -1,0 +1,60 @@
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+   name: pv-cassandra-01
+   labels:
+      type: data
+spec:
+   capacity:
+      storage: 10Gi
+   volumeMode: Filesystem
+   accessModes:
+   - ReadWriteOnce
+   persistentVolumeReclaimPolicy: Retain
+  #  storage-class: minio-local-storage 
+  #  storage-class: minio-local-storage 
+   storageClassName: local-path
+   local:
+      path: /mnt/data/base/cassandra/01
+   nodeAffinity:
+      required:
+         nodeSelectorTerms:
+         - matchExpressions:
+            - key: "kubernetes.io/hostname"
+              operator: In
+              values:
+              - k8s-master
+
+---
+
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+   name: pv-cassandra-02
+spec:
+   capacity:
+      storage: 10Gi
+   volumeMode: Filesystem
+   accessModes:
+   - ReadWriteOnce
+   persistentVolumeReclaimPolicy: Retain
+  #  storage-class: minio-local-storage 
+  #  storage-class: minio-local-storage 
+   storageClassName: local-path
+   local:
+      path: /mnt/data/base/cassandra/02
+   nodeAffinity:
+      required:
+         nodeSelectorTerms:
+         - matchExpressions:
+            - key: "kubernetes.io/hostname"
+              operator: In
+              values:
+              - worker-0
+
+---
+
+

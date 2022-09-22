@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: auth
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-mongodb
+          mountPath: /etc/config/mongodb
+          readOnly: true
+        - name: secret-mongodb
+          mountPath: /etc/secret/mongodb
+          readOnly: true
+      volumes:
+        - name: config-mongodb
+          configMap:
+            name: config-mongodb
+        - name: secret-mongodb
+          secret:
+            secretName: admin-password
+            optional: false
+        
