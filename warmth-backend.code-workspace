@@ -1,6 +1,11 @@
 {
 	"folders": [
 		{
+			"name": "basic-component",
+			"path": "../basic-component"
+		},
+		{
+			"name": "warmth-backend",
 			"path": "."
 		}
 	],
