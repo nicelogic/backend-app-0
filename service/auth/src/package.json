@@ -9,7 +9,6 @@
     "cors": "^2.8.5",
     "graphql-subscriptions": "^1.2.1",
     "js-yaml": "^4.1.0",
-    "mongoose": "^6.0.2",
     "subscriptions-transport-ws": "^0.9.19",
     "util": "^0.12.4"
   },

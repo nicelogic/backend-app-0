@@ -6,17 +6,11 @@ import { ApolloServer } from "apollo-server-express";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import schema  from './schema/schema.js';
 import cors from 'cors';
-import { MongoDbWrapper } from '../../../lib/js/mongodb_wrapper.mjs';
-import { Config } from '../../../lib/js/config.mjs';
 
 (async () => {
 
   const isDebug = process.env.NODE_ENV === 'debug';
   console.log(`is debug: ${isDebug}`);
-  const config = new Config();
-  const { dbUrl } = config.getMongoDbConfig();
-  const mongoDbWrapper = new MongoDbWrapper();
-  mongoDbWrapper.init({dbUrl: dbUrl});
 
   const PORT = 80;
   const app = express();
