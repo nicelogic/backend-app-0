@@ -8,7 +8,7 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const typeDefs = loadSchemaSync(`${__dirname}/type_defs.graphql`, { loaders: [new GraphQLFileLoader()] });
+const typeDefs = loadSchemaSync(`${__dirname}/type_defs.gql`, { loaders: [new GraphQLFileLoader()] });
 
 const resolvers = {
   Query: {

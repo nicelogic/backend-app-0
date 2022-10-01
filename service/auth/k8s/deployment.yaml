@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth
-  namespace: warmth
+  namespace: app-0
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
@@ -30,7 +30,7 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: config
-          mountPath: /etc/warmth
+          mountPath: /etc/app-0
           readOnly: true
       volumes:
         - name: config
