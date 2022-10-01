@@ -12,7 +12,9 @@ import fs from 'fs';
   const configFilePath = '/etc/app-0/config.yml';
   const config = yaml.load(fs.readFileSync(configFilePath, 'utf8'));
   console.log(config);
+  // @ts-ignore
   const port = config['port'];
+  // @ts-ignore
   const path = config['path'];
 
   const root = {
@@ -25,6 +27,7 @@ import fs from 'fs';
   app.use(path, graphqlHTTP({
     schema: schema,
     rootValue: root,
+    pretty: true,
     graphiql: true
   }));
   app.listen(port);
