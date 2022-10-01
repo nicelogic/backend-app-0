@@ -2,8 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth
+  namespace: warmth
 spec:
-  externalTrafficPolicy: Cluster
+  #externalTrafficPolicy: Cluster  # default
   ports:
   - name: http
     port: 80
@@ -11,6 +12,6 @@ spec:
     targetPort: 80
   selector:
     app: auth
-  sessionAffinity: None
-  type: NodePort
+  sessionAffinity: None # default
+  type: ClusterIP
 

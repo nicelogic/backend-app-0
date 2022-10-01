@@ -1,18 +1,20 @@
 // @ts-check
 import { createServer } from "http";
 import express from "express";
-import { execute, subscribe } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { SubscriptionServer } from "subscriptions-transport-ws";
 import schema  from './schema/schema.js';
 import cors from 'cors';
+import yaml from 'js-yaml';
+import fs from 'fs';
 
 (async () => {
 
-  const isDebug = process.env.NODE_ENV === 'debug';
-  console.log(`is debug: ${isDebug}`);
+  const configFilePath = '/etc/warmth/config.yml';
+  const config = yaml.load(fs.readFileSync(configFilePath, 'utf8'));
+  console.log(config);
+  const port = config['port'];
+  const path = config['path'];
 
-  const PORT = 80;
   const app = express();
   app.use(cors());
   const httpServer = createServer(app);
@@ -22,29 +24,12 @@ import cors from 'cors';
   await server.start();
   server.applyMiddleware({
     app,
-    path: '/'
+    path: path
   });
 
-  SubscriptionServer.create(
-    {
-      schema, execute, subscribe,
-      onConnect: () => {
-        console.log(`onConnect`);
-      },
-      onDisconnect: () => {
-        console.log(`onDisconnect`);
-      },
-      keepAlive: 10 * 1000
-    },
-    { server: httpServer, path: server.graphqlPath }
-  );
-
-  httpServer.listen(PORT, () => {
+  httpServer.listen(port, () => {
     console.log(
-      `🚀 Query endpoint ready at http://localhost:${PORT}${server.graphqlPath}`
-    );
-    console.log(
-      `🚀 Subscription endpoint ready at ws://localhost:${PORT}${server.graphqlPath}`
+      `🚀 Query endpoint ready at http://localhost:${port}${server.graphqlPath}`
     );
   });
 })();

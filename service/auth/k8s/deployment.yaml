@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth
+  namespace: warmth
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
@@ -20,26 +21,19 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
             memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
             cpu: "500m"
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: config-mongodb
-          mountPath: /etc/config/mongodb
-          readOnly: true
-        - name: secret-mongodb
-          mountPath: /etc/secret/mongodb
+        - name: config
+          mountPath: /etc/warmth
           readOnly: true
       volumes:
-        - name: config-mongodb
+        - name: config
           configMap:
-            name: config-mongodb
-        - name: secret-mongodb
-          secret:
-            secretName: admin-password
-            optional: false
+            name: config
         
