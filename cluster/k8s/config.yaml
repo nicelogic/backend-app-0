@@ -7,3 +7,4 @@ metadata:
 data:
   config.yml: |+
     port: 80
+    path: /
