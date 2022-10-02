@@ -1,0 +1,42 @@
+type Query {
+  hello(name: String): String
+  getChats(accountId: String!): [Chat!]
+  getChat(chatId: String!): Chat!
+  getMessages(chatId: String!): Chat!
+}
+
+type Mutation {
+  createChat(accountId: String!, memberIds: [String!]!, name: String!): Chat!
+  deleteChat(chatId: String!): String!
+  createMessage(accountId: String!, chatId: String!, text: String!): Message!
+}
+
+type Subscription {
+  # getNewMessages(chatId: String!): Message!
+  newMessageReceived(accountId: String!): ChatMessage!
+}
+
+type Chat {
+  _id: String!
+  members: [Account!]!
+  messages: [Message]
+  name: String!
+  lastMessage: Message
+}
+
+type Message {
+  _id: String!
+  text: String
+  sender: Account!
+  date: String!
+}
+
+type ChatMessage{
+  _id: String!
+  message: Message!
+}
+
+type Account {
+  _id: String!
+  name: String
+}

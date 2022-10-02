@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: p2p-signaling-service
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: p2p-signaling-service
+  sessionAffinity: None
+  type: NodePort
+

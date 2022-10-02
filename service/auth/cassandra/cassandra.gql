@@ -1,0 +1,19 @@
+
+mutation createTables {
+  auth: createTable(
+    keyspaceName:"app_0",
+    tableName:"auth",
+    partitionKeys: [ 
+      { name: "auth_id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+      { name: "id_type", type: {basic: TEXT} }
+    ]
+    values: [
+      { name: "user_id", type: {basic: TEXT} }
+      { name: "createTime", type: {basic: DATE} }
+      { name: "updateTime", type: {basic: DATE} }
+    ]
+  )
+  
+}

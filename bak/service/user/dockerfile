@@ -1,0 +1,13 @@
+
+FROM node
+
+ENV APP_PATH=/opt/service/user
+WORKDIR $APP_PATH
+
+COPY ./src/. $APP_PATH
+
+RUN cd $APP_PATH
+RUN npm install
+CMD [ "node", "${APP_PATH}/main.js" ]
+
+EXPOSE 80

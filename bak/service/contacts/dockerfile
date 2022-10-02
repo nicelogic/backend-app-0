@@ -1,0 +1,18 @@
+
+FROM node
+
+ENV APP_PATH=/opt/service/contacts
+WORKDIR $APP_PATH
+
+COPY ./service/. $APP_PATH
+
+RUN apt-get upgrade -y
+RUN apt-get update 
+RUN apt-get install -y nodejs
+RUN apt-get install -y npm
+RUN cd $APP_PATH
+RUN npm install
+CMD [ "node", "/opt/service/contacts/main.js" ]
+
+EXPOSE 80
+EXPOSE 443

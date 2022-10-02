@@ -1,0 +1,17 @@
+
+FROM node
+
+ENV APP_PATH=/opt/niceice/notification
+WORKDIR $APP_PATH
+
+COPY ./service/. /opt/niceice/notification
+
+RUN apt-get update && apt-get install -y nodejs
+RUN apt-get install -y npm
+RUN cd /opt/niceice/notification/
+RUN npm install
+# RUN npm install express express-graphql graphql mongoose jsonwebtoken sha256 express-jwt js-md5 merge-json --save
+CMD [ "node", "/opt/niceice/notification/main.js" ]
+
+EXPOSE 80
+EXPOSE 443
