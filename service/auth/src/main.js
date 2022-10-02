@@ -15,7 +15,7 @@ import fs from 'fs';
 
   const root = {
     hello: () => {
-      return 'Hello world!';
+      return 'auth';
     },
   };
   const app = express();
