@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth:0.0.1
         imagePullPolicy: Always
         resources:
           requests:
@@ -29,11 +29,11 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: config
+        - name: config-auth
           mountPath: /etc/app-0
           readOnly: true
       volumes:
-        - name: config
+        - name: config-auth
           configMap:
-            name: config
+            name: config-auth
         

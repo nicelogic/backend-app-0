@@ -1,4 +1,3 @@
-// @ts-check
 
 import { graphqlHTTP } from 'express-graphql';
 import express from 'express';
@@ -9,13 +8,10 @@ import fs from 'fs';
 
 (async () => {
 
-  const configFilePath = '/etc/app-0/config.yml';
-  const config = yaml.load(fs.readFileSync(configFilePath, 'utf8'));
-  console.log(config);
-  // @ts-ignore
-  const port = config['port'];
-  // @ts-ignore
-  const path = config['path'];
+  const serviceConfigFilePath = '/etc/app-0/config-auth.yml';
+  const serviceConfig = yaml.load(fs.readFileSync(serviceConfigFilePath, 'utf8'));
+  console.log(serviceConfig);
+  const path = serviceConfig['path'];
 
   const root = {
     hello: () => {
@@ -30,6 +26,7 @@ import fs from 'fs';
     pretty: true,
     graphiql: true
   }));
+  const port = 80;
   app.listen(port);
   console.log(`🚀 Running a GraphQL API server at http://localhost:${port}${path}`);
 

@@ -1,0 +1,4 @@
+resources:
+  - config.yml
+  - deployment.yml
+  - service.yml

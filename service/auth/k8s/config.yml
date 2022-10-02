@@ -2,7 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config
+  name: config-auth
   namespace: app-0
 data:
-  config.yml: |+
+  config-auth.yml: |+
+    port: 80
+    path: /
