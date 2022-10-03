@@ -30,13 +30,13 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: secret-cassandra
-          mountPath: /etc/app-0
+          mountPath: /etc/app-0/secret-cassandra
           readOnly: true
         - name: config
-          mountPath: /etc/app-0
+          mountPath: /etc/app-0/config
           readOnly: true
         - name: config-auth
-          mountPath: /etc/app-0
+          mountPath: /etc/app-0/config-auth
           readOnly: true
       volumes:
         - name: secret-cassandra
