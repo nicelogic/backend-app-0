@@ -1,21 +1,32 @@
 
 import { generateToken } from "../../util/token.js";
+import axios from 'axios';
 
 const resolvers = {
   Query: {
-    signInWithUserName
+    signInByUserName
   },
   Mutation: {
-    signUpWithUserName
+    signUpByUserName
   }
 };
 export default resolvers;
 
-async function signUpWithUserName(_, { userName, pwd}) {
+async function signUpByUserName(_, { userName, pwd }) {
   console.log(`signup with user name: ${userName}`);
-  return "aaa";
+  const cassandraAdminNameAndPwd = '{"username": "cassandra-cluster-env0-superuser", "password": "znk4uVfaCLm6hppEZaJl"}';
+  const response = await axios.post("https://auth.cassandra.env0.luojm.com:9443/v1/auth",
+    cassandraAdminNameAndPwd,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }
+  );
+  const token = response.data.authToken;
+  return token;
 }
 
-async function signInWithUserName(_, { userNamePwd }) {
+async function signInByUserName(_, { userNamePwd }) {
   return "";
 }

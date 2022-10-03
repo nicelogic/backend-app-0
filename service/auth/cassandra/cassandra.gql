@@ -7,13 +7,69 @@ mutation createTables {
       { name: "auth_id", type: {basic: TEXT} }
     ]
     clusteringKeys: [
-      { name: "id_type", type: {basic: TEXT} }
+      { name: "auth_id_type", type: {basic: TEXT} }
     ]
     values: [
       { name: "user_id", type: {basic: TEXT} }
-      { name: "createTime", type: {basic: DATE} }
-      { name: "updateTime", type: {basic: DATE} }
+      { name: "createTime", type: {basic: TIMESTAMP} }
+      { name: "auth_id_type_username_pwd", type: {basic: TEXT} }
     ]
   )
-  
+}
+
+mutation alterTableDrop{
+  alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "user_id")
+}
+
+query GetTables {
+  keyspace(name: "app_0") {
+      name
+      tables {
+          name
+          columns {
+              name
+              kind
+              type {
+                  basic
+                  info {
+                      name
+                  }
+              }
+          }
+      }
+  }
+}
+
+mutation insertauth {
+  test: insertauth(value: {
+                    auth_id:"test", 
+                    auth_id_type:"username",
+                    auth_id_type_username_pwd: "4a8a08f09d37b73795649038408b5f33",
+                    user_id: "XsfiE-8SgetD-JU71IwPw"
+                  },
+                  ifNotExists: true
+                  ) {
+          applied,
+          accepted,
+          value {
+            auth_id,
+
+          }
+        }
+}
+
+query auth {
+  auth: auth(value: {
+                    auth_id:"test", 
+                   
+                  },
+                  ) {
+          pageState,
+          values {
+            auth_id,
+						user_id,
+            auth_id_type_username_pwd,
+            createTime
+          }
+        }
 }

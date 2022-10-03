@@ -3,19 +3,19 @@ import { generateToken } from "../../util/token.js";
 
 const resolvers = {
   Query: {
-    signInWithUserName
+    signInByUserName
   },
   Mutation: {
-    signUpWithUserName
+    signUpByUserName
   }
 };
 export default resolvers;
 
-async function signUpWithUserName(_, { userName, pwd}) {
-  console.log(`signup with user name: ${userName}`);
+async function signUpByUserName(_, { userName, pwd}) {
+  console.log(`signup by user name: ${userName}`);
   return "aaa";
 }
 
-async function signInWithUserName(_, { userNamePwd }) {
+async function signInByUserName(_, { userNamePwd }) {
   return "";
 }

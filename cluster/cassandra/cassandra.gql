@@ -1,5 +1,0 @@
-
-mutation createKeyspaceApp_0{
-  createKeyspace(name:"app_0", replicas: 3)
-}
-

@@ -1,9 +1,6 @@
 
-import { nanoid } from 'nanoid'
+var curlcon = require("curlconverter");
 
-import md5 from 'md5';
+ret = curlcon.toPython("curl --request POST --url https://open.workec.com/auth/accesstoken --header 'cache-control: no-cache' --header 'content-type: application/json' --data '{ 'appId': appId, 'appSecret': 'appSecret'}'")
 
-console.log(nanoid());
-
-
-console.log(md5("c"));
+console.log(ret)
