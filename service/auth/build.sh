@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=0.0.1
+version=0.0.2
 
 docker login --username=niceice220 --password-stdin registry.cn-shanghai.aliyuncs.com
 docker build -t logic-base/auth:$version ./
