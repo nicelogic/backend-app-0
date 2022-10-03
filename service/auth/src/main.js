@@ -8,10 +8,14 @@ import fs from 'fs';
 
 (async () => {
 
+  /*
   const serviceConfigFilePath = '/etc/app-0/config-auth.yml';
   const serviceConfig = yaml.load(fs.readFileSync(serviceConfigFilePath, 'utf8'));
   console.log(serviceConfig);
   const path = serviceConfig['path'];
+  */
+
+  const path = '/';
 
   const root = {
     hello: () => {
