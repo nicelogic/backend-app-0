@@ -44,7 +44,8 @@ spec:
             secretName: secret-cassandra
             optional: false # 默认设置，意味着 secret 必须已经存在
         - name: config
-          configMap: config
+          configMap:
+            name: config
         - name: config-auth
           configMap:
             name: config-auth
