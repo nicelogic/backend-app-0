@@ -29,23 +29,23 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-        # - name: secret-cassandra
-        #   mountPath: /etc/app-0
-        #   readOnly: true
-        # - name: config
-        #   mountPath: /etc/app-0
-        #   readOnly: true
+        - name: secret-cassandra
+          mountPath: /etc/app-0
+          readOnly: true
+        - name: config
+          mountPath: /etc/app-0
+          readOnly: true
         - name: config-auth
           mountPath: /etc/app-0
           readOnly: true
       volumes:
-        # - name: secret-cassandra
-        #   secret:
-        #     secretName: secret-cassandra
-        #     optional: false # 默认设置，意味着 secret 必须已经存在
-        # - name: config
-        #   configMap:
-        #     name: config
+        - name: secret-cassandra
+          secret:
+            secretName: secret-cassandra
+            optional: false # 默认设置，意味着 secret 必须已经存在
+        - name: config
+          configMap:
+            name: config
         - name: config-auth
           configMap:
             name: config-auth
