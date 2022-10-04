@@ -1,6 +1,5 @@
 
 import yaml from 'js-yaml';
-import fs from 'fs';
 
 export class Config {
 	getMongoDbConfig() {

@@ -7,8 +7,7 @@ import Config from 'nicelogic-config';
 
 (async () => {
 
-  const serviceConfigFilePath = '/etc/app-0/config-auth/config-auth.yml';
-  const config = new Config(serviceConfigFilePath);
+  const config = new Config('/etc/app-0/config-auth/config-auth.yml');
   const path = config.get('path', '/');
 
   const root = {

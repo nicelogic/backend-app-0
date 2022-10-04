@@ -1,0 +1,19 @@
+{
+  "name": "nicelogic-cassandra",
+  "type": "module",
+  "version": "1.0.4",
+  "description": "nicelogic cassandra",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cassandra"
+  ],
+  "author": "nicelogic",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "nicelogic-config": "^1.0.2"
+  }
+}
