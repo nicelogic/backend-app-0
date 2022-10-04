@@ -3,19 +3,13 @@ import { graphqlHTTP } from 'express-graphql';
 import express from 'express';
 import schema from './schema/schema.js';
 import cors from 'cors';
-import yaml from 'js-yaml';
-import fs from 'fs';
+import Config from 'nicelogic-config';
 
 (async () => {
 
-  /*
-  const serviceConfigFilePath = '/etc/app-0/config-auth.yml';
-  const serviceConfig = yaml.load(fs.readFileSync(serviceConfigFilePath, 'utf8'));
-  console.log(serviceConfig);
-  const path = serviceConfig['path'];
-  */
-
-  const path = '/';
+  const serviceConfigFilePath = '/etc/app-0/config-auth/config-auth.yml';
+  const config = new Config(serviceConfigFilePath);
+  const path = config.get('path', '/');
 
   const root = {
     hello: () => {
