@@ -9,6 +9,7 @@ class Cassandra {
 		this.cassandraPwd = fs.readFileSync('/etc/app-0/secret-cassandra/password', 'utf8').trim();
 		const config = new Config('/etc/app-0/config/config.yml');
 		this.cassandraAuthUrl = config.get('cassandra-auth-url', '');
+		this.cassandraGraphqlUrl = config.get('cassandra-graphql-url', '');
 	}
 
 	async getToken() {

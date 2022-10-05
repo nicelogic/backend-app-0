@@ -5,7 +5,7 @@ import schema from './schema/schema.js';
 import cors from 'cors';
 import Config from 'nicelogic-config';
 
-(async () => {
+async function main(){
 
   const config = new Config('/etc/app-0/config-auth/config-auth.yml');
   const path = config.get('path', '/');
@@ -23,8 +23,10 @@ import Config from 'nicelogic-config';
     pretty: true,
     graphiql: true
   }));
-  const port = 80;
-  app.listen(port);
-  console.log(`🚀 Running a GraphQL API server at http://localhost:${port}${path}`);
+  app.listen(80);
+  console.log(`🚀 Running a GraphQL API server at http://localhost${path}`);
 
-})();
+}
+
+main().catch((error) => console.error(error));
+
