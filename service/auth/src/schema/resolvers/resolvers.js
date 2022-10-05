@@ -18,9 +18,8 @@ export default resolvers;
 
 async function signUpByUserName(_, { userName, pwd }) {
   console.log(`signup by user name: ${userName}`);
-  const cassandra = new Cassandra();
 
-  const mutation = gql`
+  const insertAuth = gql`
     mutation insertauth($auth_id: String!, $auth_id_type_username_pwd: String!, $user_id: String!) {
       insertauth(value: {
                     auth_id: $auth_id, 
@@ -54,7 +53,8 @@ async function signUpByUserName(_, { userName, pwd }) {
   let auth_id_type = 'username';
   let user_id = '';
   try {
-    const response = await cassandra.mutation(mutation, variables);
+    const cassandra = new Cassandra();
+    const response = await cassandra.mutation(insertAuth, variables);
     console.log(JSON.stringify(response));
     const isExist = response['insertauth']['applied'] === false;
     if (isExist) {
@@ -80,52 +80,5 @@ async function signUpByUserName(_, { userName, pwd }) {
 
 async function signInByUserName(_, { userName, pwd }) {
   console.log(`signup by user name: ${userName}`);
-  const cassandra = new Cassandra();
-  const token = await cassandra.getToken();
-  console.log(`token: ${token}`);
-
-  const config = new Config('/etc/app-0/config/config.yml');
-  const cassandraGraphqlUrl = config.get('cassandra-graphql-url-app_0', '');
-  const graphQLClient = new GraphQLClient(cassandraGraphqlUrl,
-    {
-      method: 'GET',
-      jsonSerializer: {
-        parse: JSON.parse,
-        stringify: JSON.stringify,
-      },
-      headers: {
-        'x-cassandra-token': token,
-      },
-    });
-
-  const query = gql`
-query auth($auth_id: String!) {
-  auth: auth(value: {
-                    auth_id: $auth_id, 
-                   
-                  },
-                  ) {
-          pageState,
-          values {
-            auth_id,
-						user_id,
-            auth_id_type_username_pwd,
-            createTime
-          }
-        }
-}
-  `;
-  const variables = { auth_id: userName };
-
-  try {
-    const data = await graphQLClient.request(query, variables);
-    const jdata = JSON.stringify(data);
-    console.log(jdata)
-
-    return data;
-
-  } catch (e) {
-    console.log(e);
-    return "error";
-  }
+  return '';
 }
