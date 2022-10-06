@@ -1,10 +1,9 @@
 
-import Config from 'nicelogic-config';
 import Cassandra from 'nicelogic-cassandra';
 import { gql } from 'graphql-request'
 import { nanoid } from 'nanoid';
 import crypto from 'crypto';
-
+import { generateToken } from '../../util/token.js';
 
 const resolvers = {
   Query: {
@@ -48,33 +47,39 @@ async function signUpByUserName(_, { userName, pwd }) {
   };
 
   let error_code = 0;
-  let description = '';
+  let error_code_description = '';
   let auth_id = userName;
   let auth_id_type = 'username';
   let user_id = '';
+  let token = '';
   try {
     const cassandra = new Cassandra();
     const response = await cassandra.mutation(insertAuth, variables);
     console.log(JSON.stringify(response));
-    const isExist = response['insertauth']['applied'] === false;
-    if (isExist) {
-      error_code = 1;
-      description = 'user name exist';
-    }
     auth_id = response['insertauth']['value']['auth_id'];
     auth_id_type = response['insertauth']['value']['auth_id_type'];
     user_id = response['insertauth']['value']['user_id'];
+    const isExist = response['insertauth']['applied'] === false;
+    if (isExist) {
+      error_code = 1;
+      error_code_description = 'user name already exist';
+    } else {
+      token = generateToken(user_id);
+    }
   } catch (e) {
+    error_code = -1;
+    error_code_description = 'server internal error';
     console.log(e);
   }
   return {
     error_code: error_code,
-    description: description,
+    error_code_description: error_code_description,
     auth: {
       auth_id: auth_id,
       auth_id_type: auth_id_type,
       user_id: user_id
-    }
+    },
+    token: token
   };
 }
 

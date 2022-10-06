@@ -7,19 +7,15 @@ import Config from 'nicelogic-config';
 
 async function main(){
 
+  fileSystem.readFileSync('./cert/2_niceice.cn.key')
+
   const config = new Config('/etc/app-0/config-auth/config-auth.yml');
   const path = config.get('path', '/');
 
-  const root = {
-    hello: () => {
-      return 'auth';
-    },
-  };
   const app = express();
   app.use(cors());
   app.use(path, graphqlHTTP({
     schema: schema,
-    rootValue: root,
     pretty: true,
     graphiql: true
   }));

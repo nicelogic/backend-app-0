@@ -5,12 +5,14 @@
 
 english name: warmth
 中文: 抱团取暖
+
 ## 设计
 
 * use microservice
 * client每次只获取其需要的信息去渲染显示（可以多次获取)
 * client缓存获取到的信息，有变化才去重新获取
 * microservice之间可以存在互相依赖关系: contacts的返回可以依赖user
+* 每个微服务的返回值为： error_code, error_code_description，“具体对象"
 
 ## design
 

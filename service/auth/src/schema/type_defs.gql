@@ -9,6 +9,7 @@ type Result {
   error_code: Int!
   description: String
   auth: Auth
+  token: String
 }
 
 type Query {
