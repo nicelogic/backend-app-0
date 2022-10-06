@@ -45,6 +45,25 @@ class Cassandra {
 		const response = await graphQLClient.request(gql, variables);
 		return response;
 	}
+
+	async query(gql, variables){
+		const token = await this.getToken();
+		console.log(`token: ${token}`);
+
+		const graphQLClient = new GraphQLClient(this.cassandraGraphqlUrl,
+			{
+			  method: 'GET',
+			  jsonSerializer: {
+			    parse: JSON.parse,
+			    stringify: JSON.stringify,
+			  },
+			  headers: {
+			    'x-cassandra-token': token,
+			  },
+			});
+		const response = await graphQLClient.request(gql, variables);
+		return response;
+	}
 }
 
 export default Cassandra;

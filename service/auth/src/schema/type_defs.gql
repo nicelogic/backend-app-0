@@ -7,7 +7,7 @@ type Auth {
 
 type Result {
   error_code: Int!
-  description: String
+  error_code_description: String
   auth: Auth
   token: String
 }
