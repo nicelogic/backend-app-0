@@ -15,7 +15,7 @@ const resolvers = {
 };
 export default resolvers;
 
-async function signUpByUserName(_, { userName, pwd }) {
+async function signUpByUserName(context, { userName, pwd }) {
   console.log(`signup by user name: ${userName}`);
 
   const insertAuth = gql`
@@ -64,7 +64,7 @@ async function signUpByUserName(_, { userName, pwd }) {
       error_code = 1;
       error_code_description = 'user name already exist';
     } else {
-      token = generateToken(user_id);
+      token = generateToken(user_id, context.privateKey);
     }
   } catch (e) {
     error_code = -1;

@@ -4,18 +4,23 @@ import express from 'express';
 import schema from './schema/schema.js';
 import cors from 'cors';
 import Config from 'nicelogic-config';
+import fs from 'fs';
 
 async function main(){
 
-  fileSystem.readFileSync('./cert/2_niceice.cn.key')
-
   const config = new Config('/etc/app-0/config-auth/config-auth.yml');
   const path = config.get('path', '/');
+  const privateKey = fs.readFileSync('/etc/app-0/secret-jwt/jwt-privatekey');
+
+  const rootValue = {
+    privateKey: privateKey
+  };
 
   const app = express();
   app.use(cors());
   app.use(path, graphqlHTTP({
     schema: schema,
+    rootValue: rootValue,
     pretty: true,
     graphiql: true
   }));
