@@ -3,3 +3,4 @@ resources:
   - namespace.yml
   - config.yml
   - secret-cassandra.yml
+  - certificate.yml

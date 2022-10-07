@@ -7,5 +7,5 @@ metadata:
 data:
   config.yml: |+
     cassandra-auth-url: http://cassandra-cluster-env0-dc1-stargate-service.k8ssandra-operator:8081/v1/auth
-    cassandra-graphql-url: http://cassandra-cluster-env0-dc1-stargate-service.k8ssandra-operator:8080
+    cassandra-graphql-url-app_0: http://cassandra-cluster-env0-dc1-stargate-service.k8ssandra-operator:8080/graphql/app_0
 

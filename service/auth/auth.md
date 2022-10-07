@@ -3,6 +3,42 @@
 
 [toc]
 
+## gql
+
+```gql
+
+query signInByUserName($userName: String!, $pwd: String!) {
+  signInByUserName(userName: $userName, pwd: $pwd) {
+    error_code
+    error_code_description
+    auth {
+      auth_id
+      auth_id_type
+      user_id
+      create_time
+    }
+    token
+  }
+}
+
+mutation signUpByUserName($userName: String!, $pwd: String!) {
+  signUpByUserName(userName: $userName, pwd: $pwd) {
+    error_code
+    error_code_description
+    auth {
+      auth_id
+      auth_id_type
+      user_id
+    }
+    token
+  }
+}
+
+
+```
+
+
+
 ## 需求
 
 * 支持用户名密码登陆-仅用于测试-不对外开放
