@@ -8,6 +8,6 @@ COPY ./src/. $APP_PATH
 
 RUN cd $APP_PATH
 RUN npm install
-CMD [ "node", "${APP_PATH}/main.js" ]
+CMD [ "npm", "start" ]
 
 EXPOSE 80

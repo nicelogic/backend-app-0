@@ -15,48 +15,11 @@ const resolvers = {
   }
 };
 
+export default resolvers;
+
 
 async function hello(_, { val }) {
-  const paginationContacts = await ContactsModel.aggregate([{
-    $match: { userId: 'wzh' },
-  }, {
-    $lookup: {
-      from: 'accounts',
-      localField: 'contacts',
-      foreignField: '_id',
-      as: 'user'
-    }
-  }, {
-    $unwind: "$user"
-  }, {
-    $sort: { 'user.name': 1 }
-  }, {
-    $limit: 2
-  }]);
-  console.log(inspect(paginationContacts, { depth: null }));
-
-  // const contactsModel = await ContactsModel.find({ userId: 'wzh' }).populate(
-  //   { path: 'contacts', select: { name: 1 }, options: { sort: { id: 1 } } });
-
-
-
-
-  // const userModel = await (await UserModel.findById('wzh')).populate({
-  //   path: 'contacts', populate: {
-  //     path: 'contacts',
-  //     select: { 'name': 1 },
-  //   },
-  //   // match: { 'contacts.name': { $gt: val } },
-  //   options: { limit: 2, sort: { contacts.name: 1 } }
-
-  // });
-  // if (userModel === null) {
-  //   return 'is null';
-  // } else {
-  //   console.log(inspect(userModel, { depth: null }));
-
-  //   return 'not null';
-  // }
+  console.log('hello user');
 }
 
 
@@ -188,4 +151,3 @@ async function removeContacts(_, { userId, contactsId }) {
   return contactsId;
 }
 
-export default resolvers;
