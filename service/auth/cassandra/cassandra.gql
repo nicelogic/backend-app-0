@@ -11,14 +11,18 @@ mutation createTables {
     ]
     values: [
       { name: "user_id", type: {basic: TEXT} }
-      { name: "createTime", type: {basic: TIMESTAMP} }
+      { name: "create_time", type: {basic: TIMESTAMP} }
       { name: "auth_id_type_username_pwd", type: {basic: TEXT} }
     ]
   )
 }
 
 mutation alterTableDrop{
-  alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "user_id")
+  alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "create_time")
+}
+
+mutation alterTableAdd{
+  alterTableAdd(keyspaceName: "app_0", tableName:"auth", toAdd: { name: "create_time", type: {basic: TIMESTAMP}})
 }
 
 query GetTables {
@@ -42,10 +46,10 @@ query GetTables {
 
 mutation insertauth {
   test: insertauth(value: {
-                    auth_id:"test", 
+                    auth_id:"test1", 
                     auth_id_type:"username",
                     auth_id_type_username_pwd: "4a8a08f09d37b73795649038408b5f33",
-                    user_id: "XsfiE-8SgetD-JU71IwPw"
+                    user_id: "test1"
                   },
                   ifNotExists: true
                   ) {
@@ -69,7 +73,59 @@ query auth {
             auth_id,
 						user_id,
             auth_id_type_username_pwd,
-            createTime
+            create_time
+          }
+        }
+}
+
+#search all
+query auth {
+  auth: auth(filter: {
+                  },
+                  ) {
+          pageState,
+          values {
+            auth_id,
+            auth_id_type,
+						user_id,
+            auth_id_type_username_pwd,
+            create_time
+          }
+        }
+}
+
+query auth($auth_id: String!) {
+  auth: auth(value: {
+                    auth_id: $auth_id, 
+                    auth_id_type: "username"
+                  },
+                  ) {
+          pageState,
+          values {
+            auth_id,
+            auth_id_type,
+						user_id,
+            auth_id_type_username_pwd,
+            create_time
+          }
+        }
+}
+
+mutation deleteauth($auth_id: String!) {
+  deleteauth: deleteauth(value: {
+                    auth_id: $auth_id, 
+                    auth_id_type: "username"
+                  },
+    							ifExists: true
+                  ) {
+          applied,
+    			accepted,
+          value {
+            auth_id,
+            auth_id_type,
+						user_id,
+            auth_id_type_username_pwd,
+            create_time
           }
         }
 }
