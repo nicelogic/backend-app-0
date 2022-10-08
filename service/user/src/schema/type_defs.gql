@@ -1,35 +1,4 @@
 type Query {
   hello(name: String): String
-  paginationContacts(userId: ID!, first: Int!, after: String!): PaginationContacts!
 }
 
-type Mutation {
-  addContacts(userId: ID!, contactsId: ID!): String!
-  removeContacts(userId: ID!, contactsId: ID!): String!
-}
-
-type PaginationContacts{
-  id: ID!
-  contactsConnection: ContactsConnection!
-}
-
-type ContactsConnection {
-  totalCount: Int!
-  edges: [Edge!]
-  pageInfo: PageInfo!
-}
-
-type Edge{
-  node: Node!
-  cursor: String!
-}
-
-type Node {
-  id: ID!
-  name: String!
-}
-
-type PageInfo{
-  endCursor: String
-  hasNextPage: Boolean!
-}

@@ -2,7 +2,7 @@
 import { loadSchemaSync } from '@graphql-tools/load';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import contactsResolver from './resolvers/resolvers.js';
+import resolver from './resolvers/resolvers.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -12,10 +12,7 @@ const typeDefs = loadSchemaSync(`${__dirname}/type_defs.gql`, { loaders: [new Gr
 
 const resolvers = {
   Query: {
-    ...contactsResolver.Query,
-  },
-  Mutation:{
-    ...contactsResolver.Mutation
+    ...resolver.Query,
   }
 };
 
