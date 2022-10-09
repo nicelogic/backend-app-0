@@ -58,7 +58,7 @@ async function signUpByUserName(rootValue, { userName, pwd }) {
     console.log(JSON.stringify(response));
     const isExist = response['insertauth']['applied'] === false;
     if (isExist) {
-      throw new GraphQLError(authErrors.userExist);
+      throw authErrors.userExist;
     }
     const user_id = response['insertauth']['value']['user_id'];
     const token = generateToken(user_id, rootValue.privateKey, rootValue.expiresIn);
@@ -116,7 +116,7 @@ async function signInByUserName(rootValue, { userName, pwd }) {
     const md5Pwd = crypto.createHash('md5').update(pwd, 'utf8').digest("hex");
     const isPwdRight = md5Pwd === auth_id_type_username_pwd;
     if (!isPwdRight) {
-      throw new GraphQLError(authErrors.pwdWrong);
+      throw authErrors.pwdWrong;
     }
     const user_id = response['auth']['values'][0]['user_id'];
     const token = generateToken(user_id, rootValue.privateKey, rootValue.expiresIn);
