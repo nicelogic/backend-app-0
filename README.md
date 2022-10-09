@@ -8,7 +8,7 @@ english name: warmth
 
 ## 设计
 
-* use microservice
+* only use go
 * client每次只获取其需要的信息去渲染显示（可以多次获取)
 * client缓存获取到的信息，有变化才去重新获取
 * microservice之间可以存在互相依赖关系: contacts的返回可以依赖user
