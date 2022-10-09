@@ -23,7 +23,7 @@ async function main(){
     schema: schema,
     rootValue: rootValue,
     pretty: true,
-    graphiql: true
+    graphiql: true,
   }));
   app.listen(80);
   console.log(`🚀 Running a GraphQL API server at http://localhost${path}`);

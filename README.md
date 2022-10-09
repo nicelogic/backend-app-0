@@ -14,6 +14,11 @@ english name: warmth
 * microservice之间可以存在互相依赖关系: contacts的返回可以依赖user
 * 每个微服务的返回值为： error_code, error_code_description，“具体对象"
 
+### 关于配置
+
+* 影响服务重启使用新配置的用configmap, secret始终用secret
+* 只用错误描述，不用错误码
+
 ## design
 
 ### 为什么不app直接访问数据库

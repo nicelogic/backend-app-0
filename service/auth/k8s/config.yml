@@ -6,5 +6,5 @@ metadata:
   namespace: app-0
 data:
   config-auth.yml: |+
-    port: 80
     path: /
+    expirsin: 30 days

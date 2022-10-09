@@ -1,0 +1,18 @@
+{
+  "name": "nicelogic-error",
+  "type": "module",
+  "version": "1.0.9",
+  "description": "nicelogic error",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "error"
+  ],
+  "author": "nicelogic",
+  "license": "ISC",
+  "dependencies": {
+    "graphql": "^16.6.0"
+  }
+}
