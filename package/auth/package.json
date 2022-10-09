@@ -1,0 +1,20 @@
+{
+  "name": "nicelogic-auth",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "nicelogic auth",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/test.js"
+  },
+  "keywords": [
+    "auth"
+  ],
+  "author": "nicelogic",
+  "license": "ISC",
+  "dependencies": {
+    "graphql": "^16.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "nicelogic-error": "^1.0.9"
+  }
+}

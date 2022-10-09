@@ -9,6 +9,7 @@
     "express-graphql": "^0.12.0",
     "graphql": "^15.8.0",
     "jsonwebtoken": "^8.5.1",
+    "nicelogic-auth": "^1.0.0",
     "nicelogic-cassandra": "^1.0.11",
     "nicelogic-config": "^1.0.2"
   },

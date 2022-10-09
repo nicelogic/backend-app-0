@@ -1,4 +1,6 @@
 
+import { getUserId } from 'nicelogic-auth';
+
 const resolvers = {
   Query: {
     hello
@@ -7,9 +9,10 @@ const resolvers = {
 
 export default resolvers;
 
-async function hello(rootValue, args) {
+async function hello(rootValue) {
   console.log('root: ' + JSON.stringify(rootValue));
-  console.log('args: ' + JSON.stringify(args));
-  return 'hello user';
+  const userId = getUserId(rootValue);
+  console.log('user id: ' + userId);
+  return 'hello user: ' + userId;
 }
 
