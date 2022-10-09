@@ -7,4 +7,4 @@ metadata:
 data:
   config-auth.yml: |+
     path: /
-    expirsin: 30 days
+    expiresin: 30 days
