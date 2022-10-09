@@ -1,11 +1,12 @@
 
 import { graphqlHTTP } from 'express-graphql';
+import { GraphQLError } from 'graphql';
 import express from 'express';
 import schema from './schema/schema.js';
 import cors from 'cors';
 import Config from 'nicelogic-config';
 import fs from 'fs';
-import { expressjwt } from 'express-jwt';
+import jwt from 'jsonwebtoken';
 
 async function main() {
 
@@ -14,40 +15,31 @@ async function main() {
   const path = config.get('path', '/');
   const publicKey = fs.readFileSync('/etc/app-0/secret-jwt/jwt-publickey');
 
-  const rootValue = {
-    publicKey: publicKey
-  };
-
-  const extensions = ({
-    document,
-    variables,
-    operationName,
-    result,
-    context,
-  }) => {
-    return {
-      runTime: Date.now() - context.startTime,
-    };
-  };
-
   const app = express();
-  app.use(
-    expressjwt({
-      secret: publicKey,
-      algorithms: ['RS256'],
-      credentialsRequired: false,
-    }).unless({
-      path: []
-    }),
-  );
+  function rootValue(req) {
+    const authorizationHeader = req.headers && 'Authorization' in req.headers ? 'Authorization' : 'authorization';
+    if (typeof (req.headers[authorizationHeader]) === undefined) {
+      throw new GraphQLError('unauthorized');
+    }
+    const token = (req.headers[authorizationHeader]).split(' ')[1];
+    console.log(token);
+    let payload = {};
+    try {
+      payload = jwt.verify(token, publicKey);
+      console.log(payload.id);
+
+    } catch (e) {
+      throw new GraphQLError(e.message);
+    }
+    return payload;
+  }
+
   app.use(cors());
-  app.use(path, graphqlHTTP( (request, response, graphQLParams) => ({
+  app.use(path, graphqlHTTP((req, response, graphQLParams) => ({
     schema: schema,
-    rootValue: rootValue,
     pretty: true,
     graphiql: { headerEditorEnabled: true },
-    context: { startTime: Date.now() },
-    extensions
+    rootValue: rootValue(req)
   })));
   app.listen(80);
   console.log(`🚀 Running a GraphQL API server at http://localhost${path}`);

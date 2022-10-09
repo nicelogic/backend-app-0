@@ -9,15 +9,16 @@ import fs from 'fs';
 async function main(){
 
   const config = new Config('/etc/app-0/config-auth/config-auth.yml');
-  const path = config.get('path', '/');
+  const expiresIn = config.get('expiresin', 60);
   const privateKey = fs.readFileSync('/etc/app-0/secret-jwt/jwt-privatekey');
-
   const rootValue = {
-    privateKey: privateKey
+    privateKey: privateKey,
+    expiresIn: expiresIn
   };
 
   const app = express();
   app.use(cors());
+  const path = config.get('path', '/');
   app.use(path, graphqlHTTP({
     schema: schema,
     rootValue: rootValue,

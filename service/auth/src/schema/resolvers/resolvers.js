@@ -15,7 +15,7 @@ const resolvers = {
 };
 export default resolvers;
 
-async function signUpByUserName(context, { userName, pwd }) {
+async function signUpByUserName(rootValue, { userName, pwd }) {
   console.log(`signup by user name: ${userName}`);
   const insertAuth = gql`
     mutation insertauth($auth_id: String!, $auth_id_type_username_pwd: String!, $user_id: String!, $create_time: Timestamp!) {
@@ -67,9 +67,9 @@ async function signUpByUserName(context, { userName, pwd }) {
       error_code = 1;
       error_code_description = 'user name already exist';
     } else {
+      token = generateToken(user_id, rootValue.privateKey, rootValue.expiresIn);
       user_id = response['insertauth']['value']['user_id'];
       create_time = response['insertauth']['value']['create_time'];
-      token = generateToken(user_id, context.privateKey);
     }
   } catch (e) {
     error_code = -1;
@@ -89,7 +89,7 @@ async function signUpByUserName(context, { userName, pwd }) {
   };
 }
 
-async function signInByUserName(context, { userName, pwd }) {
+async function signInByUserName(rootValue, { userName, pwd }) {
   console.log(`signup by user name: ${userName}`);
 
   const queryAuth = gql`
@@ -135,9 +135,9 @@ async function signInByUserName(context, { userName, pwd }) {
       const md5Pwd = crypto.createHash('md5').update(pwd, 'utf8').digest("hex");
       const isPwdRight = md5Pwd === auth_id_type_username_pwd;
       if (isPwdRight) {
+        token = generateToken(user_id, rootValue.privateKey, rootValue.expiresIn);
         user_id = response['auth']['values'][0]['user_id'];
         create_time = response['auth']['values'][0]['create_time'];
-        token = generateToken(user_id, context.privateKey);
       } else {
         error_code = 3;
         error_code_description = 'password wrong';

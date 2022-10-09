@@ -6,22 +6,26 @@ class Config {
 	constructor(configFilePath) { 
 		try {
 			this.doc = yaml.load(fs.readFileSync(configFilePath, 'utf8'));
-			console.log(`${configFilePath}: `);
-			console.log(this.doc)
 		} catch (e) {
 			console.log(e);
 		}
 	}
 
 	get(key, defaltVal) {
+		let val;
 		try {
-			const val = this.doc[key];
-			console.log(`${key}: ${val}`);
-			return val;
+			val = this.doc[key];
+			if(val === undefined){
+				val = defaltVal;
+				console.log('use default value');
+			}
 		} catch (e) {
 			console.log(e);
+			console.log('use default value');
+			val = defaltVal;
 		}
-		return 	defaltVal;
+		console.log(`${key}: ${val}`);
+		return 	val;
 	}
 }
 

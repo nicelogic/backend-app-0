@@ -7,10 +7,9 @@ const resolvers = {
 
 export default resolvers;
 
-async function hello(_, args, context) {
-  console.log(JSON.stringify(parent));
-  console.log(JSON.stringify(args));
-  console.log(JSON.stringify(context));
+async function hello(rootValue, args) {
+  console.log('root: ' + JSON.stringify(rootValue));
+  console.log('args: ' + JSON.stringify(args));
   return 'hello user';
 }
 

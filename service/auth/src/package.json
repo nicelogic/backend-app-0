@@ -12,7 +12,7 @@
     "jsonwebtoken": "^8.5.1",
     "nanoid": "^4.0.0",
     "nicelogic-cassandra": "^1.0.11",
-    "nicelogic-config": "^1.0.2"
+    "nicelogic-config": "^1.1.0"
   },
   "scripts": {
     "start": "node index.js"
