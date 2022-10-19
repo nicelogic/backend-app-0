@@ -6,37 +6,9 @@ package graph
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"user/graph/generated"
 	"user/graph/model"
 )
-
-type contextKey struct {
-	name string
-}
-var userCtxKey = &contextKey{"user"}
-
-type User struct {
-	Id string
-}
-
-func ForContext(ctx context.Context) *User {
-	raw, _ := ctx.Value(userCtxKey).(*User)
-	return raw
-}
-
-func Middleware() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-
-			user := &User{Id: "wzh"}
-			fmt.Println("has user")
-			ctx := context.WithValue(request.Context(), userCtxKey, user)
-			request = request.WithContext(ctx)
-			next.ServeHTTP(writer, request)
-		})
-	}
-}
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
@@ -45,8 +17,6 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	user := ForContext(ctx)
-	fmt.Printf("userId: %v", user.Id)
 
 	return []*model.Todo{}, nil
 	//panic(fmt.Errorf("not implemented: Todos - todos"))

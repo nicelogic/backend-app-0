@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"runtime/debug"
 	"user/config"
 	"user/graph"
 	"user/graph/generated"
@@ -25,7 +24,6 @@ func main() {
 	server := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
 		log.Print(panicErr)
-		debug.PrintStack()
 		err := &gqlerror.Error{
 			Path:       graphql.GetPath(ctx),
 			Message:    common_error.InternalServerError,
@@ -38,7 +36,7 @@ func main() {
 	configer.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
-	router.Use(graph.Middleware())
+	//router.Use(graph.Middleware())
 	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", server)
 	log.Printf("connect to http://localhost" + path + " for GraphQL playground")
