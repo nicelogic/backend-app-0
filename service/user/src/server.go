@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
+	"github.com/nicelogic/auth"
 	"github.com/nicelogic/configer"
 	"github.com/nicelogic/constant/common_error"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -36,7 +37,7 @@ func main() {
 	configer.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
-	//router.Use(graph.Middleware())
+	router.Use(auth.Middleware())
 	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", server)
 	log.Printf("connect to http://localhost" + path + " for GraphQL playground")

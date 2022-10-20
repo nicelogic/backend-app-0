@@ -1,4 +1,4 @@
-module github.com/nicelogic/configer
+module github.com/nicelogic/config
 
 go 1.19
 
