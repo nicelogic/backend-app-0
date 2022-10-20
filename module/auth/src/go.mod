@@ -1,4 +1,4 @@
-module github.com/nicelogic/authentication
+module github.com/nicelogic/auth
 
 go 1.19
 

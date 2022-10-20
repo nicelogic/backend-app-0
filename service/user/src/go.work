@@ -3,6 +3,6 @@ go 1.19
 use (
 	.
 	../../../module/auth/src
-	../../../module/configer/src
+	../../../module/config/src
 	../../../module/constant/src
 )

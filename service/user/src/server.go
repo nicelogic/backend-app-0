@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"user/config"
+	userConfig "user/config"
 	"user/graph"
 	"user/graph/generated"
 
@@ -13,12 +13,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/nicelogic/auth"
-	"github.com/nicelogic/configer"
+	"github.com/nicelogic/config"
 	"github.com/nicelogic/constant/common_error"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
-
-
 
 func main() {
 
@@ -33,8 +31,8 @@ func main() {
 		return err
 	})
 
-	userConfig := config.Config{Path: "/"}
-	configer.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
+	userConfig := userConfig.Config{Path: "/"}
+	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())

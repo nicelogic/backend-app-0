@@ -49,13 +49,12 @@ func userFromJwt(tokenString string) (user *User, err error){
 		return
 	}
 	userMap, ok := claims["user"].(map[string]interface{})
-	fmt.Printf("claims[user]: %v\n", userMap)
-	if !ok{
+	if !ok {
 		_, err = fmt.Printf("claims[user] is not map[string]interface{}\n")
 		return
 	}
 	id, ok := userMap["id"].(string)
-	if !ok{
+	if !ok {
 		_, err = fmt.Printf("userMap[id] is not string\n")
 		return
 	}
@@ -68,13 +67,10 @@ func Middleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			reqToken := request.Header.Get("Authorization")
 			splitToken := strings.Split(reqToken, "Bearer ")
-			if(len(splitToken) != 2){
-				fmt.Println("invalid token: ", reqToken)	
-			} else {
+			if len(splitToken) == 2 {
 				jwtToken := splitToken[1]
-				fmt.Println("token: ", jwtToken)
 				user, err := userFromJwt(jwtToken)
-				if err != nil{
+				if err == nil {
 					ctx := context.WithValue(request.Context(), userCtxKey, user)
 					request = request.WithContext(ctx)
 				}
