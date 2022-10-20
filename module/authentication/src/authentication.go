@@ -43,14 +43,23 @@ func userFromJwt(tokenString string) (user *User, err error){
 		return jwtPublicKey, nil
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userMap := claims["user"].(map[string]interface{})
-		fmt.Printf("claims[user]: %v\n", userMap)
-		user = &User{Id: userMap["id"].(string)}
-	} else {
-		fmt.Println(err)
-	}	
-
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		_, err = fmt.Println(err)
+		return
+	}
+	userMap, ok := claims["user"].(map[string]interface{})
+	fmt.Printf("claims[user]: %v\n", userMap)
+	if !ok{
+		_, err = fmt.Printf("claims[user] is not map[string]interface{}\n")
+		return
+	}
+	id, ok := userMap["id"].(string)
+	if !ok{
+		_, err = fmt.Printf("userMap[id] is not string\n")
+		return
+	}
+	user = &User{Id: id}
 	return 
 }
 
