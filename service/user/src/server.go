@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	userConfig "user/config"
@@ -12,9 +13,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
+	"github.com/golang-jwt/jwt"
 	"github.com/nicelogic/auth"
+	"github.com/nicelogic/common_error"
 	"github.com/nicelogic/config"
-	"github.com/nicelogic/constant/common_error"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -25,8 +27,22 @@ func main() {
 		log.Print(panicErr)
 		err := &gqlerror.Error{
 			Path:       graphql.GetPath(ctx),
-			Message:    common_error.InternalServerError,
+			Message:    common_error.ServerInternalError,
 			Extensions: map[string]interface{}{},
+		}
+		return err
+	})
+	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+		err := graphql.DefaultErrorPresenter(ctx, e)
+		var jwtError *jwt.ValidationError
+		hasJwtError := errors.As(e, &jwtError)
+		switch{
+		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
+			err.Message = common_error.TokenExpired
+		case hasJwtError:
+			err.Message = common_error.TokenInvalid
+		default:
+			err.Message = common_error.ServerInternalError
 		}
 		return err
 	})

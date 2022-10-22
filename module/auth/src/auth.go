@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,30 +15,36 @@ type contextKey struct {
 	name string
 }
 var userCtxKey = &contextKey{name: "user"}
+var errorCtxKey = &contextKey{name: "error"}
 
 type User struct {
 	Id string
 }
 
-func GetUser(ctx context.Context) *User {
-	raw, _ := ctx.Value(userCtxKey).(*User)
-	return raw
+func GetUser(ctx context.Context) (*User, error) {
+	user, _ := ctx.Value(userCtxKey).(*User)
+	err, _:= ctx.Value(errorCtxKey).(error)
+	return user, err
 }
 
 func userFromJwt(tokenString string) (user *User, err error){
+	defer func() {
+        if e := recover(); e != nil {
+			err = fmt.Errorf("recovered error: %v", err)
+        }
+    }()
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		content, err := os.ReadFile("/etc/app-0/secret-jwt/jwt-publickey")
 		if err != nil {
-			fmt.Println(err)
 			return nil, err
 		}
 
 		jwtPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(content)
 		if err != nil{
-			fmt.Println(err)
 			return nil, err
 		}
 		return jwtPublicKey, nil
@@ -45,17 +52,16 @@ func userFromJwt(tokenString string) (user *User, err error){
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		_, err = fmt.Println(err)
 		return
 	}
 	userMap, ok := claims["user"].(map[string]interface{})
 	if !ok {
-		_, err = fmt.Printf("claims[user] is not map[string]interface{}\n")
+		err = errors.New("claims[user] is not map[string]interface{}")
 		return
 	}
 	id, ok := userMap["id"].(string)
 	if !ok {
-		_, err = fmt.Printf("userMap[id] is not string\n")
+		err = errors.New("userMap[id] is not string")
 		return
 	}
 	user = &User{Id: id}
@@ -67,14 +73,20 @@ func Middleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			reqToken := request.Header.Get("Authorization")
 			splitToken := strings.Split(reqToken, "Bearer ")
-			if len(splitToken) == 2 {
+			var ctx context.Context
+			if len(splitToken) != 2 {
+				ctx = context.WithValue(request.Context(), errorCtxKey, errors.New("http header: Authorization's value invalid"))
+			} else{
 				jwtToken := splitToken[1]
 				user, err := userFromJwt(jwtToken)
-				if err == nil {
-					ctx := context.WithValue(request.Context(), userCtxKey, user)
-					request = request.WithContext(ctx)
+				if err != nil {
+					fmt.Printf("userFromJwt: %v\n", err)
+					ctx = context.WithValue(request.Context(), errorCtxKey, err)
+				} else {
+					ctx = context.WithValue(request.Context(), userCtxKey, user)
 				}
 			}
+			request = request.WithContext(ctx)
 			next.ServeHTTP(writer, request)
 		})
 	}

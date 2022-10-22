@@ -9,7 +9,8 @@ import fs from 'fs';
 async function main(){
 
   const config = new Config('/etc/app-0/config-auth/config-auth.yml');
-  const expiresIn = config.get('expiresin', 60);
+  //const expiresIn = config.get('expiresin', 60);
+  const expiresIn = 60;
   const privateKey = fs.readFileSync('/etc/app-0/secret-jwt/jwt-privatekey');
   const rootValue = {
     privateKey: privateKey,

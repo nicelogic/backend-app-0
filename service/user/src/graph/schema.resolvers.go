@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"user/graph/generated"
 	"user/graph/model"
+
 	"github.com/nicelogic/auth"
 )
 
@@ -18,12 +19,13 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	user := auth.GetUser(ctx)
-	if user != nil{
-		fmt.Println(user.Id)
+	user, err := auth.GetUser(ctx)
+	if err != nil{
+		return nil, err
 	}
+	fmt.Println(user.Id)
+
 	return []*model.Todo{}, nil
-	//panic(fmt.Errorf("not implemented: Todos - todos"))
 }
 
 // Mutation returns generated.MutationResolver implementation.
