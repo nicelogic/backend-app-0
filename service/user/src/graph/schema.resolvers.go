@@ -5,9 +5,11 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"user/graph/generated"
 	"user/graph/model"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/nicelogic/auth"
 )
 
@@ -26,10 +28,23 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	if err != nil{
 		return
 	}
+	fmt.Printf("user: %v update\n", user.Id)
+
 	updatedUser = &model.User{}
-	updatedUser.ID = user.Id
-	updatedUser.Name = "test"
-	updatedUser.Signature = "well"
+	var metadata mapstructure.Metadata
+	config := &mapstructure.DecoderConfig{
+		Metadata: &metadata,
+		Result:   &updatedUser,
+	}
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return
+	}
+	err = decoder.Decode(changes)
+	if err != nil{
+		return
+	}
+	fmt.Printf("success decoded: %v\n", metadata.Keys)
 
 
 	return 

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto/rsa"
 	"errors"
 	"fmt"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 type contextKey struct {
 	name string
 }
+
 var userCtxKey = &contextKey{name: "user"}
 var errorCtxKey = &contextKey{name: "error"}
 
@@ -23,30 +25,35 @@ type User struct {
 
 func GetUser(ctx context.Context) (*User, error) {
 	user, _ := ctx.Value(userCtxKey).(*User)
-	err, _:= ctx.Value(errorCtxKey).(error)
+	err, _ := ctx.Value(errorCtxKey).(error)
 	return user, err
 }
 
-func userFromJwt(tokenString string) (user *User, err error){
+var jwtPublicKey *rsa.PublicKey
+
+func userFromJwt(tokenString string) (user *User, err error) {
 	defer func() {
-        if e := recover(); e != nil {
+		if e := recover(); e != nil {
 			err = fmt.Errorf("recovered error: %v", err)
-        }
-    }()
+		}
+	}()
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		content, err := os.ReadFile("/etc/app-0/secret-jwt/jwt-publickey")
-		if err != nil {
-			return nil, err
+
+		if jwtPublicKey == nil {
+			sliceJwtPublicKey, err := os.ReadFile("/etc/app-0/secret-jwt/jwt-publickey")
+			if err != nil {
+				return nil, err
+			}
+			jwtPublicKey, err = jwt.ParseRSAPublicKeyFromPEM(sliceJwtPublicKey)
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		jwtPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(content)
-		if err != nil{
-			return nil, err
-		}
 		return jwtPublicKey, nil
 	})
 
@@ -65,7 +72,7 @@ func userFromJwt(tokenString string) (user *User, err error){
 		return
 	}
 	user = &User{Id: id}
-	return 
+	return
 }
 
 func Middleware() func(http.Handler) http.Handler {
@@ -76,7 +83,7 @@ func Middleware() func(http.Handler) http.Handler {
 			var ctx context.Context
 			if len(splitToken) != 2 {
 				ctx = context.WithValue(request.Context(), errorCtxKey, errors.New("http header: Authorization's value invalid"))
-			} else{
+			} else {
 				jwtToken := splitToken[1]
 				user, err := userFromJwt(jwtToken)
 				if err != nil {
