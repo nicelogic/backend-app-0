@@ -5,28 +5,11 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"user/graph/generated"
 	"user/graph/model"
 
 	"github.com/nicelogic/auth"
 )
-
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	user, err := auth.GetUser(ctx)
-	if err != nil{
-		return nil, err
-	}
-	fmt.Println(user.Id)
-
-	return []*model.Todo{}, nil
-}
 
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
@@ -36,3 +19,26 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (user *model.User, err error) {
+	requestUser, err := auth.GetUser(ctx)
+	if err != nil{
+		return
+	}
+	user = &model.User{}
+	user.ID = requestUser.Id
+	user.Name = "test"
+	user.Signature = "well"
+
+
+	return 
+}
+
+func (r *queryResolver) Me(ctx context.Context) (user *model.User, err error) {
+	return 
+}
+
+func (r *queryResolver) User(ctx context.Context, idOrName string) (user *model.User, err error) {
+	return 
+}

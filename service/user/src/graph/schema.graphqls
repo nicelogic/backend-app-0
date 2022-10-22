@@ -2,27 +2,20 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
 
 type User {
   id: ID!
   name: String!
+  signature: String!
 }
 
 type Query {
-  todos: [Todo!]!
+  me: User!
+  user(idOrName: String!): User!
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
+scalar Map
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  updateUser(changes: Map!): User!
 }

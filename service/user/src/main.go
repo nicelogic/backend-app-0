@@ -41,6 +41,8 @@ func main() {
 			err.Message = common_error.TokenExpired
 		case hasJwtError:
 			err.Message = common_error.TokenInvalid
+		case err.Message == UserNotExist:
+			break
 		default:
 			err.Message = common_error.ServerInternalError
 		}
