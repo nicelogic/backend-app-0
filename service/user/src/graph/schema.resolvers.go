@@ -21,15 +21,15 @@ type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (user *model.User, err error) {
-	requestUser, err := auth.GetUser(ctx)
+func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (updatedUser *model.User, err error) {
+	user, err := auth.GetUser(ctx)
 	if err != nil{
 		return
 	}
-	user = &model.User{}
-	user.ID = requestUser.Id
-	user.Name = "test"
-	user.Signature = "well"
+	updatedUser = &model.User{}
+	updatedUser.ID = user.Id
+	updatedUser.Name = "test"
+	updatedUser.Signature = "well"
 
 
 	return 
