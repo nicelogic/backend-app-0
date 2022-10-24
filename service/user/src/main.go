@@ -55,14 +55,14 @@ func main() {
 		return err
 	})
 
-	userConfig := userConfig.Config{Path: "/"}
+	userConfig := userConfig.Config{Path: "/", Listen_address: ":80"}
 	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())
 	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", server)
-	log.Printf("connect to http://localhost" + path + " for GraphQL playground")
 
-	log.Fatal(http.ListenAndServe(":80", router))
+	log.Printf("connect to http://%s%s for GraphQL playground", userConfig.Listen_address, userConfig.Path)
+	log.Fatal(http.ListenAndServe(userConfig.Listen_address, router))
 }

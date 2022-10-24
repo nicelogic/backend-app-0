@@ -22,16 +22,12 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
-func (r *mutationResolver) UpdateUser2(ctx context.Context, name *string, signature *string) (responseUser *model.User, err error) {
-	return
-}
-
 func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (responseUser *model.User, err error) {
 	user, err := auth.GetUser(ctx)
 	if err != nil{
 		return
 	}
-	fmt.Printf("user: %v update\n", user.Id)
+	fmt.Printf("user: %v update: %v\n", user.Id, changes)
 
 	updatedUser := &model.User{}
 	var metadata mapstructure.Metadata

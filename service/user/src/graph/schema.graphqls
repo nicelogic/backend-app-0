@@ -18,5 +18,4 @@ scalar Map
 
 type Mutation {
   updateUser(changes: Map!): User!
-  updateUser2(name: String, signature: String): User!
 }
