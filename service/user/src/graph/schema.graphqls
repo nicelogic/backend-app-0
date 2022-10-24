@@ -4,7 +4,7 @@
 
 
 type User {
-  id: ID!
+  id: ID! @goField(name: "user_id")
   name: String!
   signature: String!
 }
