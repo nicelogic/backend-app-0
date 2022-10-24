@@ -27,14 +27,14 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 	}
 
 	const gqlFormat = `mutation updateUser(
-					$user_id: String!
+					$id: String!
 					# VariableDefinitions
 					%s
 					$update_time: Timestamp!
 				) {
 				updateUser: updateuser(
 					value: {
-							user_id: $user_id
+							id: $id
 							# variables
 							%s
 						    update_time: $update_time
@@ -44,7 +44,7 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 					applied
 					accepted
 					value {
-						user_id
+						id
 						# response values
 						%s
 						update_time

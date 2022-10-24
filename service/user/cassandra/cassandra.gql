@@ -16,7 +16,7 @@ mutation createTables {
     keyspaceName:"app_0_user",
     tableName:"user",
     partitionKeys: [ 
-      { name: "user_id", type: {basic: TEXT} }
+      { name: "id", type: {basic: TEXT} }
     ]
     clusteringKeys: [
     ]
@@ -30,7 +30,7 @@ mutation createTables {
 
 mutation dropTable {
   dropUser: dropTable(
-    keyspaceName: "app_0"
+    keyspaceName: "app_0_user"
     tableName: "user"
     ifExists: true
   )

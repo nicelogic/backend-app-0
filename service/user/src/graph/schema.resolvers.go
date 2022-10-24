@@ -35,7 +35,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	if err != nil {
 		return
 	}
-	variables["user_id"] = user.Id
+	variables["id"] = user.Id
 	response, err := r.CassandraClient.Mutation(gql, variables)
 	if err != nil {
 		return
