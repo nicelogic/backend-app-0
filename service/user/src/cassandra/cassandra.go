@@ -32,7 +32,7 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 					%s
 					$update_time: Timestamp!
 				) {
-				updateUserName: updateuser(
+				updateUser: updateuser(
 					value: {
 							user_id: $user_id
 							# variables

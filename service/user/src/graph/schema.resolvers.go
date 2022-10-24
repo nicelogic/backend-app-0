@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"user/cassandra"
 	"user/graph/generated"
@@ -41,8 +42,27 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	}
 	fmt.Printf("%v\n", response)
 
+	response, ok := response["updateUser"].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[updateUser]'s type is not map[string]interface{}")
+		return
+	}
+	applied, ok := response["applied"].(bool)
+	if !ok {
+		err = errors.New("response[updateUser][applied]'s type is not bool")
+		return
+	}
+	if !applied {
+		err = errors.New("cassandra not applied")
+		return
+	}
+	value, ok := response["value"].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[updateUser][value]'s type is not map[string]interface{}")
+		return
+	}
 	responseUser = &model.User{}
-	err = mapstructure.Decode(response, &responseUser)
+	err = mapstructure.Decode(value, &responseUser)
 	if err != nil {
 		return
 	}
