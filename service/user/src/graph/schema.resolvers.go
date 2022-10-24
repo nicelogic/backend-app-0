@@ -22,15 +22,18 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+func (r *mutationResolver) UpdateUser2(ctx context.Context, name *string, signature *string) (responseUser *model.User, err error) {
+	return
+}
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (updatedUser *model.User, err error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (responseUser *model.User, err error) {
 	user, err := auth.GetUser(ctx)
 	if err != nil{
 		return
 	}
 	fmt.Printf("user: %v update\n", user.Id)
 
-	updatedUser = &model.User{}
+	updatedUser := &model.User{}
 	var metadata mapstructure.Metadata
 	config := &mapstructure.DecoderConfig{
 		Metadata: &metadata,
@@ -44,7 +47,51 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	if err != nil{
 		return
 	}
+	fmt.Printf("changes: %v\n", changes)
 	fmt.Printf("success decoded: %v\n", metadata.Keys)
+	for _, value := range metadata.Keys{
+		fmt.Printf("%s change to: %v\n", value, changes["Signature"])
+	}
+
+	const gql = `mutation updateUser($user_id: String!, $update_time: Timestamp!, $name: String, $signature: String) {
+		updateUserName: updateuser(value: {
+										  user_id: $user_id
+						  name:$name , 
+										  signature: $signature
+						  update_time: $update_time
+						},
+									  ifExists: false,
+						
+						)
+		{
+				applied,
+				accepted,
+				value {
+				  user_id,
+				  name,
+				  signature,
+				  update_time
+	  
+				}
+			  }
+	  }`
+	variables := map[string]interface{}{
+		"user_id": user.Id,
+  		"update_time": "2022-10-22T04:03:18.879Z",
+		"name": "hi",
+		"signature": "hi",
+	}
+	response, err := r.CassandraClient.Mutation(gql, variables)
+	if err != nil{
+		return
+	}
+	fmt.Printf("%v", response)
+
+	responseUser = &model.User{}
+	err = mapstructure.Decode(response, &responseUser)
+	if err != nil{
+		return
+	}
 
 
 	return 

@@ -94,7 +94,7 @@ mutation insertUser {
 }
 
 # ifExists: false, means: if not exist, will insert user
-mutation updateUser {
+mutation updateUser() {
   updateUser: updateuser(value: {
     								user_id: "uGiDk3f21pwmmvwXu2lFV"
                     name:"test_same_name",

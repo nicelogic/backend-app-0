@@ -3,6 +3,7 @@ go 1.19
 use (
 	.
 	../../../module/auth/src
+	../../../module/cassandra/src
 	../../../module/common_error/src
 	../../../module/config/src
 	../../../module/constant/src
