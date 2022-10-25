@@ -87,7 +87,7 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) (users []*mo
 	if err != nil {
 		return
 	}
-	fmt.Printf("response: %v\n", response)
+	fmt.Printf("query user by id response: %v\n", response)
 
 	mapUsers := make(map[string]*model.User)
 	queriedByIdUser, err := cassandra.GetUserFromQueryUserByIdResponse(response)
@@ -106,7 +106,7 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) (users []*mo
 		if err != nil {
 			return
 		}
-		fmt.Printf("response: %v\n", response)
+		fmt.Printf("query user by name response: %v\n", response)
 
 		queriedUsers, pageState, getErr := cassandra.GetUserFromQueryUserByNameResponse(response)
 		if getErr != nil {

@@ -31,7 +31,7 @@ func main() {
 			generated.Config{
 				Resolvers: &graph.Resolver{ CassandraClient: &client}}))
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
-		log.Print(panicErr)
+		fmt.Printf("panic: %v\n", panicErr)
 		err := &gqlerror.Error{
 			Path:       graphql.GetPath(ctx),
 			Message:    common_error.ServerInternalError,

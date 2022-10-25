@@ -146,7 +146,11 @@ const QueryUserByNameGql = `query queryuserbyname($name: String!, $pageState: St
   func GetUserFromQueryUserByNameResponse(response map[string]interface{}) (users map[string]*model.User, pageState string, err error){
 
 	response = response["queryuserbyname"].(map[string]interface{})
-	pageState = response["pageState"].(string)
+	pageState, ok := response["pageState"].(string)
+	if !ok {
+		pageState = ""
+		fmt.Printf("response pageState is: %v\n", response["pageState"])
+	}
 	values := response["values"].([]interface{})
 
 	users = make(map[string]*model.User)
