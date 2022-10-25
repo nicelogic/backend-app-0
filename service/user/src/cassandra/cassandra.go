@@ -27,13 +27,13 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 		return
 	}
 
-	const gqlFormat = `mutation updateUser(
+	const gqlFormat = `mutation updateuser(
 					$id: String!
 					# VariableDefinitions
 					%s
 					$update_time: Timestamp!
 				) {
-				updateUser: updateuser(
+				updateuser: updateuser(
 					value: {
 							id: $id
 							# variables
@@ -73,36 +73,24 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 }
 
 func GetUpdatedUserFromResponse(response map[string]interface{}) (user *model.User, err error){
-	response, ok := response["updateUser"].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[updateUser]'s type is not map[string]interface{}")
-		return
-	}
-	applied, ok := response["applied"].(bool)
-	if !ok {
-		err = errors.New("response[updateUser][applied]'s type is not bool")
-		return
-	}
+
+	response = response["updateuser"].(map[string]interface{})
+	applied := response["applied"].(bool)
 	if !applied {
 		err = errors.New("cassandra not applied")
 		return
 	}
-	value, ok := response["value"].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[updateUser][value]'s type is not map[string]interface{}")
-		return
-	}
+	value := response["value"].(map[string]interface{})
 	user = &model.User{}
 	err = mapstructure.Decode(value, &user)
 	if err != nil {
 		return
 	}
-
 	return
 }
 
 const QueryUserByIdGql = `query queryuser($id: String!) {
-	queryUser: user(value: {
+	queryuser: user(value: {
 					  id:$id, 
 					},
 					) {
@@ -116,32 +104,61 @@ const QueryUserByIdGql = `query queryuser($id: String!) {
 		  }
   }`
 
-  func GetQueryUserFromResponse(response map[string]interface{}) (user *model.User, err error){
-	response, ok := response["queryUser"].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[queryUser]'s type is not map[string]interface{}")
-		return
-	}
+  func GetUserFromQueryUserByIdResponse(response map[string]interface{}) (user *model.User, err error){
 
-	values, ok := response["values"].([]interface{})
-	if !ok {
-		err = errors.New("response[queryUser][values]'s type is not []interface{}")
+	response = response["queryuser"].(map[string]interface{})
+	values := response["values"].([]interface{})
+	if len(values) == 0 {
 		return
 	}
 	if len(values) != 1 {
-		err = errors.New("response[queryUser][values] length != 1")
+		err = errors.New("response[queryuser][values] length != 1")
 		return
 	}
-	value, ok := values[0].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[queryUser][values][0]'s type is not map[string]interface{}")
-		return
-	}
-
+	value := values[0].(map[string]interface{})
 	user = &model.User{}
 	err = mapstructure.Decode(value, &user)
 	if err != nil {
 		return
+	}
+	return
+}
+
+const QueryUserByNameGql = `query queryuserbyname($name: String!, $pageState: String) {
+	queryuserbyname: user(filter: {
+				  name: {eq: $name}
+					},
+							  options: {
+					pageSize: 1,
+					pageState: $pageState
+				  }
+					) {
+			pageState,
+			values {
+				id,
+			  name,
+			  signature,
+			  update_time
+			}
+		  }
+  }`
+
+  func GetUserFromQueryUserByNameResponse(response map[string]interface{}) (users map[string]*model.User, pageState string, err error){
+
+	response = response["queryuserbyname"].(map[string]interface{})
+	pageState = response["pageState"].(string)
+	values := response["values"].([]interface{})
+
+	users = make(map[string]*model.User)
+	for _, value := range values {
+		value = value.(map[string]interface{})
+		user := &model.User{}
+		err = mapstructure.Decode(value, &user)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+		} else {
+			users[user.ID] = user
+		}
 	}
 	return
 }

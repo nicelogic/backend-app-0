@@ -11,7 +11,7 @@ type User {
 
 type Query {
   me: User!
-  user(idOrName: String!): User!
+  users(idOrName: String!): [User!]
 }
 
 scalar Map

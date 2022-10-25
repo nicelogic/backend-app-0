@@ -94,8 +94,8 @@ mutation insertUser {
 }
 
 # ifExists: false, means: if not exist, will insert user
-mutation updateUser {
-  updateUser: updateuser(value: {
+mutation updateuser {
+  updateuser: updateuser(value: {
     								id: "uGiDk3f21pwmmvwXu2lFV"
                     name:"test_same_name",
                     signature: "hehe",
@@ -118,7 +118,7 @@ mutation updateUser {
 
 
 query queryuser($id: String!) {
-  queryUser: user(value: {
+  queryuser: user(value: {
                     id:$id, 
                   },
                   ) {
@@ -134,7 +134,7 @@ query queryuser($id: String!) {
 
 #search all
 query queryalluser {
-  queryAllUser: user(filter: {
+  queryalluser: user(filter: {
                   },
                   ) {
           pageState,
@@ -147,9 +147,9 @@ query queryalluser {
         }
 }
 
-query queryuserbyname {
+query queryuserbyname($name: String!) {
   queryuserbyname: user(filter: {
-                name: {eq: "test_same_name"}
+                name: {eq: $name}
                   },
                   ) {
           pageState,
