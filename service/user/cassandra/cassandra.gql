@@ -75,7 +75,7 @@ query GetTables {
 
 mutation insertUser {
   insertUser: insertuser(value: {
-                    user_id: "pdKBcAc7lKzSC9nyglCwQ"
+                    id: "pdKBcAc7lKzSC9nyglCwQ"
                     name:"username",
                     signature: "well",
                     update_time: "2022-10-07T04:03:18.879Z"
@@ -85,7 +85,7 @@ mutation insertUser {
           applied,
           accepted,
           value {
-            user_id,
+            id,
             name,
             signature,
             update_time
@@ -96,7 +96,7 @@ mutation insertUser {
 # ifExists: false, means: if not exist, will insert user
 mutation updateUser {
   updateUser: updateuser(value: {
-    								user_id: "uGiDk3f21pwmmvwXu2lFV"
+    								id: "uGiDk3f21pwmmvwXu2lFV"
                     name:"test_same_name",
                     signature: "hehe",
                     update_time: "2022-10-22T04:03:18.879Z"
@@ -107,7 +107,7 @@ mutation updateUser {
           applied,
           accepted,
           value {
-            user_id,
+            id,
             name,
             signature,
             update_time
@@ -117,14 +117,14 @@ mutation updateUser {
 }
 
 
-query queryuser {
+query queryuser($id: String!) {
   queryUser: user(value: {
-                    user_id:"pdKBcAc7lKzSC9nyglCwQ", 
+                    id:$id, 
                   },
                   ) {
           pageState,
           values {
-						user_id,
+						id,
             name,
             signature,
             update_time
@@ -139,7 +139,7 @@ query queryalluser {
                   ) {
           pageState,
           values {
-      	    user_id,
+      	    id,
             name,
             signature,
             update_time
@@ -154,7 +154,7 @@ query queryuserbyname {
                   ) {
           pageState,
           values {
-      	    user_id,
+      	    id,
             name,
             signature,
             update_time
@@ -162,16 +162,16 @@ query queryuserbyname {
         }
 }
 
-mutation deleteuser($user_id: String!) {
+mutation deleteuser($id: String!) {
   deleteuser: deleteuser(value: {
-                    user_id: $user_id, 
+                    id: $id, 
                   },
     							ifExists: true
                   ) {
           applied,
     			accepted,
           value {
-            user_id,
+            id,
             name,
             signature,
             update_time

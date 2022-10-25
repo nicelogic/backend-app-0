@@ -19,6 +19,7 @@ type Client struct {
 	authUrl    string
 	graphqlUrl string
 	token      string
+	graphqlClient *graphql.Client
 }
 
 type cassandraConfig struct {
@@ -49,6 +50,8 @@ func (cassandra *Client) Init(keyspace string) (err error) {
 	cassandra.graphqlUrl = aConfig.Cassandra_graphql_url + keyspace
 	fmt.Printf("authUrl: %s\n", cassandra.authUrl)
 	fmt.Printf("authGraphqlUrl: %s\n", cassandra.graphqlUrl)
+
+	cassandra.graphqlClient = graphql.NewClient(cassandra.graphqlUrl)
 	return
 }
 
@@ -78,8 +81,7 @@ func (cassandra *Client) fetchToken() (err error) {
 	return
 }
 
-func (cassandra *Client) Mutation(gql string, variables map[string]interface{}) (response map[string]interface{}, err error) {
-
+func (cassandra *Client) Run(gql string, variables map[string]interface{}) (response map[string]interface{}, err error) {
 	if cassandra.token == ""{
 		fmt.Printf("token is empty, will fetch\n")
 		err = cassandra.fetchToken()
@@ -88,7 +90,6 @@ func (cassandra *Client) Mutation(gql string, variables map[string]interface{}) 
 		}
 	}
 
-	client := graphql.NewClient(cassandra.graphqlUrl)
 	req := graphql.NewRequest(gql)
 	for key, value := range variables{
 		req.Var(key, value)
@@ -97,14 +98,19 @@ func (cassandra *Client) Mutation(gql string, variables map[string]interface{}) 
 	ctx := context.Background()
 	// token will exipired after 30 minues if no any operation
 	// if token expired, need fetch token, then redo
-	if err = client.Run(ctx, req, &response); err != nil {
+	if err = cassandra.graphqlClient.Run(ctx, req, &response); err != nil {
 		fmt.Printf("%v", err)
 		return
 	}
-
 	return
 }
 
-func (cassandra *Client) Query(gql string, variables map[string]interface{}) (response string, err error) {
+func (cassandra *Client) Mutation(gql string, variables map[string]interface{}) (response map[string]interface{}, err error) {
+	response, err = cassandra.Run(gql, variables)
+	return
+}
+
+func (cassandra *Client) Query(gql string, variables map[string]interface{}) (response map[string]interface{}, err error) {
+	response, err = cassandra.Run(gql, variables)
 	return
 }

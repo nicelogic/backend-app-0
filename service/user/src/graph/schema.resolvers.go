@@ -5,13 +5,11 @@ package graph
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"user/cassandra"
 	"user/graph/generated"
 	"user/graph/model"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/nicelogic/auth"
 )
 
@@ -40,37 +38,30 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	if err != nil {
 		return
 	}
-	fmt.Printf("%v\n", response)
-
-	response, ok := response["updateUser"].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[updateUser]'s type is not map[string]interface{}")
+	fmt.Printf("response: %v\n", response)
+	responseUser, err = cassandra.GetUserFromResponse(response)
+	if err != nil{
 		return
 	}
-	applied, ok := response["applied"].(bool)
-	if !ok {
-		err = errors.New("response[updateUser][applied]'s type is not bool")
-		return
-	}
-	if !applied {
-		err = errors.New("cassandra not applied")
-		return
-	}
-	value, ok := response["value"].(map[string]interface{})
-	if !ok {
-		err = errors.New("response[updateUser][value]'s type is not map[string]interface{}")
-		return
-	}
-	responseUser = &model.User{}
-	err = mapstructure.Decode(value, &responseUser)
-	if err != nil {
-		return
-	}
-
 	return
 }
 
-func (r *queryResolver) Me(ctx context.Context) (user *model.User, err error) {
+func (r *queryResolver) Me(ctx context.Context) (me *model.User, err error) {
+	user, err := auth.GetUser(ctx)
+	if err != nil {
+		return
+	}
+	fmt.Printf("user: %v query own info\n", user.Id)	
+
+	variables := map[string]interface{}{
+		"id": user.Id,
+	}
+	response, err := r.CassandraClient.Query(cassandra.QueryUserByIdGql, variables)
+	if err != nil {
+		return
+	}
+	fmt.Printf("response: %v\n", response)
+
 	return
 }
 

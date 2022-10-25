@@ -1,6 +1,7 @@
 package cassandra
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -70,3 +71,47 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 
 	return gql, variables, nil
 }
+
+func GetUserFromResponse(response map[string]interface{}) (user *model.User, err error){
+	response, ok := response["updateUser"].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[updateUser]'s type is not map[string]interface{}")
+		return
+	}
+	applied, ok := response["applied"].(bool)
+	if !ok {
+		err = errors.New("response[updateUser][applied]'s type is not bool")
+		return
+	}
+	if !applied {
+		err = errors.New("cassandra not applied")
+		return
+	}
+	value, ok := response["value"].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[updateUser][value]'s type is not map[string]interface{}")
+		return
+	}
+	user = &model.User{}
+	err = mapstructure.Decode(value, &user)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+const QueryUserByIdGql = `query queryuser($id: String!) {
+	queryUser: user(value: {
+					  id:$id, 
+					},
+					) {
+			pageState,
+			values {
+			  id,
+			  name,
+			  signature,
+			  update_time
+			}
+		  }
+  }`
