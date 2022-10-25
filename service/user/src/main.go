@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	userConfig "user/config"
@@ -39,6 +40,7 @@ func main() {
 		return err
 	})
 	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+		fmt.Printf("error: %v\n", e)
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		var jwtError *jwt.ValidationError
 		hasJwtError := errors.As(e, &jwtError)

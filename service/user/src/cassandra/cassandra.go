@@ -72,7 +72,7 @@ func UpdateUserGql(changes map[string]interface{}) (gql string, variables map[st
 	return gql, variables, nil
 }
 
-func GetUserFromResponse(response map[string]interface{}) (user *model.User, err error){
+func GetUpdatedUserFromResponse(response map[string]interface{}) (user *model.User, err error){
 	response, ok := response["updateUser"].(map[string]interface{})
 	if !ok {
 		err = errors.New("response[updateUser]'s type is not map[string]interface{}")
@@ -115,3 +115,33 @@ const QueryUserByIdGql = `query queryuser($id: String!) {
 			}
 		  }
   }`
+
+  func GetQueryUserFromResponse(response map[string]interface{}) (user *model.User, err error){
+	response, ok := response["queryUser"].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[queryUser]'s type is not map[string]interface{}")
+		return
+	}
+
+	values, ok := response["values"].([]interface{})
+	if !ok {
+		err = errors.New("response[queryUser][values]'s type is not []interface{}")
+		return
+	}
+	if len(values) != 1 {
+		err = errors.New("response[queryUser][values] length != 1")
+		return
+	}
+	value, ok := values[0].(map[string]interface{})
+	if !ok {
+		err = errors.New("response[queryUser][values][0]'s type is not map[string]interface{}")
+		return
+	}
+
+	user = &model.User{}
+	err = mapstructure.Decode(value, &user)
+	if err != nil {
+		return
+	}
+	return
+}

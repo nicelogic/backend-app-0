@@ -39,7 +39,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 		return
 	}
 	fmt.Printf("response: %v\n", response)
-	responseUser, err = cassandra.GetUserFromResponse(response)
+	responseUser, err = cassandra.GetUpdatedUserFromResponse(response)
 	if err != nil{
 		return
 	}
@@ -61,10 +61,14 @@ func (r *queryResolver) Me(ctx context.Context) (me *model.User, err error) {
 		return
 	}
 	fmt.Printf("response: %v\n", response)
-
+	me, err = cassandra.GetQueryUserFromResponse(response)
+	if err != nil{
+		return
+	}
 	return
 }
 
 func (r *queryResolver) User(ctx context.Context, idOrName string) (user *model.User, err error) {
+
 	return
 }
