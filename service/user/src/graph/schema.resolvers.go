@@ -95,7 +95,6 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) (users []*mo
 		return
 	} else if queriedByIdUser != nil {
 		mapUsers[queriedByIdUser.ID] = queriedByIdUser
-		fmt.Printf("queried user by id: %v\n", queriedByIdUser)
 	}
 
 	variables = map[string]interface{}{

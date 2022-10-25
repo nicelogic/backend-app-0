@@ -129,7 +129,7 @@ const QueryUserByNameGql = `query queryuserbyname($name: String!, $pageState: St
 				  name: {eq: $name}
 					},
 							  options: {
-					pageSize: 1,
+					pageSize: 100,
 					pageState: $pageState
 				  }
 					) {
