@@ -14,11 +14,11 @@ import (
 )
 
 type Client struct {
-	userName   string
-	pwd        string
-	authUrl    string
-	graphqlUrl string
-	token      string
+	userName      string
+	pwd           string
+	authUrl       string
+	graphqlUrl    string
+	token         string
 	graphqlClient *graphql.Client
 }
 
@@ -72,7 +72,7 @@ func (cassandra *Client) fetchToken() (err error) {
 		return
 	}
 	token, ok := res["authToken"].(string)
-	if !ok || token == ""{
+	if !ok || token == "" {
 		err = fmt.Errorf("%s response not contain token", cassandra.authUrl)
 		return
 	}
@@ -82,16 +82,16 @@ func (cassandra *Client) fetchToken() (err error) {
 }
 
 func (cassandra *Client) Run(gql string, variables map[string]interface{}) (response map[string]interface{}, err error) {
-	if cassandra.token == ""{
+	if cassandra.token == "" {
 		fmt.Printf("token is empty, will fetch\n")
 		err = cassandra.fetchToken()
 		if err != nil{
-			return nil, err
+			return 
 		}
 	}
 
 	req := graphql.NewRequest(gql)
-	for key, value := range variables{
+	for key, value := range variables {
 		req.Var(key, value)
 	}
 	req.Header.Set("x-cassandra-token", cassandra.token)
@@ -99,8 +99,17 @@ func (cassandra *Client) Run(gql string, variables map[string]interface{}) (resp
 	// token will exipired after 30 minues if no any operation
 	// if token expired, need fetch token, then redo
 	if err = cassandra.graphqlClient.Run(ctx, req, &response); err != nil {
-		fmt.Printf("%v", err)
-		return
+		fmt.Printf("%v\n", err)
+		fmt.Println("token may expired, fetch token, try again")
+		err = cassandra.fetchToken()
+		if err != nil {
+			return 
+		}
+		req.Header.Set("x-cassandra-token", cassandra.token)
+		if err = cassandra.graphqlClient.Run(ctx, req, &response); err != nil {
+			fmt.Printf("%v", err)
+			return 
+		}
 	}
 	return
 }
