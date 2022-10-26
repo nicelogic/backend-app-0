@@ -8,12 +8,20 @@ require (
 )
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/machinebox/graphql v0.2.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+)
+
+require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/mitchellh/mapstructure v1.3.1 // indirect
+	github.com/nicelogic/auth v0.1.0
+	github.com/nicelogic/cassandra v0.1.0
 	github.com/nicelogic/config v0.1.0
 	github.com/nicelogic/errs v0.1.0
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

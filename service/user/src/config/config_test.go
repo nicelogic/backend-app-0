@@ -15,7 +15,7 @@ func TestLoadUserConfig(t *testing.T){
 		t.Errorf("user config path: want: %s, but: %s\n", path, userConfig.Path)
 	}
 
-	listenAddress := "http://localhost:8080" 
+	listenAddress := "localhost:8080" 
 	if userConfig.Listen_address != listenAddress {
 		t.Errorf("user config path: want: %s, but: %s\n", listenAddress, userConfig.Listen_address)
 	}
