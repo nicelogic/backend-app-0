@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=v0.1.0
+version=$1
 #./build.sh $version
 serviceName="user"
     
