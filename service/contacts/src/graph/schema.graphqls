@@ -1,11 +1,10 @@
 type Query {
-  hello(name: String): String
   paginationContacts(userId: ID!, first: Int!, after: String!): PaginationContacts!
 }
 
 type Mutation {
-  addContacts(userId: ID!, contactsId: ID!): String!
-  removeContacts(userId: ID!, contactsId: ID!): String!
+  addContacts(contactsId: ID!): String!
+  removeContacts(contactsId: ID!): String!
 }
 
 type PaginationContacts{
