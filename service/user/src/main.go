@@ -58,7 +58,7 @@ func main() {
 		return err
 	})
 
-	userConfig := userConfig.Config{Path: "/", Listen_address: ":80"}
+	userConfig := userConfig.Config{Path: "/", Listen_address: "0.0.0.0:80"}
 	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
