@@ -1,4 +1,4 @@
-package common_error
+package errs
 
 const (
 	ServerInternalError = "server internal error"

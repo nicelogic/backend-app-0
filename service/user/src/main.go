@@ -17,7 +17,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/nicelogic/auth"
 	"github.com/nicelogic/cassandra"
-	"github.com/nicelogic/common_error"
+	"github.com/nicelogic/errs"
 	"github.com/nicelogic/config"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -34,7 +34,7 @@ func main() {
 		fmt.Printf("panic: %v\n", panicErr)
 		err := &gqlerror.Error{
 			Path:       graphql.GetPath(ctx),
-			Message:    common_error.ServerInternalError,
+			Message:    errs.ServerInternalError,
 			Extensions: map[string]interface{}{},
 		}
 		return err
@@ -46,13 +46,13 @@ func main() {
 		hasJwtError := errors.As(e, &jwtError)
 		switch{
 		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
-			err.Message = common_error.TokenExpired
+			err.Message = errs.TokenExpired
 		case hasJwtError:
-			err.Message = common_error.TokenInvalid
+			err.Message = errs.TokenInvalid
 		case err.Message == UserNotExist:
 			break
 		default:
-			err.Message = common_error.ServerInternalError
+			err.Message = errs.ServerInternalError
 		}
 		return err
 	})
