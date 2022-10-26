@@ -4,6 +4,4 @@ use (
 	.
 	../../../module/auth/src
 	../../../module/cassandra/src
-	../../../module/error/src
-	../../../module/config/src
 )

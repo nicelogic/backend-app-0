@@ -35,6 +35,10 @@ github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovk
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mitchellh/mapstructure v1.3.1 h1:cCBH2gTD2K0OtLlv/Y5H01VQCqmlDxz30kS5Y5bqfLA=
 github.com/mitchellh/mapstructure v1.3.1/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/nicelogic/config v0.1.0 h1:OM+5QvjZmK0DUml99d/H/9CapfU6P3b6S6bqrFzd0C0=
+github.com/nicelogic/config v0.1.0/go.mod h1:qDKz0cJSwmjaPE4S1lE6mqU5CDRL44e6OXKBi9e+kbo=
+github.com/nicelogic/errs v0.1.0 h1:iz8nOV8Zh7BdwgJLv7oluCU1D6sLNibl7KfWEa0Oscw=
+github.com/nicelogic/errs v0.1.0/go.mod h1:XGvGsbyL68dTb0kBH8gsT2tyDvyfhMdv+ZvdKpBqX+I=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
