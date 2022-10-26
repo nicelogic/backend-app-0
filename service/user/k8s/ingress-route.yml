@@ -1,0 +1,20 @@
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: user
+  namespace: app-0
+spec:
+  entryPoints:
+    - websecure
+  tls: 
+    secretName: tls-env0-app0
+  routes:
+    - match: Host(`app0.env0.luojm.com`) && PathPrefix(`/user`) 
+      kind: Rule
+      services:
+      - name: user
+        kind: Service
+        namespace: app-0
+        port: 80
+
