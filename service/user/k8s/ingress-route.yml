@@ -8,9 +8,9 @@ spec:
   entryPoints:
     - websecure
   tls: 
-    secretName: tls-env0-app0
+    secretName: tls-env0-app0-user
   routes:
-    - match: Host(`app0.env0.luojm.com`) && PathPrefix(`/user`) 
+    - match: Host(`user.app0.env0.luojm.com`) 
       kind: Rule
       services:
       - name: user

@@ -19,7 +19,6 @@ import (
 	"github.com/nicelogic/cassandra"
 	"github.com/nicelogic/config"
 	"github.com/nicelogic/errs"
-	"github.com/rs/cors"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -58,15 +57,10 @@ func main() {
 		return err
 	})
 
-	userConfig := userConfig.Config{Path: "/", Listen_address: "0.0.0.0:80"}
+	userConfig := userConfig.Config{Path: "/", Listen_address: ":80"}
 	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
-	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		Debug:            true,
-	}).Handler)
 	router.Use(auth.Middleware())
 	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", server)

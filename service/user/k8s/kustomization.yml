@@ -1,4 +1,5 @@
 resources:
+  - certificate.yml
   - config.yml
   - deployment.yml
   - service.yml

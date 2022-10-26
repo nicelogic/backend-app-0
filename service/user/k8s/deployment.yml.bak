@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: user
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/user:v0.1.0
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/user:v0.1.2
         imagePullPolicy: Always
         resources:
           requests:

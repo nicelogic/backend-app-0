@@ -23,7 +23,6 @@ require (
 	github.com/nicelogic/cassandra v0.1.0
 	github.com/nicelogic/config v0.1.0
 	github.com/nicelogic/errs v0.1.0
-	github.com/rs/cors v1.8.2
 	golang.org/x/exp v0.0.0-20221025133541-111beb427cde
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
