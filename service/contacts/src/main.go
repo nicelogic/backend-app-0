@@ -1,14 +1,15 @@
 package main
 
 import (
+	contactsConfig "contacts/config"
+	"contacts/constant"
+	"contacts/graph"
+	"contacts/graph/generated"
 	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	contactsConfig "contacts/config"
-	"contacts/graph"
-	"contacts/graph/generated"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -25,7 +26,7 @@ import (
 func main() {
 
 	client := cassandra.Client{}
-	client.Init("app_0_user")
+	client.Init("app_0_contacts")
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
@@ -49,8 +50,6 @@ func main() {
 			err.Message = errs.TokenExpired
 		case hasJwtError:
 			err.Message = errs.TokenInvalid
-		case err.Message == UserNotExist:
-			break
 		default:
 			err.Message = errs.ServerInternalError
 		}
@@ -58,7 +57,7 @@ func main() {
 	})
 
 	userConfig := contactsConfig.Config{Path: "/", Listen_address: ":80"}
-	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
+	config.Init(constant.ConfigPath, &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())

@@ -1,0 +1,186 @@
+
+mutation createKeyspace{
+  contacts: createKeyspace(
+    name: "app_0_contacts"
+    ifNotExists: true
+    datacenters: [
+      { name: "dc1", replicas: 3 }
+    ]
+)
+}
+
+
+mutation createTables {
+  contacts: createTable(
+    keyspaceName:"app_0_contacts",
+    tableName:"contacts",
+    partitionKeys: [ 
+      { name: "id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+    ]
+    values: [
+      { name: "user_id", type: {basic: TEXT} }
+      { name: "contacts_id", type: {basic: TEXT} }
+      { name: "remark_name", type: {basic: TEXT} }
+      { name: "update_time", type: {basic: TIMESTAMP} }
+    ]
+  )
+}
+
+mutation dropTable {
+  dropcontacts: dropTable(
+    keyspaceName: "app_0_contacts"
+    tableName: "contacts"
+    ifExists: true
+  )
+}
+
+mutation createUserIdIndex{
+  createNameIndex: createIndex(
+    keyspaceName: "app_0_contacts"
+    tableName: "contacts"
+    columnName: "user_id"
+    ifNotExists: true
+  )
+}
+
+# mutation alterTableDrop{
+#   alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "create_time")
+# }
+# mutation alterTableAdd{
+#   alterTableAdd(keyspaceName: "app_0", tableName:"auth", toAdd: { name: "create_time", type: {basic: TIMESTAMP}})
+# }
+
+query GetTables {
+  keyspace(name: "app_0_contacts") {
+      name
+      tables {
+          name
+          columns {
+              name
+              kind
+              type {
+                  basic
+                  info {
+                      name
+                  }
+              }
+          }
+      }
+  }
+}
+
+mutation insertcontacts {
+  insertcontacts: insertcontacts(value: {
+                    id: "pdKBcAc7lKzSC9nyglCwQ|b6e9KyEDX6yDNiYfRW5R8"
+                    user_id: "pdKBcAc7lKzSC9nyglCwQ"
+                    contacts_id: "b6e9KyEDX6yDNiYfRW5R8"
+                    remark_name: "his_id_b6e"
+                    update_time: "2022-10-07T04:03:18.879Z"
+                  },
+    							ifNotExists: true
+                  ) {
+          applied
+          accepted
+          value {
+            id
+            user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}
+
+# ifExists: false, means: if not exist, will insert contacts
+mutation updatecontacts {
+  updatecontacts: insertcontacts(value: {
+                    id: "pdKBcAc7lKzSC9nyglCwQ|b6e9KyEDX6yDNiYfRW5R8"
+                    user_id: "pdKBcAc7lKzSC9nyglCwQ"
+                    contacts_id: "b6e9KyEDX6yDNiYfRW5R8"
+                    remark_name: "this_contacts_id_b6e"
+                    update_time: "2022-10-07T04:03:18.879Z"
+                  },
+    							ifNotExists: false
+                  ) {
+          applied
+          accepted
+          value {
+            id
+            user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}
+
+#search all
+query queryallcontacts {
+  queryallcontacts: contacts(filter: {
+                  },
+                  ) {
+          pageState,
+          values {
+      	    id,
+            user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}
+
+
+
+query querycontacts($user_id: String!) {
+  querycontacts: contacts(value: {
+                    user_id:$user_id, 
+                  },
+                  ) {
+          pageState,
+          values {
+            id
+				    user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}
+
+
+query querycontactsbyuserid($user_id: String!) {
+  querycontactsbyuserid: contacts(filter: {
+                user_id: {eq: $user_id}
+                  }
+                  ) {
+          pageState
+          values {
+      	    id
+            user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}
+
+mutation deletecontacts($id: String!) {
+  deletecontacts: deletecontacts(value: {
+                    id: $id, 
+                  },
+    							ifExists: true
+                  ) {
+          applied
+    			accepted
+          value {
+            id
+            user_id
+            contacts_id
+            remark_name
+            update_time
+          }
+        }
+}

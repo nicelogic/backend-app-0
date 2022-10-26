@@ -3,7 +3,7 @@ mutation createKeyspace{
   user: createKeyspace(
     name: "app_0_user"
     ifNotExists: true
-    replicas: 3
+    #replicas: 3
     datacenters: [
       { name: "dc1", replicas: 3 }
     ]
@@ -47,12 +47,12 @@ mutation createNameIndex{
 
 
 
-mutation alterTableDrop{
-  alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "create_time")
-}
-mutation alterTableAdd{
-  alterTableAdd(keyspaceName: "app_0", tableName:"auth", toAdd: { name: "create_time", type: {basic: TIMESTAMP}})
-}
+# mutation alterTableDrop{
+#   alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "create_time")
+# }
+# mutation alterTableAdd{
+#   alterTableAdd(keyspaceName: "app_0", tableName:"auth", toAdd: { name: "create_time", type: {basic: TIMESTAMP}})
+# }
 
 query GetTables {
   keyspace(name: "app_0_user") {
@@ -73,8 +73,8 @@ query GetTables {
   }
 }
 
-mutation insertUser {
-  insertUser: insertuser(value: {
+mutation insertuser {
+  insertuser: insertuser(value: {
                     id: "pdKBcAc7lKzSC9nyglCwQ"
                     name:"username",
                     signature: "well",

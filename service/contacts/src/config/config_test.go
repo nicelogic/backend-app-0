@@ -1,6 +1,7 @@
 package config
 
 import (
+	"contacts/constant"
 	"testing"
 
 	"github.com/nicelogic/config"
@@ -8,7 +9,7 @@ import (
 
 func TestLoadUserConfig(t *testing.T){
 	userConfig := Config{Path: "/", Listen_address: ":80"}
-	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
+	config.Init(constant.ConfigPath, &userConfig)
 
 	path := "/user/gql"
 	if userConfig.Path != path {

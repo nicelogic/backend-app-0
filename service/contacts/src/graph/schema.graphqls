@@ -7,6 +7,10 @@ type Mutation {
   removeContacts(contactsId: ID!): String!
 }
 
+type Contacts{
+  id: ID!
+}
+
 type PaginationContacts{
   id: ID!
   contactsConnection: ContactsConnection!
