@@ -202,11 +202,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema.graphqls", Input: `# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
-
+	{Name: "../schema.graphqls", Input: `
 type User {
   id: ID!
   name: String!
@@ -222,8 +218,7 @@ scalar Map
 
 type Mutation {
   updateUser(changes: Map!): User!
-}
-`, BuiltIn: false},
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
