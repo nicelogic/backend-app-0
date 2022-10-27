@@ -3,12 +3,13 @@ type Query {
 }
 
 type Mutation {
-  addContacts(contactsId: ID!): String!
+  addContactsReq(contactsId: ID!): String!
   removeContacts(contactsId: ID!): String!
 }
 
 type Contacts{
   id: ID!
+  remarkName: String!
 }
 
 type PaginationContacts{

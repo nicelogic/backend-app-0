@@ -1,0 +1,18 @@
+
+mutation createTables {
+  contacts: createTable(
+    keyspaceName:"app_0_contacts",
+    tableName:"add_contacts_req",
+    partitionKeys: [ 
+      { name: "id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+    ]
+    values: [
+      { name: "user_id", type: {basic: TEXT} }
+      { name: "contacts_id", type: {basic: TEXT} }
+      { name: "remark_name", type: {basic: TEXT} }
+      { name: "update_time", type: {basic: TIMESTAMP} }
+    ]
+  )
+}
