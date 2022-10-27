@@ -1,10 +1,17 @@
-type Query {
-  paginationContacts(userId: ID!, first: Int!, after: String!): PaginationContacts!
-}
 
 type Mutation {
-  addContactsReq(contactsId: ID!): String!
-  removeContacts(contactsId: ID!): String!
+  addContactsRequest(contacts: AddContactsReqInput!): Boolean!
+  addContactsResponse()
+  removeContacts(contactsId: ID!): Boolean!
+}
+
+type Query {
+  paginationContacts(first: Int!, after: String!): PaginationContacts!
+}
+
+input AddContactsReqInput {
+  contactsId: ID!
+  remarkName: String!
 }
 
 type Contacts{
