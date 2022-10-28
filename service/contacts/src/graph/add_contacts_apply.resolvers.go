@@ -57,11 +57,21 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 }
 
 // AddContactsApply is the resolver for the addContactsApply field.
-func (r *queryResolver) AddContactsApply(ctx context.Context) (*model.AddContactsApplyConnection, error) {
+func (r *queryResolver) AddContactsApply(ctx context.Context, first int, after string) (*model.AddContactsApplyConnection, error) {
 	user, err := auth.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 	fmt.Printf("user: %#v query add contacts apply\n", user)
+
+	variables := map[string]interface{}{
+		"user_id": user.Id,
+	}
+	response, err := r.CassandraClient.Query(cassandra.AddContactsApplyGql, variables)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(response)
+
 	return nil, err
 }

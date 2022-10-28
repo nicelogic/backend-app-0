@@ -5,7 +5,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply: AddContactsApplyConnection!
+  addContactsApply(first: Int!, after: String!): AddContactsApplyConnection!
 }
 
 input ApplyAddContactsInput {
@@ -35,7 +35,7 @@ type AddContactsApplyConnection {
 
 type AddContactsApplyEdge{
   node: AddContactsApply!
-  cursor: String!
+  cursor: String
 }
 
 type AddContactsApplyEdgePageInfo{

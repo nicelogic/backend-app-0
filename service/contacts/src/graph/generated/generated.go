@@ -96,7 +96,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AddContactsApply func(childComplexity int) int
+		AddContactsApply func(childComplexity int, first int, after string) int
 		Contacts         func(childComplexity int, first int, after string) int
 	}
 }
@@ -108,7 +108,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Contacts(ctx context.Context, first int, after string) (*model.ContactsConnection, error)
-	AddContactsApply(ctx context.Context) (*model.AddContactsApplyConnection, error)
+	AddContactsApply(ctx context.Context, first int, after string) (*model.AddContactsApplyConnection, error)
 }
 
 type executableSchema struct {
@@ -314,7 +314,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.AddContactsApply(childComplexity), true
+		args, err := ec.field_Query_addContactsApply_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AddContactsApply(childComplexity, args["first"].(int), args["after"].(string)), true
 
 	case "Query.contacts":
 		if e.complexity.Query.Contacts == nil {
@@ -405,7 +410,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply: AddContactsApplyConnection!
+  addContactsApply(first: Int!, after: String!): AddContactsApplyConnection!
 }
 
 input ApplyAddContactsInput {
@@ -435,7 +440,7 @@ type AddContactsApplyConnection {
 
 type AddContactsApplyEdge{
   node: AddContactsApply!
-  cursor: String!
+  cursor: String
 }
 
 type AddContactsApplyEdgePageInfo{
@@ -460,7 +465,7 @@ type ContactsConnection {
 
 type Edge{
   node: Contacts!
-  cursor: String!
+  cursor: String
 }
 
 type Contacts {
@@ -537,6 +542,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_addContactsApply_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg1
 	return args, nil
 }
 
@@ -1037,14 +1066,11 @@ func (ec *executionContext) _AddContactsApplyEdge_cursor(ctx context.Context, fi
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_AddContactsApplyEdge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1445,14 +1471,11 @@ func (ec *executionContext) _Edge_cursor(ctx context.Context, field graphql.Coll
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Edge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1807,7 +1830,7 @@ func (ec *executionContext) _Query_addContactsApply(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AddContactsApply(rctx)
+		return ec.resolvers.Query().AddContactsApply(rctx, fc.Args["first"].(int), fc.Args["after"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1841,6 +1864,17 @@ func (ec *executionContext) fieldContext_Query_addContactsApply(ctx context.Cont
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AddContactsApplyConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_addContactsApply_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -3948,9 +3982,6 @@ func (ec *executionContext) _AddContactsApplyEdge(ctx context.Context, sel ast.S
 
 			out.Values[i] = ec._AddContactsApplyEdge_cursor(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4089,9 +4120,6 @@ func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = ec._Edge_cursor(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

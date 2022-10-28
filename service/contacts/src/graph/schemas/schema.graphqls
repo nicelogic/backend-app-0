@@ -16,7 +16,7 @@ type ContactsConnection {
 
 type Edge{
   node: Contacts!
-  cursor: String!
+  cursor: String
 }
 
 type Contacts {

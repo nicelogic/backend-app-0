@@ -18,7 +18,7 @@ type AddContactsApplyConnection struct {
 
 type AddContactsApplyEdge struct {
 	Node   *AddContactsApply `json:"node"`
-	Cursor string            `json:"cursor"`
+	Cursor *string           `json:"cursor"`
 }
 
 type AddContactsApplyEdgePageInfo struct {
@@ -44,7 +44,7 @@ type ContactsConnection struct {
 
 type Edge struct {
 	Node   *Contacts `json:"node"`
-	Cursor string    `json:"cursor"`
+	Cursor *string   `json:"cursor"`
 }
 
 type PageInfo struct {
