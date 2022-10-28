@@ -36,7 +36,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		return nil, err
 	}
 	addContactsApply := &model.AddContactsApply{}
-	applied, jsonValue, err := r.CassandraClient.GetValue(response)
+	applied, jsonValue, err := r.CassandraClient.MutationResponse(response)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 }
 
 // AddContactsApply is the resolver for the addContactsApply field.
-func (r *queryResolver) AddContactsApply(ctx context.Context, first int, after string) (*model.AddContactsApplyConnection, error) {
+func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error) {
 	user, err := auth.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -66,6 +66,8 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first int, after s
 
 	variables := map[string]interface{}{
 		"user_id": user.Id,
+		"first":   first,
+		"after":   after,
 	}
 	response, err := r.CassandraClient.Query(cassandra.AddContactsApplyGql, variables)
 	if err != nil {

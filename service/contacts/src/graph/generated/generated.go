@@ -96,7 +96,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AddContactsApply func(childComplexity int, first int, after string) int
+		AddContactsApply func(childComplexity int, first *int, after *string) int
 		Contacts         func(childComplexity int, first int, after string) int
 	}
 }
@@ -108,7 +108,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Contacts(ctx context.Context, first int, after string) (*model.ContactsConnection, error)
-	AddContactsApply(ctx context.Context, first int, after string) (*model.AddContactsApplyConnection, error)
+	AddContactsApply(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error)
 }
 
 type executableSchema struct {
@@ -319,7 +319,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.AddContactsApply(childComplexity, args["first"].(int), args["after"].(string)), true
+		return e.complexity.Query.AddContactsApply(childComplexity, args["first"].(*int), args["after"].(*string)), true
 
 	case "Query.contacts":
 		if e.complexity.Query.Contacts == nil {
@@ -410,7 +410,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply(first: Int!, after: String!): AddContactsApplyConnection!
+  addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
 }
 
 input ApplyAddContactsInput {
@@ -454,7 +454,7 @@ type Mutation {
 }
 
 type Query {
-  contacts(first: Int!, after: String!): ContactsConnection!
+  contacts(first: Int! = 100, after: String!): ContactsConnection!
 }
 
 type ContactsConnection {
@@ -548,19 +548,19 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_addContactsApply_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 *int
 	if tmp, ok := rawArgs["first"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["first"] = arg0
-	var arg1 string
+	var arg1 *string
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1830,7 +1830,7 @@ func (ec *executionContext) _Query_addContactsApply(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AddContactsApply(rctx, fc.Args["first"].(int), fc.Args["after"].(string))
+		return ec.resolvers.Query().AddContactsApply(rctx, fc.Args["first"].(*int), fc.Args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5159,6 +5159,22 @@ func (ec *executionContext) marshalOEdge2ᚕᚖcontactsᚋgraphᚋmodelᚐEdge�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt(*v)
+	return res
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
