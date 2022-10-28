@@ -1,9 +1,7 @@
 
 extend type Mutation {
-  # return add contacts apply id
-  applyAddContacts(input: ApplyAddContactsInput!): String!
-  # return add contacts apply id
-  replyAddContacts(input: ReplyAddContactsInput!): String!
+  applyAddContacts(input: ApplyAddContactsInput!): AddContactsApply!
+  replyAddContacts(input: ReplyAddContactsInput!): Boolean!
 }
 
 extend type Query{
@@ -23,7 +21,9 @@ input ReplyAddContactsInput {
 
 type AddContactsApply {
   id: ID!
-  contactsId: ID!
+  user_id: ID!
+  contacts_id: ID!
+  remark_name: String!
   message: String
 }
 

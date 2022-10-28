@@ -48,6 +48,8 @@ type ComplexityRoot struct {
 		ContactsID func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Message    func(childComplexity int) int
+		RemarkName func(childComplexity int) int
+		UserID     func(childComplexity int) int
 	}
 
 	Contacts struct {
@@ -85,8 +87,8 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	RemoveContacts(ctx context.Context, contactsID string) (string, error)
-	ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (string, error)
-	ReplyAddContacts(ctx context.Context, input model.ReplyAddContactsInput) (string, error)
+	ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (*model.AddContactsApply, error)
+	ReplyAddContacts(ctx context.Context, input model.ReplyAddContactsInput) (bool, error)
 }
 type QueryResolver interface {
 	Contacts(ctx context.Context, first int, after string) (*model.ContactsConnection, error)
@@ -108,7 +110,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AddContactsApply.contactsId":
+	case "AddContactsApply.contacts_id":
 		if e.complexity.AddContactsApply.ContactsID == nil {
 			break
 		}
@@ -128,6 +130,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AddContactsApply.Message(childComplexity), true
+
+	case "AddContactsApply.remark_name":
+		if e.complexity.AddContactsApply.RemarkName == nil {
+			break
+		}
+
+		return e.complexity.AddContactsApply.RemarkName(childComplexity), true
+
+	case "AddContactsApply.user_id":
+		if e.complexity.AddContactsApply.UserID == nil {
+			break
+		}
+
+		return e.complexity.AddContactsApply.UserID(childComplexity), true
 
 	case "Contacts.id":
 		if e.complexity.Contacts.ID == nil {
@@ -319,10 +335,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../schemas/add_contacts_apply.graphqls", Input: `
 extend type Mutation {
-  # return add contacts apply id
-  applyAddContacts(input: ApplyAddContactsInput!): String!
-  # return add contacts apply id
-  replyAddContacts(input: ReplyAddContactsInput!): String!
+  applyAddContacts(input: ApplyAddContactsInput!): AddContactsApply!
+  replyAddContacts(input: ReplyAddContactsInput!): Boolean!
 }
 
 extend type Query{
@@ -342,7 +356,9 @@ input ReplyAddContactsInput {
 
 type AddContactsApply {
   id: ID!
-  contactsId: ID!
+  user_id: ID!
+  contacts_id: ID!
+  remark_name: String!
   message: String
 }
 
@@ -551,8 +567,52 @@ func (ec *executionContext) fieldContext_AddContactsApply_id(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _AddContactsApply_contactsId(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AddContactsApply_contactsId(ctx, field)
+func (ec *executionContext) _AddContactsApply_user_id(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_user_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AddContactsApply_user_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AddContactsApply",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AddContactsApply_contacts_id(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_contacts_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -582,7 +642,7 @@ func (ec *executionContext) _AddContactsApply_contactsId(ctx context.Context, fi
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_AddContactsApply_contactsId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AddContactsApply_contacts_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddContactsApply",
 		Field:      field,
@@ -590,6 +650,50 @@ func (ec *executionContext) fieldContext_AddContactsApply_contactsId(ctx context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AddContactsApply_remark_name(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_remark_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RemarkName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AddContactsApply_remark_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AddContactsApply",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1040,9 +1144,9 @@ func (ec *executionContext) _Mutation_applyAddContacts(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.AddContactsApply)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNAddContactsApply2ᚖcontactsᚋgraphᚋmodelᚐAddContactsApply(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_applyAddContacts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1052,7 +1156,19 @@ func (ec *executionContext) fieldContext_Mutation_applyAddContacts(ctx context.C
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_AddContactsApply_id(ctx, field)
+			case "user_id":
+				return ec.fieldContext_AddContactsApply_user_id(ctx, field)
+			case "contacts_id":
+				return ec.fieldContext_AddContactsApply_contacts_id(ctx, field)
+			case "remark_name":
+				return ec.fieldContext_AddContactsApply_remark_name(ctx, field)
+			case "message":
+				return ec.fieldContext_AddContactsApply_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AddContactsApply", field.Name)
 		},
 	}
 	defer func() {
@@ -1095,9 +1211,9 @@ func (ec *executionContext) _Mutation_replyAddContacts(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_replyAddContacts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1107,7 +1223,7 @@ func (ec *executionContext) fieldContext_Mutation_replyAddContacts(ctx context.C
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	defer func() {
@@ -1310,8 +1426,12 @@ func (ec *executionContext) fieldContext_Query_addContactsApply(ctx context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_AddContactsApply_id(ctx, field)
-			case "contactsId":
-				return ec.fieldContext_AddContactsApply_contactsId(ctx, field)
+			case "user_id":
+				return ec.fieldContext_AddContactsApply_user_id(ctx, field)
+			case "contacts_id":
+				return ec.fieldContext_AddContactsApply_contacts_id(ctx, field)
+			case "remark_name":
+				return ec.fieldContext_AddContactsApply_remark_name(ctx, field)
 			case "message":
 				return ec.fieldContext_AddContactsApply_message(ctx, field)
 			}
@@ -3328,9 +3448,23 @@ func (ec *executionContext) _AddContactsApply(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "contactsId":
+		case "user_id":
 
-			out.Values[i] = ec._AddContactsApply_contactsId(ctx, field, obj)
+			out.Values[i] = ec._AddContactsApply_user_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "contacts_id":
+
+			out.Values[i] = ec._AddContactsApply_contacts_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "remark_name":
+
+			out.Values[i] = ec._AddContactsApply_remark_name(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3950,6 +4084,10 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNAddContactsApply2contactsᚋgraphᚋmodelᚐAddContactsApply(ctx context.Context, sel ast.SelectionSet, v model.AddContactsApply) graphql.Marshaler {
+	return ec._AddContactsApply(ctx, sel, &v)
+}
 
 func (ec *executionContext) marshalNAddContactsApply2ᚖcontactsᚋgraphᚋmodelᚐAddContactsApply(ctx context.Context, sel ast.SelectionSet, v *model.AddContactsApply) graphql.Marshaler {
 	if v == nil {

@@ -18,7 +18,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
-	github.com/mitchellh/mapstructure v1.3.1 //indirect
+	github.com/mitchellh/mapstructure v1.3.1
 	github.com/nicelogic/auth v0.1.0
 	github.com/nicelogic/cassandra v0.1.0
 	github.com/nicelogic/config v0.1.0

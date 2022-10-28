@@ -24,6 +24,7 @@ mutation updateadd_contacts_apply(
 		user_id
 		contacts_id
 		remark_name
+		message
 		update_time
 	  }
 	}

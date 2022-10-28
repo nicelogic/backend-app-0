@@ -4,7 +4,9 @@ package model
 
 type AddContactsApply struct {
 	ID         string  `json:"id"`
-	ContactsID string  `json:"contactsId"`
+	UserID     string  `json:"user_id"`
+	ContactsID string  `json:"contacts_id"`
+	RemarkName string  `json:"remark_name"`
 	Message    *string `json:"message"`
 }
 

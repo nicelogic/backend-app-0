@@ -26,3 +26,6 @@ mutation dropTable {
 }
 
 
+mutation alterTableAdd{
+  alterTableAdd(keyspaceName: "app_0_contacts", tableName:"add_contacts_apply", toAdd: { name: "message", type: {basic: TEXT}})
+}
