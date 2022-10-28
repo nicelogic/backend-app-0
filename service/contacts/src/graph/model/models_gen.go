@@ -10,6 +10,22 @@ type AddContactsApply struct {
 	Message    *string `json:"message"`
 }
 
+type AddContactsApplyConnection struct {
+	TotalCount int                           `json:"totalCount"`
+	Edges      []*AddContactsApplyEdge       `json:"edges"`
+	PageInfo   *AddContactsApplyEdgePageInfo `json:"pageInfo"`
+}
+
+type AddContactsApplyEdge struct {
+	Node   *AddContactsApply `json:"node"`
+	Cursor string            `json:"cursor"`
+}
+
+type AddContactsApplyEdgePageInfo struct {
+	EndCursor   *string `json:"endCursor"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type ApplyAddContactsInput struct {
 	ContactsID string `json:"contactsId"`
 	RemarkName string `json:"remarkName"`

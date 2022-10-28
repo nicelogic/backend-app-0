@@ -12,8 +12,18 @@ mutation createTables {
       { name: "user_id", type: {basic: TEXT} }
       { name: "contacts_id", type: {basic: TEXT} }
       { name: "remark_name", type: {basic: TEXT} }
+      { name: "message", type: {basic: TEXT} }
       { name: "update_time", type: {basic: TIMESTAMP} }
     ]
+  )
+}
+
+mutation createContactsIdIndex{
+  createNameIndex: createIndex(
+    keyspaceName: "app_0_contacts"
+    tableName: "add_contacts_apply"
+    columnName: "contacts_id"
+    ifNotExists: true
   )
 }
 

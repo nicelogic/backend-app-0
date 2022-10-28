@@ -5,7 +5,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply: [AddContactsApply!]
+  addContactsApply: AddContactsApplyConnection!
 }
 
 input ApplyAddContactsInput {
@@ -27,3 +27,18 @@ type AddContactsApply {
   message: String
 }
 
+type AddContactsApplyConnection {
+  totalCount: Int!
+  edges: [AddContactsApplyEdge!]
+  pageInfo: AddContactsApplyEdgePageInfo!
+}
+
+type AddContactsApplyEdge{
+  node: AddContactsApply!
+  cursor: String!
+}
+
+type AddContactsApplyEdgePageInfo{
+  endCursor: String
+  hasNextPage: Boolean!
+}
