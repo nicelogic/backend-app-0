@@ -1,16 +1,13 @@
 
-type Mutation {
+extend type Mutation {
   # return add contacts apply id
   applyAddContacts(input: ApplyAddContactsInput!): String!
   # return add contacts apply id
   replyAddContacts(input: ReplyAddContactsInput!): String!
-  # return contacts id
-  removeContacts(contactsId: ID!): String!
 }
 
-type Query {
+extend type Query{
   addContactsApply: [AddContactsApply!]
-  contacts(first: Int!, after: String!): ContactsConnection!
 }
 
 input ApplyAddContactsInput {
@@ -30,24 +27,3 @@ type AddContactsApply {
   message: String
 }
 
-
-type ContactsConnection {
-  totalCount: Int!
-  edges: [Edge!]
-  pageInfo: PageInfo!
-}
-
-type Edge{
-  node: Contacts!
-  cursor: String!
-}
-
-type Contacts {
-  id: ID!
-  remarkName: String!
-}
-
-type PageInfo{
-  endCursor: String
-  hasNextPage: Boolean!
-}
