@@ -1,27 +1,33 @@
 
 type Mutation {
-  addContactsRequest(contacts: AddContactsReqInput!): Boolean!
-  addContactsResponse()
-  removeContacts(contactsId: ID!): Boolean!
+  # return add contacts apply id
+  applyAddContacts(input: ApplyAddContactsInput!): String!
+  # return add contacts apply id
+  replyAddContacts(input: ReplyAddContactsInput!): String!
+  # return contacts id
+  removeContacts(contactsId: ID!): String!
 }
 
 type Query {
-  paginationContacts(first: Int!, after: String!): PaginationContacts!
+  addContactsApply: [AddContactsApply!]
+  contacts(first: Int!, after: String!): ContactsConnection!
 }
 
-input AddContactsReqInput {
+input ApplyAddContactsInput {
   contactsId: ID!
   remarkName: String!
 }
 
-type Contacts{
+input ReplyAddContactsInput {
   id: ID!
-  remarkName: String!
+  ack: Boolean!
+  remarkName: String
 }
 
-type PaginationContacts{
+type AddContactsApply {
   id: ID!
-  contactsConnection: ContactsConnection!
+  contactsId: ID!
+  message: String
 }
 
 type ContactsConnection {
@@ -31,13 +37,13 @@ type ContactsConnection {
 }
 
 type Edge{
-  node: Node!
+  node: Contacts!
   cursor: String!
 }
 
-type Node {
+type Contacts {
   id: ID!
-  name: String!
+  remarkName: String!
 }
 
 type PageInfo{

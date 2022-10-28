@@ -2,6 +2,22 @@
 
 package model
 
+type AddContactsApply struct {
+	ID         string  `json:"id"`
+	ContactsID string  `json:"contactsId"`
+	Message    *string `json:"message"`
+}
+
+type ApplyAddContactsInput struct {
+	ContactsID string `json:"contactsId"`
+	RemarkName string `json:"remarkName"`
+}
+
+type Contacts struct {
+	ID         string `json:"id"`
+	RemarkName string `json:"remarkName"`
+}
+
 type ContactsConnection struct {
 	TotalCount int       `json:"totalCount"`
 	Edges      []*Edge   `json:"edges"`
@@ -9,13 +25,8 @@ type ContactsConnection struct {
 }
 
 type Edge struct {
-	Node   *Node  `json:"node"`
-	Cursor string `json:"cursor"`
-}
-
-type Node struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Node   *Contacts `json:"node"`
+	Cursor string    `json:"cursor"`
 }
 
 type PageInfo struct {
@@ -23,7 +34,8 @@ type PageInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
-type PaginationContacts struct {
-	ID                 string              `json:"id"`
-	ContactsConnection *ContactsConnection `json:"contactsConnection"`
+type ReplyAddContactsInput struct {
+	ID         string  `json:"id"`
+	Ack        bool    `json:"ack"`
+	RemarkName *string `json:"remarkName"`
 }

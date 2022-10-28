@@ -18,11 +18,11 @@ mutation createTables {
       { name: "id", type: {basic: TEXT} }
     ]
     clusteringKeys: [
+      { name: "remark_name", type: {basic: TEXT} }
     ]
     values: [
       { name: "user_id", type: {basic: TEXT} }
       { name: "contacts_id", type: {basic: TEXT} }
-      { name: "remark_name", type: {basic: TEXT} }
       { name: "update_time", type: {basic: TIMESTAMP} }
     ]
   )

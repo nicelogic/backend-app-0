@@ -1,8 +1,8 @@
 
 mutation createTables {
-  contacts: createTable(
+  addcontactsrequest: createTable(
     keyspaceName:"app_0_contacts",
-    tableName:"add_contacts_req",
+    tableName:"add_contacts_request",
     partitionKeys: [ 
       { name: "id", type: {basic: TEXT} }
     ]
@@ -14,5 +14,13 @@ mutation createTables {
       { name: "remark_name", type: {basic: TEXT} }
       { name: "update_time", type: {basic: TIMESTAMP} }
     ]
+  )
+}
+
+mutation dropTable {
+  dropaddcontactsrequest: dropTable(
+    keyspaceName: "app_0_contacts"
+    tableName: "add_contacts_request"
+    ifExists: true
   )
 }
