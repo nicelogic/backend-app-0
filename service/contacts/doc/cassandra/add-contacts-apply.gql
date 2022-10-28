@@ -1,8 +1,8 @@
 
 mutation createTables {
-  addcontactsrequest: createTable(
+  addcontactsapply: createTable(
     keyspaceName:"app_0_contacts",
-    tableName:"add_contacts_request",
+    tableName:"add_contacts_apply",
     partitionKeys: [ 
       { name: "id", type: {basic: TEXT} }
     ]
@@ -18,9 +18,11 @@ mutation createTables {
 }
 
 mutation dropTable {
-  dropaddcontactsrequest: dropTable(
+  dropaddcontactsapply: dropTable(
     keyspaceName: "app_0_contacts"
-    tableName: "add_contacts_request"
+    tableName: "add_contacts_apply"
     ifExists: true
   )
 }
+
+

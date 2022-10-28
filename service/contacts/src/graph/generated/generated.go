@@ -349,6 +349,7 @@ type AddContactsApply {
   message: String
 }
 
+
 type ContactsConnection {
   totalCount: Int!
   edges: [Edge!]
