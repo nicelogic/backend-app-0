@@ -68,7 +68,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 
 	variables := map[string]interface{}{
 		"user_id": user.Id,
-		"first":   first,
+		"first": first,
 		"after":   after,
 	}
 	response, err := r.CassandraClient.Query(cassandra.AddContactsApplyGql, variables)
@@ -89,6 +89,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	addContactsApplyConnection := &model.AddContactsApplyConnection{}
 	addContactsApplyConnection.TotalCount = len(addContactsApplys)
 	for _, apply := range addContactsApplys {
+		apply := apply
 		edge := &model.AddContactsApplyEdge{}
 		edge.Node = &apply
 		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
