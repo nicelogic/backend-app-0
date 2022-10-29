@@ -10,6 +10,7 @@ query add_contacts_apply($user_id: String!, $first: Int = 100, $after: String){
 		pageSize: $first
 		pageState: $after
 	  }
+	  orderBy: update_time_DESC
 	){
 	  pageState
 	  values {
