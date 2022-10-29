@@ -1,4 +1,10 @@
 
+# 关于通讯录这块的表设计
+# 以时间作为排序， 则可能申请的记录会有多个
+# 返回给Client的时候过滤下多个, 返回最新申请的
+# 不在插入的时候，删除旧的是因为： 没办法确定： 删除和插入同时成功。万一删除成功，插入失败，则旧申请消失。如果插入成功，则还是可能有多个记录
+# 在对端答复的时候，删除所有记录，成功则返回答复成功，要不然就是失败，对端再重试
+
 mutation createTables {
   addcontactsapply: createTable(
     keyspaceName:"app_0_contacts",
@@ -8,13 +14,20 @@ mutation createTables {
     ]
     clusteringKeys: [
       { name: "update_time", type: {basic: TIMESTAMP} }
-      { name: "id", type: {basic: TEXT} }
+      { name: "user_id", type: {basic: TEXT} }
     ]
     values: [
-      { name: "user_id", type: {basic: TEXT} }
       { name: "remark_name", type: {basic: TEXT} }
       { name: "message", type: {basic: TEXT} }
     ]
+  )
+}
+
+mutation dropTable {
+  dropaddcontactsapply: dropTable(
+    keyspaceName: "app_0_contacts"
+    tableName: "add_contacts_apply"
+    ifExists: true
   )
 }
 
@@ -37,13 +50,7 @@ mutation createUpdateTimeIndex{
 
 
 
-mutation dropTable {
-  dropaddcontactsapply: dropTable(
-    keyspaceName: "app_0_contacts"
-    tableName: "add_contacts_apply"
-    ifExists: true
-  )
-}
+
 
 
 mutation alterTableAdd{

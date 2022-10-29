@@ -14,7 +14,6 @@ query add_contacts_apply($user_id: String!, $first: Int = 100, $after: String){
 	){
 	  pageState
 	  values {
-		id
 		  user_id
 		contacts_id
 		remark_name

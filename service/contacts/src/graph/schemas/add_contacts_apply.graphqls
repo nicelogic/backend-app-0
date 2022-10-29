@@ -11,19 +11,20 @@ extend type Query{
 input ApplyAddContactsInput {
   contactsId: ID!
   remarkName: String!
+  message: String
 }
 
 input ReplyAddContactsInput {
-  id: ID!
+  contacts_id: ID!
   ack: Boolean!
   remarkName: String
 }
 
 type AddContactsApply {
-  id: ID!
   user_id: ID!
   contacts_id: ID!
   remark_name: String!
+  update_time: String!
   message: String
 }
 
