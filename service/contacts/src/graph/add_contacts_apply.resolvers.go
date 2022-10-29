@@ -35,6 +35,8 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(response)
+
 	addContactsApply := &model.AddContactsApply{}
 	applied, jsonValue, err := r.CassandraClient.MutationResponse(response)
 	if err != nil {
@@ -75,5 +77,25 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	fmt.Println(response)
 
-	return nil, err
+	pageState, jsonValue, err := r.CassandraClient.QueryResponse(response)
+	if err != nil{
+		return nil, err
+	}
+	addContactsApplys := make([]model.AddContactsApply, 0)
+	err = json.Unmarshal(jsonValue, &addContactsApplys)
+	if err != nil{
+		return nil, err
+	}
+	addContactsApplyConnection := &model.AddContactsApplyConnection{}
+	addContactsApplyConnection.TotalCount = len(addContactsApplys)
+	for _, apply := range addContactsApplys {
+		edge := &model.AddContactsApplyEdge{}
+		edge.Node = &apply
+		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
+	}
+	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
+	addContactsApplyConnection.PageInfo.EndCursor = pageState
+	addContactsApplyConnection.PageInfo.HasNextPage = pageState != nil
+
+	return addContactsApplyConnection, err
 }
