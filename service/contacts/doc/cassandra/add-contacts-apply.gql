@@ -13,6 +13,17 @@
 # 不在插入的时候删除旧的是因为： 没办法确定： 删除和插入同时成功。万一删除成功，插入失败，则旧申请消失。如果插入成功，则还是可能有多个记录
 # 在对端答复的时候，删除所有记录，成功则返回答复成功，要不然就是失败，对端再重试
 
+
+mutation createKeyspace{
+  contacts: createKeyspace(
+    name: "app_0_contacts"
+    ifNotExists: true
+    datacenters: [
+      { name: "dc1", replicas: 3 }
+    ]
+)
+}
+
 mutation createTables {
   addcontactsapply: createTable(
     keyspaceName:"app_0_contacts",
@@ -32,6 +43,15 @@ mutation createTables {
   )
 }
 
+mutation createIndex{
+  createIndex: createIndex(
+    keyspaceName: "app_0_contacts"
+    tableName: "add_contacts_apply"
+    columnName: "id"
+    ifNotExists: true
+  )
+}
+
 mutation dropTable {
   dropaddcontactsapply: dropTable(
     keyspaceName: "app_0_contacts"
@@ -40,22 +60,14 @@ mutation dropTable {
   )
 }
 
-mutation createContactsIdIndex{
-  createContactsIdIndex: createIndex(
-    keyspaceName: "app_0_contacts"
-    tableName: "add_contacts_apply"
-    columnName: "contacts_id"
-    ifNotExists: true
-  )
-}
-mutation createIdIndex{
-  createIndex: createIndex(
-    keyspaceName: "app_0_contacts"
-    tableName: "add_contacts_apply"
-    columnName: "id"
-    ifNotExists: true
-  )
-}
+# mutation createContactsIdIndex{
+#   createContactsIdIndex: createIndex(
+#     keyspaceName: "app_0_contacts"
+#     tableName: "add_contacts_apply"
+#     columnName: "contacts_id"
+#     ifNotExists: true
+#   )
+# }
 
 
 
