@@ -1,8 +1,16 @@
 
 # 关于通讯录这块的表设计
 # 以时间作为排序， 则可能申请的记录会有多个
-# 返回给Client的时候过滤下多个, 返回最新申请的
-# 不在插入的时候，删除旧的是因为： 没办法确定： 删除和插入同时成功。万一删除成功，插入失败，则旧申请消失。如果插入成功，则还是可能有多个记录
+# 但是很多时候不得不以时间排序，因为如果结果很多，就不能客户端排序（支持分页
+# 用户显示就是需要显示最新的记录
+# 两种方案解决多个记录问题
+# 方案1: 返回多个，过滤成为1个。应答的时候删除所有user a-> user b 的申请
+# 因为已经做了id(a>b)的index
+# 方案2: 
+
+# 结果很多，可以返回给Client的时候过滤下多个, 返回最新申请的
+# 如果都相同，则至少返回一个，且pageState仍然有效
+# 不在插入的时候删除旧的是因为： 没办法确定： 删除和插入同时成功。万一删除成功，插入失败，则旧申请消失。如果插入成功，则还是可能有多个记录
 # 在对端答复的时候，删除所有记录，成功则返回答复成功，要不然就是失败，对端再重试
 
 mutation createTables {
@@ -13,10 +21,11 @@ mutation createTables {
       { name: "contacts_id", type: {basic: TEXT} }
     ]
     clusteringKeys: [
-      { name: "update_time", type: {basic: TIMESTAMP} }
-      { name: "user_id", type: {basic: TEXT} }
+      { name: "update_time", type: {basic: TIMESTAMP}, order: "DESC" }
     ]
     values: [
+      { name: "user_id", type: {basic: TEXT} }
+      { name: "id", type: {basic: TEXT} }
       { name: "remark_name", type: {basic: TEXT} }
       { name: "message", type: {basic: TEXT} }
     ]
@@ -39,11 +48,11 @@ mutation createContactsIdIndex{
     ifNotExists: true
   )
 }
-mutation createUpdateTimeIndex{
-  createUpdateTimeIndex: createIndex(
+mutation createIdIndex{
+  createIndex: createIndex(
     keyspaceName: "app_0_contacts"
     tableName: "add_contacts_apply"
-    columnName: "update_time"
+    columnName: "id"
     ifNotExists: true
   )
 }

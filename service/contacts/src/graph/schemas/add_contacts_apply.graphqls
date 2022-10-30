@@ -23,8 +23,9 @@ input ReplyAddContactsInput {
 type AddContactsApply {
   user_id: ID!
   contacts_id: ID!
-  remark_name: String!
+  id: ID!
   update_time: String!
+  remark_name: String!
   message: String
 }
 

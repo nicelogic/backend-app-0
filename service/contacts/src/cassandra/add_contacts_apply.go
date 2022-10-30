@@ -14,11 +14,12 @@ query add_contacts_apply($user_id: String!, $first: Int = 100, $after: String){
 	){
 	  pageState
 	  values {
-		  user_id
+		user_id
 		contacts_id
+		id
+		update_time
 		remark_name
 		message
-		update_time
 	  }
 	}
   }

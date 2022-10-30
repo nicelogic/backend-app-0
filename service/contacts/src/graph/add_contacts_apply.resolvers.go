@@ -23,10 +23,12 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	fmt.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
+	id := user.Id + ">" + input.ContactsID
 	variables := map[string]interface{}{
-		"contacts_id": input.ContactsID,
-		"update_time": time.Now().Format(time.RFC3339),
 		"user_id":     user.Id,
+		"contacts_id": input.ContactsID,
+		"id":          id,
+		"update_time": time.Now().Format(time.RFC3339),
 		"remark_name": input.RemarkName,
 		"message":     input.Message,
 	}
@@ -54,7 +56,13 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 
 // ReplyAddContacts is the resolver for the replyAddContacts field.
 func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.ReplyAddContactsInput) (bool, error) {
-	panic(fmt.Errorf("not implemented: ReplyAddContacts - replyAddContacts"))
+	user, err := auth.GetUser(ctx)
+	if err != nil {
+		return false, err
+	}
+	fmt.Printf("user: %#v reply add contacts apply\n", user)
+
+	return true, err
 }
 
 // AddContactsApply is the resolver for the addContactsApply field.
@@ -90,7 +98,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 		apply := apply
 		id := apply.UserID + ">" + apply.ContactsID
 		uniqueApply := uniqueAddContactsApplys[id]
-		if uniqueApply == nil || apply.UpdateTime > uniqueApply.UpdateTime{
+		if uniqueApply == nil || apply.UpdateTime > uniqueApply.UpdateTime {
 			uniqueAddContactsApplys[id] = &apply
 		}
 	}
