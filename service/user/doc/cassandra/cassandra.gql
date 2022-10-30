@@ -28,14 +28,6 @@ mutation createTables {
   )
 }
 
-mutation dropTable {
-  dropUser: dropTable(
-    keyspaceName: "app_0_user"
-    tableName: "user"
-    ifExists: true
-  )
-}
-
 mutation createNameIndex{
   createNameIndex: createIndex(
     keyspaceName: "app_0_user"
@@ -44,6 +36,15 @@ mutation createNameIndex{
     ifNotExists: true
   )
 }
+
+mutation dropTable {
+  dropUser: dropTable(
+    keyspaceName: "app_0_user"
+    tableName: "user"
+    ifExists: true
+  )
+}
+
 
 
 

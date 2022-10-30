@@ -1,4 +1,16 @@
 
+
+mutation createKeyspace{
+  user: createKeyspace(
+    name: "app_0"
+    ifNotExists: true
+    #replicas: 3
+    datacenters: [
+      { name: "dc1", replicas: 3 }
+    ]
+)
+}
+
 mutation createTables {
   auth: createTable(
     keyspaceName:"app_0",
