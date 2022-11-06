@@ -55,6 +55,6 @@ type PageInfo struct {
 
 type ReplyAddContactsInput struct {
 	ContactsID string `json:"contacts_id"`
-	Ack        bool   `json:"ack"`
+	Reply      string `json:"reply"`
 	RemarkName string `json:"remarkName"`
 }

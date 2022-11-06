@@ -22,6 +22,8 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	fmt.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
+	//查询对方是否已经是你的好友，如果是，则回复错误： 已经是你好友，无需重新申请
+
 	variables := map[string]interface{}{
 		"user_id":                user.Id,
 		"contacts_id":            input.ContactsID,

@@ -18,7 +18,7 @@ input ApplyAddContactsInput {
 #
 input ReplyAddContactsInput {
   contacts_id: ID!
-  ack: Boolean!
+  reply: String!
   remarkName: String!
 }
 

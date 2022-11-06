@@ -437,7 +437,7 @@ input ApplyAddContactsInput {
 #
 input ReplyAddContactsInput {
   contacts_id: ID!
-  ack: Boolean!
+  reply: String!
   remarkName: String!
 }
 
@@ -3911,7 +3911,7 @@ func (ec *executionContext) unmarshalInputReplyAddContactsInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"contacts_id", "ack", "remarkName"}
+	fieldsInOrder := [...]string{"contacts_id", "reply", "remarkName"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3926,11 +3926,11 @@ func (ec *executionContext) unmarshalInputReplyAddContactsInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "ack":
+		case "reply":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ack"))
-			it.Ack, err = ec.unmarshalNBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reply"))
+			it.Reply, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
