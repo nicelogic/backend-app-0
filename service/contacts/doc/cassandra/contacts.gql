@@ -9,24 +9,39 @@ mutation createKeyspace{
 )
 }
 
-
+mutation createTables {
+  contacts_by_remark_name: createTable(
+    keyspaceName:"app_0_contacts",
+    tableName:"contacts_by_remark_name",
+    partitionKeys: [ 
+      { name: "user_id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+      { name: "remark_name", type: {basic: TEXT} }
+      { name: "contacts_id", type: {basic: TEXT} }
+    ]
+    values: [
+      #{ name: "id", type: {basic: TEXT} }
+      { name: "update_time", type: {basic: TIMESTAMP} }
+    ]
+  )
+}
 mutation createTables {
   contacts: createTable(
     keyspaceName:"app_0_contacts",
     tableName:"contacts",
     partitionKeys: [ 
-      { name: "id", type: {basic: TEXT} }
-    ]
-    clusteringKeys: [
-      { name: "remark_name", type: {basic: TEXT} }
-    ]
-    values: [
       { name: "user_id", type: {basic: TEXT} }
       { name: "contacts_id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+    ]
+    values: [
       { name: "update_time", type: {basic: TIMESTAMP} }
     ]
   )
 }
+
 
 mutation dropTable {
   dropcontacts: dropTable(

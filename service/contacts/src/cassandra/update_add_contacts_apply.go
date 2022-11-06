@@ -33,3 +33,14 @@ mutation updateadd_contacts_apply(
   }
 `
 
+
+/*
+{
+	"user_id": "1",
+	"contacts_id": "2",
+	"id": "1>2",
+	"update_time": "2022-10-30T11:30:25.000Z",
+	"remark_name": "2",
+	"message": "please add me"
+}
+*/

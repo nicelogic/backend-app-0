@@ -1,7 +1,7 @@
 
 type Mutation {
-  # return contacts id
-  removeContacts(contactsId: ID!): String!
+  addContacts(contactsId: ID!): Boolean!
+  removeContacts(contactsId: ID!): Boolean!
 }
 
 type Query {

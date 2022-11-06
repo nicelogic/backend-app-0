@@ -1,6 +1,6 @@
 
 extend type Mutation {
-  applyAddContacts(input: ApplyAddContactsInput!): AddContactsApply!
+  applyAddContacts(input: ApplyAddContactsInput!): Boolean!
   replyAddContacts(input: ReplyAddContactsInput!): Boolean!
 }
 
@@ -8,24 +8,25 @@ extend type Query{
   addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
 }
 
+#
 input ApplyAddContactsInput {
   contactsId: ID!
   remarkName: String!
   message: String
 }
 
+#
 input ReplyAddContactsInput {
   contacts_id: ID!
   ack: Boolean!
   remarkName: String
 }
 
+#
 type AddContactsApply {
   user_id: ID!
   contacts_id: ID!
-  id: ID!
   update_time: String!
-  remark_name: String!
   message: String
 }
 
