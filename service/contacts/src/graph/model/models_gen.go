@@ -7,6 +7,7 @@ type AddContactsApply struct {
 	ContactsID string `json:"contacts_id"`
 	UpdateTime string `json:"update_time"`
 	Message    string `json:"message"`
+	Reply      string `json:"reply"`
 }
 
 type AddContactsApplyConnection struct {

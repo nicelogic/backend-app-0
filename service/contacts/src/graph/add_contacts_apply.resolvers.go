@@ -23,11 +23,11 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	fmt.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
 	variables := map[string]interface{}{
-		"user_id":     user.Id,
-		"contacts_id": input.ContactsID,
-		"remark_name": input.RemarkName,
-		"message":     input.Message,
-		"update_time": time.Now().Format(time.RFC3339),
+		"user_id":                user.Id,
+		"contacts_id":            input.ContactsID,
+		"remark_name":            input.RemarkName,
+		"message":                input.Message,
+		"update_time":            time.Now().Format(time.RFC3339),
 		"add_contacts_apply_ttl": 604800,
 	}
 	response, err := r.CassandraClient.Mutation(cassandra.UpdateAddContactsApplyGql, variables)
@@ -40,7 +40,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		"updatecontacts_by_remark_name",
 		"updatecontacts",
 		"updateadd_contacts_apply",
-	}	
+	}
 	_, err = r.CassandraClient.BatchMutationResponse(response, mutations)
 	if err != nil {
 		return false, err

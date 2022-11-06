@@ -40,14 +40,14 @@ mutation createTables {
   )
 }
 
-mutation createIndex{
-  createIndex: createIndex(
-    keyspaceName: "app_0_contacts"
-    tableName: "add_contacts_apply"
-    columnName: "id"
-    ifNotExists: true
-  )
-}
+# mutation createIndex{
+#   createIndex: createIndex(
+#     keyspaceName: "app_0_contacts"
+#     tableName: "add_contacts_apply"
+#     columnName: "id"
+#     ifNotExists: true
+#   )
+# }
 
 mutation dropTable {
   dropaddcontactsapply: dropTable(
@@ -57,20 +57,6 @@ mutation dropTable {
   )
 }
 
-# mutation createContactsIdIndex{
-#   createContactsIdIndex: createIndex(
-#     keyspaceName: "app_0_contacts"
-#     tableName: "add_contacts_apply"
-#     columnName: "contacts_id"
-#     ifNotExists: true
-#   )
-# }
-
-
-
-
-
-
 mutation alterTableAdd{
-  alterTableAdd(keyspaceName: "app_0_contacts", tableName:"add_contacts_apply", toAdd: { name: "message", type: {basic: TEXT}})
+  alterTableAdd(keyspaceName: "app_0_contacts", tableName:"add_contacts_apply", toAdd: { name: "reply", type: {basic: TEXT}})
 }
