@@ -8,7 +8,6 @@ import (
 	"contacts/graph/model"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -37,12 +36,13 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	fmt.Println(response)
 
-	applied, _, err := r.CassandraClient.MutationResponse(response)
+	mutations := []string{
+		"updatecontacts_by_remark_name",
+		"updatecontacts",
+		"updateadd_contacts_apply",
+	}	
+	_, err = r.CassandraClient.BatchMutationResponse(response, mutations)
 	if err != nil {
-		return false, err
-	}
-	if !applied {
-		err = errors.New("cassandra not applied")
 		return false, err
 	}
 	return true, nil
