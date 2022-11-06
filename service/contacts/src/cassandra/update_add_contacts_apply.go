@@ -1,21 +1,56 @@
 package cassandra
 
 const UpdateAddContactsApplyGql = `
-mutation updateadd_contacts_apply(
+
+mutation  add_contacts_apply (
 	$user_id: String!
 	$contacts_id: String!
-	$id: String!
 	$update_time: Timestamp!
 	$remark_name: String!
-  	$message: String
-  ){
-	response: updateadd_contacts_apply(value:{
+  $message: String!
+) @atomic {
+    
+	updatecontacts_by_remark_name: updatecontacts_by_remark_name(
+		value: {
+      user_id: $user_id,
+      contacts_id: $contacts_id,
+      remark_name: $remark_name,
+      update_time: $update_time
+    }
+		ifExists: false
+		){
+      applied
+      accepted
+      value{
+        user_id
+        contacts_id
+        remark_name
+        update_time
+      }
+  	}
+  
+  updatecontacts: updatecontacts(
+		value: {
+      user_id: $user_id,
+      contacts_id: $contacts_id,
+      update_time: $update_time
+    }
+		ifExists: false
+		){
+      applied
+      accepted
+      value{
+        user_id
+        contacts_id
+        update_time
+      }
+  	}
+  
+  	updateadd_contacts_apply: updateadd_contacts_apply(value:{
 	  user_id: $user_id
 	  contacts_id: $contacts_id
-	  id: $id
 	  update_time: $update_time
-	  remark_name: $remark_name
-      message: $message
+    message: $message
 	}
 	  ifExists: false
 	){
@@ -24,23 +59,26 @@ mutation updateadd_contacts_apply(
 	  value {
 		contacts_id
 		update_time
-		id
 		user_id
-		remark_name
 		message
 	  }
 	}
+	
   }
+
+
+
 `
 
 
 /*
+
 {
-	"user_id": "1",
-	"contacts_id": "2",
-	"id": "1>2",
-	"update_time": "2022-10-30T11:30:25.000Z",
-	"remark_name": "2",
-	"message": "please add me"
+  "user_id": "1",
+  "contacts_id": "2",
+  "update_time":"2022-11-05T11:38:45.000Z",
+  "remark_name": "2",
+  "message": "please add me"
 }
+
 */

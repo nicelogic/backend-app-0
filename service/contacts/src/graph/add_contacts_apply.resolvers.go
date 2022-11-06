@@ -16,42 +16,34 @@ import (
 )
 
 // ApplyAddContacts is the resolver for the applyAddContacts field.
-func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (*model.AddContactsApply, error) {
+func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (bool, error) {
 	user, err := auth.GetUser(ctx)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	fmt.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
-	id := user.Id + ">" + input.ContactsID
 	variables := map[string]interface{}{
 		"user_id":     user.Id,
 		"contacts_id": input.ContactsID,
-		"id":          id,
 		"update_time": time.Now().Format(time.RFC3339),
-		"remark_name": input.RemarkName,
 		"message":     input.Message,
 	}
 	response, err := r.CassandraClient.Mutation(cassandra.UpdateAddContactsApplyGql, variables)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	fmt.Println(response)
 
-	addContactsApply := &model.AddContactsApply{}
-	applied, jsonValue, err := r.CassandraClient.MutationResponse(response)
+	applied, _, err := r.CassandraClient.MutationResponse(response)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	if !applied {
 		err = errors.New("cassandra not applied")
-		return nil, err
+		return false, err
 	}
-	err = json.Unmarshal(jsonValue, addContactsApply)
-	if err != nil {
-		return nil, err
-	}
-	return addContactsApply, nil
+	return true, nil
 }
 
 // ReplyAddContacts is the resolver for the replyAddContacts field.

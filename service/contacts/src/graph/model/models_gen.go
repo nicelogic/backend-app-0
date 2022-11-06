@@ -5,9 +5,7 @@ package model
 type AddContactsApply struct {
 	UserID     string  `json:"user_id"`
 	ContactsID string  `json:"contacts_id"`
-	ID         string  `json:"id"`
 	UpdateTime string  `json:"update_time"`
-	RemarkName string  `json:"remark_name"`
 	Message    *string `json:"message"`
 }
 
@@ -28,9 +26,9 @@ type AddContactsApplyEdgePageInfo struct {
 }
 
 type ApplyAddContactsInput struct {
-	ContactsID string  `json:"contactsId"`
-	RemarkName string  `json:"remarkName"`
-	Message    *string `json:"message"`
+	ContactsID string `json:"contactsId"`
+	RemarkName string `json:"remarkName"`
+	Message    string `json:"message"`
 }
 
 type Contacts struct {

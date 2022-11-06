@@ -12,7 +12,7 @@ extend type Query{
 input ApplyAddContactsInput {
   contactsId: ID!
   remarkName: String!
-  message: String
+  message: String!
 }
 
 #
