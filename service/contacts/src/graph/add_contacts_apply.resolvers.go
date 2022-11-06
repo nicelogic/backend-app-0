@@ -26,8 +26,10 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	variables := map[string]interface{}{
 		"user_id":     user.Id,
 		"contacts_id": input.ContactsID,
-		"update_time": time.Now().Format(time.RFC3339),
+		"remark_name": input.RemarkName,
 		"message":     input.Message,
+		"update_time": time.Now().Format(time.RFC3339),
+		"add_contacts_apply_ttl": 604800,
 	}
 	response, err := r.CassandraClient.Mutation(cassandra.UpdateAddContactsApplyGql, variables)
 	if err != nil {

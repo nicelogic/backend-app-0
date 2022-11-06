@@ -7,7 +7,8 @@ mutation  add_contacts_apply (
 	$contacts_id: String!
 	$update_time: Timestamp!
 	$remark_name: String!
-  $message: String!
+    $message: String!
+    $add_contacts_apply_ttl: Int = 604800 #one week: 60 * 60 * 24 * 7
 ) @atomic {
     
 	updatecontacts_by_remark_name: updatecontacts_by_remark_name(
@@ -53,6 +54,9 @@ mutation  add_contacts_apply (
     message: $message
 	}
 	  ifExists: false
+    options: {
+      ttl: $add_contacts_apply_ttl
+    }
 	){
 	  applied
 	  accepted
@@ -67,7 +71,6 @@ mutation  add_contacts_apply (
   }
 
 
-
 `
 
 
@@ -78,7 +81,8 @@ mutation  add_contacts_apply (
   "contacts_id": "2",
   "update_time":"2022-11-05T11:38:45.000Z",
   "remark_name": "2",
-  "message": "please add me"
+  "message": "please add me",
+  "add_contacts_apply_ttl": 604800
 }
 
 */
