@@ -19,7 +19,7 @@ input ApplyAddContactsInput {
 input ReplyAddContactsInput {
   contacts_id: ID!
   ack: Boolean!
-  remarkName: String
+  remarkName: String!
 }
 
 #
@@ -27,7 +27,7 @@ type AddContactsApply {
   user_id: ID!
   contacts_id: ID!
   update_time: String!
-  message: String
+  message: String!
 }
 
 type AddContactsApplyConnection {

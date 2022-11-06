@@ -430,7 +430,7 @@ input ApplyAddContactsInput {
 input ReplyAddContactsInput {
   contacts_id: ID!
   ack: Boolean!
-  remarkName: String
+  remarkName: String!
 }
 
 #
@@ -438,7 +438,7 @@ type AddContactsApply {
   user_id: ID!
   contacts_id: ID!
   update_time: String!
-  message: String
+  message: String!
 }
 
 type AddContactsApplyConnection {
@@ -808,11 +808,14 @@ func (ec *executionContext) _AddContactsApply_message(ctx context.Context, field
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_AddContactsApply_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3880,7 +3883,7 @@ func (ec *executionContext) unmarshalInputReplyAddContactsInput(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("remarkName"))
-			it.RemarkName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.RemarkName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3933,6 +3936,9 @@ func (ec *executionContext) _AddContactsApply(ctx context.Context, sel ast.Selec
 
 			out.Values[i] = ec._AddContactsApply_message(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
