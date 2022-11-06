@@ -87,22 +87,12 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	if err != nil {
 		return nil, err
 	}
-	uniqueAddContactsApplys := make(map[string]*model.AddContactsApply)
+	addContactsApplyConnection := &model.AddContactsApplyConnection{}
+	addContactsApplyConnection.TotalCount = len(addContactsApplys)
 	for _, apply := range addContactsApplys {
 		apply := apply
-		id := apply.UserID + ">" + apply.ContactsID
-		uniqueApply := uniqueAddContactsApplys[id]
-		if uniqueApply == nil || apply.UpdateTime > uniqueApply.UpdateTime {
-			uniqueAddContactsApplys[id] = &apply
-		}
-	}
-
-	addContactsApplyConnection := &model.AddContactsApplyConnection{}
-	addContactsApplyConnection.TotalCount = len(uniqueAddContactsApplys)
-	for _, apply := range uniqueAddContactsApplys {
-		apply := apply
 		edge := &model.AddContactsApplyEdge{}
-		edge.Node = apply
+		edge.Node = &apply
 		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
 	}
 	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
