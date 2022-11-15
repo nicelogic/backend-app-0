@@ -1,7 +1,5 @@
 package graph
 
-import "github.com/nicelogic/cassandra"
-
 //go:generate go run github.com/99designs/gqlgen generate
 
 // This file will not be regenerated automatically.
@@ -9,5 +7,4 @@ import "github.com/nicelogic/cassandra"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct{
-	CassandraClient *cassandra.Client
 }

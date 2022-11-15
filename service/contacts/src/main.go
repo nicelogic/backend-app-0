@@ -17,7 +17,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt"
 	"github.com/nicelogic/auth"
-	"github.com/nicelogic/cassandra"
 	"github.com/nicelogic/config"
 	"github.com/nicelogic/errs"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -25,12 +24,11 @@ import (
 
 func main() {
 
-	client := cassandra.Client{}
-	client.Init("app_0_contacts")
+
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
-				Resolvers: &graph.Resolver{ CassandraClient: &client}}))
+				Resolvers: &graph.Resolver{}}))
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
 		fmt.Printf("panic: %v\n", panicErr)
 		err := &gqlerror.Error{
