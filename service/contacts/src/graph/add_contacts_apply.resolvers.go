@@ -71,7 +71,17 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	fmt.Printf("user: %#v query add contacts apply\n", user)
 
-	r.CrdbClient.Query(ctx, sql.QueryAddContactsApply)
+	currentTime := time.Now().Format(time.RFC3339)
+	result, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, currentTime, *first)
+	if err != nil{
+		fmt.Printf("query err: %v\n", err)
+		return nil, err
+	}
+	addContactsApplyConnection := &model.AddContactsApplyConnection{}
+	addContactsApplyConnection.TotalCount = len(result)
+	for _, value := range result{
+		fmt.Printf("value: %#v\n", value)
+	}
 
-	return nil, err
+	return addContactsApplyConnection, err
 }

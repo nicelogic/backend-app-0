@@ -23,10 +23,11 @@ select
 	message,
 	update_time
 from
-	add_contacts_apply
+	add_contacts_apply@contacts_update_time_index
 where
 	contacts_id = $1
+	and update_time < $2
 order by
 	update_time desc
-limit $2
+limit $3
 `
