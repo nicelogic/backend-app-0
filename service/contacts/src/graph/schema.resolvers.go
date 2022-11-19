@@ -6,6 +6,7 @@ package graph
 import (
 	"contacts/graph/generated"
 	"contacts/graph/model"
+	"contacts/sql"
 	"context"
 	"fmt"
 
@@ -30,6 +31,21 @@ func (r *queryResolver) Contacts(ctx context.Context, first int, after string) (
 	}
 	fmt.Printf("user: %#v query contacts\n", user)
 	return nil, err
+}
+
+// AddedMe is the resolver for the addedMe field.
+func (r *queryResolver) AddedMe(ctx context.Context, userID string) (bool, error) {
+	user, err := auth.GetUser(ctx)
+	if err != nil {
+		return false, err
+	}
+	fmt.Printf("user: %#v query user: %s did added me\n", user, userID)
+	result, err := r.CrdbClient.Query(ctx, sql.QueryUserAddedMe, userID, user.Id)
+	if err != nil {
+		return false, err
+	}
+	isUserAddedMe := len(result) != 0
+	return isUserAddedMe, err
 }
 
 // Mutation returns generated.MutationResolver implementation.

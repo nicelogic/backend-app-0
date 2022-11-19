@@ -11,7 +11,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jackc/pgx/v4"
+	pgx "github.com/jackc/pgx/v4"
 	"github.com/nicelogic/auth"
 )
 
@@ -24,12 +24,21 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	log.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
 	updateTime := time.Now().Format(time.RFC3339)
+	_, err = r.CrdbClient.Pool.Exec(ctx, sql.UpsertContacts, user.Id, input.ContactsID, input.RemarkName, updateTime)
+	if err != nil {
+		log.Printf("sql upsert contacts err: %v\n", err)
+		return false, err
+	}
 	err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, sql.UpsertAddContactsApply, user.Id, input.ContactsID, input.Message, updateTime)
-		if err != nil {
-			return err
+		rows, err := tx.Query(ctx, sql.QueryUserAddedMe, input.ContactsID, user.Id)
+		if err != nil && rows.Err() != nil{
+			return rows.Err()
 		}
-		_, err = tx.Exec(ctx, sql.UpsertContacts, user.Id, input.ContactsID, input.RemarkName, updateTime)
+		defer rows.Close()
+		if rows.Next() {
+			return fmt.Errorf(ContactsAddedMe)
+		}
+		_, err = tx.Exec(ctx, sql.UpsertAddContactsApply, user.Id, input.ContactsID, input.Message, updateTime)
 		if err != nil {
 			return err
 		}

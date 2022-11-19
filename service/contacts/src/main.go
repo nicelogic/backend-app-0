@@ -62,7 +62,7 @@ func main() {
 			err.Message = errs.TokenExpired
 		case hasJwtError:
 			err.Message = errs.TokenInvalid
-		case graph.ContactsAlreadyAddedU == e.Error():
+		case graph.ContactsAddedMe == e.Error():
 			fmt.Printf("ContactsAlreadyAddedU")
 		default:
 			err.Message = errs.ServerInternalError

@@ -1,5 +1,5 @@
 package graph
 
 const (
-	ContactsAlreadyAddedU = "contacts already added u"
+	ContactsAddedMe = "contacts added me"
 )
