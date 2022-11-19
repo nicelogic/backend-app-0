@@ -31,7 +31,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
 		rows, err := tx.Query(ctx, sql.QueryUserAddedMe, input.ContactsID, user.Id)
-		if err != nil && rows.Err() != nil{
+		if err != nil && rows.Err() != nil {
 			return rows.Err()
 		}
 		defer rows.Close()
@@ -71,17 +71,33 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	fmt.Printf("user: %#v query add contacts apply\n", user)
 
-	currentTime := time.Now().Format(time.RFC3339)
-	result, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, currentTime, *first)
-	if err != nil{
+	cursor := time.Now().Format(time.RFC3339)
+	if after != nil{
+		cursor = *after
+	}
+	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, cursor, *first)
+	if err != nil {
 		fmt.Printf("query err: %v\n", err)
 		return nil, err
 	}
 	addContactsApplyConnection := &model.AddContactsApplyConnection{}
-	addContactsApplyConnection.TotalCount = len(result)
-	for _, value := range result{
-		fmt.Printf("value: %#v\n", value)
+	addContactsApplyConnection.TotalCount = len(addContactsApplys)
+	endCursor := ""
+	for _, addContactsApply := range addContactsApplys {
+		fmt.Printf("apply: %#v\n", addContactsApply)
+		addContactsApply := addContactsApply.([]any)
+		edge := &model.AddContactsApplyEdge{}
+		apply := model.AddContactsApply{}
+		apply.ContactsID = user.Id
+		apply.UserID = addContactsApply[0].(string)
+		apply.Message = addContactsApply[1].(string)
+		apply.UpdateTime = addContactsApply[2].(time.Time).Format(time.RFC3339)
+		edge.Node = &apply
+		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
+		endCursor = apply.UpdateTime
 	}
-
+	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
+	addContactsApplyConnection.PageInfo.EndCursor = &endCursor
+	addContactsApplyConnection.PageInfo.HasNextPage = addContactsApplyConnection.TotalCount == *first
 	return addContactsApplyConnection, err
 }

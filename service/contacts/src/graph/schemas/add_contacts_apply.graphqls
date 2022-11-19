@@ -28,7 +28,6 @@ type AddContactsApply {
   contacts_id: ID!
   update_time: String!
   message: String!
-  reply: String!
 }
 
 type AddContactsApplyConnection {

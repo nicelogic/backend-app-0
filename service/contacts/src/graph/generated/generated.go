@@ -47,7 +47,6 @@ type ComplexityRoot struct {
 	AddContactsApply struct {
 		ContactsID func(childComplexity int) int
 		Message    func(childComplexity int) int
-		Reply      func(childComplexity int) int
 		UpdateTime func(childComplexity int) int
 		UserID     func(childComplexity int) int
 	}
@@ -143,13 +142,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AddContactsApply.Message(childComplexity), true
-
-	case "AddContactsApply.reply":
-		if e.complexity.AddContactsApply.Reply == nil {
-			break
-		}
-
-		return e.complexity.AddContactsApply.Reply(childComplexity), true
 
 	case "AddContactsApply.update_time":
 		if e.complexity.AddContactsApply.UpdateTime == nil {
@@ -461,7 +453,6 @@ type AddContactsApply {
   contacts_id: ID!
   update_time: String!
   message: String!
-  reply: String!
 }
 
 type AddContactsApplyConnection {
@@ -870,50 +861,6 @@ func (ec *executionContext) fieldContext_AddContactsApply_message(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _AddContactsApply_reply(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AddContactsApply_reply(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Reply, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_AddContactsApply_reply(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "AddContactsApply",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _AddContactsApplyConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApplyConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AddContactsApplyConnection_totalCount(ctx, field)
 	if err != nil {
@@ -1102,8 +1049,6 @@ func (ec *executionContext) fieldContext_AddContactsApplyEdge_node(ctx context.C
 				return ec.fieldContext_AddContactsApply_update_time(ctx, field)
 			case "message":
 				return ec.fieldContext_AddContactsApply_message(ctx, field)
-			case "reply":
-				return ec.fieldContext_AddContactsApply_reply(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AddContactsApply", field.Name)
 		},
@@ -4075,13 +4020,6 @@ func (ec *executionContext) _AddContactsApply(ctx context.Context, sel ast.Selec
 		case "message":
 
 			out.Values[i] = ec._AddContactsApply_message(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "reply":
-
-			out.Values[i] = ec._AddContactsApply_reply(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
