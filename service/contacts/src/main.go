@@ -24,18 +24,18 @@ import (
 )
 
 func main() {
-	userConfig := contactsConfig.Config{
-		ServiceName:            "contacts",
-		CrdbPoolConnectionsNum: 4,
-		CrdbConfigFilePath:     "/Users/bryan.wu/code/secret/config-crdb.yml",
+	serviceConfig := contactsConfig.Config{
+		Db_name:            "contacts",
+		Db_pool_connections_num: 4,
+		Db_config_file_path:     "/Users/bryan.wu/code/secret/config-crdb.yml",
 		Path:                   "/",
 		Listen_address:         ":80"}
-	config.Init(constant.ConfigPath, &userConfig)
+	config.Init(constant.ConfigPath, &serviceConfig)
 	crdbClient := crdb.Client{}
 	err := crdbClient.Init(context.Background(),
-		userConfig.CrdbConfigFilePath,
-		userConfig.ServiceName,
-		userConfig.CrdbPoolConnectionsNum)
+		serviceConfig.Db_config_file_path,
+		serviceConfig.Db_name,
+		serviceConfig.Db_pool_connections_num)
 	if err != nil {
 		log.Fatalf("crdb init err: %v\n", err)
 	}
@@ -70,12 +70,12 @@ func main() {
 		return err
 	})
 
-	path := userConfig.Path
+	path := serviceConfig.Path
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())
 	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", server)
 
-	log.Printf("connect to http://%s%s for GraphQL playground", userConfig.Listen_address, userConfig.Path)
-	log.Fatal(http.ListenAndServe(userConfig.Listen_address, router))
+	log.Printf("connect to http://%s%s for GraphQL playground", serviceConfig.Listen_address, serviceConfig.Path)
+	log.Fatal(http.ListenAndServe(serviceConfig.Listen_address, router))
 }
