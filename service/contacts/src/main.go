@@ -6,6 +6,7 @@ import (
 	"contacts/graph"
 	"contacts/graph/generated"
 	"context"
+	"crdb"
 	"errors"
 	"fmt"
 	"log"
@@ -23,12 +24,25 @@ import (
 )
 
 func main() {
-
-
+	userConfig := contactsConfig.Config{
+		ServiceName:            "contacts",
+		CrdbPoolConnectionsNum: 4,
+		CrdbConfigFilePath:     "/Users/bryan.wu/code/secret/config-crdb.yml",
+		Path:                   "/",
+		Listen_address:         ":80"}
+	config.Init(constant.ConfigPath, &userConfig)
+	crdbClient := crdb.Client{}
+	err := crdbClient.Init(context.Background(),
+		userConfig.CrdbConfigFilePath,
+		userConfig.ServiceName,
+		userConfig.CrdbPoolConnectionsNum)
+	if err != nil {
+		log.Fatalf("crdb init err: %v\n", err)
+	}
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
-				Resolvers: &graph.Resolver{}}))
+				Resolvers: &graph.Resolver{CrdbClient: &crdbClient}}))
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
 		fmt.Printf("panic: %v\n", panicErr)
 		err := &gqlerror.Error{
@@ -43,7 +57,7 @@ func main() {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		var jwtError *jwt.ValidationError
 		hasJwtError := errors.As(e, &jwtError)
-		switch{
+		switch {
 		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
 			err.Message = errs.TokenExpired
 		case hasJwtError:
@@ -56,8 +70,6 @@ func main() {
 		return err
 	})
 
-	userConfig := contactsConfig.Config{Path: "/", Listen_address: ":80"}
-	config.Init(constant.ConfigPath, &userConfig)
 	path := userConfig.Path
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())
