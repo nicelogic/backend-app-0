@@ -48,6 +48,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		log.Printf("transcation func err: %v\n", err)
 		return false, err
 	}
+	log.Printf("success")
 	return true, nil
 }
 
@@ -69,6 +70,8 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 		return nil, err
 	}
 	fmt.Printf("user: %#v query add contacts apply\n", user)
+
+	r.CrdbClient.Query(ctx, sql.QueryAddContactsApply)
 
 	return nil, err
 }

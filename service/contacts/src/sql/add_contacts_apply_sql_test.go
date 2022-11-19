@@ -46,9 +46,9 @@ func TestSql(t *testing.T) {
 	//bulk insert
 	//https://github.com/jackc/pgx/issues/764#issuecomment-685249471 
 
-	rows, err := connection.Query(ctx, AddContactsApply, "2")
+	rows, err := connection.Query(ctx, QueryAddContactsApply, "2")
 	if err != nil {
-		log.Fatal("query: ", AddContactsApply, " fail, err: ", err)
+		log.Fatal("query: ", QueryAddContactsApply, " fail, err: ", err)
 		return
 	}
 	defer rows.Close()

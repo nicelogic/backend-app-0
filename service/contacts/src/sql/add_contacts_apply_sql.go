@@ -3,20 +3,30 @@ package sql
 
 
 const UpsertAddContactsApply = `
-UPSERT INTO add_contacts_apply (
+upsert
+into
+	add_contacts_apply (
 	user_id,
 	contacts_id,
 	message,
 	update_time
 )
-VALUES ($1, $2, $3, $4)
+values ($1,
+$2,
+$3,
+$4)
 `
 
-const AddContactsApply = `
-SELECT user_id,
+const QueryAddContactsApply = `
+select
+	user_id,
 	message,
 	update_time
-from add_contacts_apply
-where contacts_id = $1
-ORDER BY update_time DESC
+from
+	add_contacts_apply
+where
+	contacts_id = $1
+order by
+	update_time desc
+limit $2
 `
