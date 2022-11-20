@@ -29,7 +29,7 @@ where
 const QueryContacts = `
 select
 	contacts_id ,
-	remark_name ,
+	remark_name 
 from
 	contacts@default_unique_index
 where 

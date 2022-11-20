@@ -71,7 +71,7 @@ func (r *queryResolver) Contacts(ctx context.Context, first *int, after *string)
 		contactsConnection.PageInfo.EndCursor = &base64EndCursor
 	}
 	contactsConnection.PageInfo.HasNextPage = contactsConnection.TotalCount == *first
-	return nil, err
+	return contactsConnection, err
 }
 
 // AddedMe is the resolver for the addedMe field.
