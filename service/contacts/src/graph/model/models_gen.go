@@ -3,9 +3,9 @@
 package model
 
 type AddContactsApply struct {
-	UserID     string `json:"user_id"`
-	ContactsID string `json:"contacts_id"`
-	UpdateTime string `json:"update_time"`
+	UserID     string `json:"userId"`
+	ContactsID string `json:"contactsId"`
+	UpdateTime string `json:"updateTime"`
 	Message    string `json:"message"`
 }
 
@@ -53,7 +53,7 @@ type PageInfo struct {
 }
 
 type ReplyAddContactsInput struct {
-	ContactsID string `json:"contacts_id"`
-	Reply      string `json:"reply"`
+	ContactsID string `json:"contactsId"`
+	IsAgree    bool   `json:"isAgree"`
 	RemarkName string `json:"remarkName"`
 }

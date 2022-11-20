@@ -48,7 +48,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		log.Printf("transcation func err: %v\n", err)
 		return false, err
 	}
-	log.Printf("success")
+	log.Printf("apply success")
 	return true, nil
 }
 
@@ -58,8 +58,34 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 	if err != nil {
 		return false, err
 	}
-	fmt.Printf("user: %#v reply add contacts apply\n", user)
-
+	log.Printf("user: %#v reply add contacts apply, isAgree: %v\n", user, input.IsAgree)
+	if !input.IsAgree {
+		_, err = r.CrdbClient.Pool.Exec(ctx, sql.DeleteAddContactsApply, user.Id, input.ContactsID)
+		if err != nil {
+			log.Printf("delete addContactsApply fail, err: %v\n", err)
+			return false, err
+		}
+	} else {
+		updateTime := time.Now().Format(time.RFC3339)
+		err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
+			_, err = r.CrdbClient.Pool.Exec(ctx, sql.UpsertContacts, user.Id, input.ContactsID, input.RemarkName, updateTime)
+			if err != nil {
+				log.Printf("sql upsert contacts err: %v\n", err)
+				return err
+			}
+			_, err = r.CrdbClient.Pool.Exec(ctx, sql.DeleteAddContactsApply, user.Id, input.ContactsID)
+			if err != nil {
+				log.Printf("delete addContactsApply err: %v\n", err)
+				return err
+			}
+			return err
+		})
+		if err != nil {
+			log.Printf("transcation func err: %v\n", err)
+			return false, err
+		}
+	}
+	log.Printf("reply success")
 	return true, err
 }
 
@@ -72,7 +98,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	fmt.Printf("user: %#v query add contacts apply\n", user)
 
 	cursor := time.Now().Format(time.RFC3339)
-	if after != nil{
+	if after != nil {
 		cursor = *after
 	}
 	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, cursor, *first)

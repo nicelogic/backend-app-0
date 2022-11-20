@@ -17,16 +17,16 @@ input ApplyAddContactsInput {
 
 #
 input ReplyAddContactsInput {
-  contacts_id: ID!
-  reply: String!
+  contactsId: ID!
+  isAgree: Boolean!
   remarkName: String!
 }
 
 #
 type AddContactsApply {
-  user_id: ID!
-  contacts_id: ID!
-  update_time: String!
+  userId: ID!
+  contactsId: ID!
+  updateTime: String!
   message: String!
 }
 

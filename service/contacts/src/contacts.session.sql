@@ -2,13 +2,14 @@
 -- for test sql & DDL/schema/table design (sqltool needed)
 -- CREATE DATABASE contacts ;
 
--- CREATE TABLE add_contacts_apply (
---         user_id STRING NOT NULL,
---         contacts_id STRING NOT NULL,
---         message STRING NOT NULL,
--- 		update_time TIMESTAMPTZ NOT NULL DEFAULT now(),   
---         CONSTRAINT "primary" PRIMARY KEY (contacts_id, user_id)
--- );
+CREATE TABLE public.add_contacts_apply (
+	user_id STRING NOT NULL,
+	contacts_id STRING NOT NULL,
+	message STRING NOT NULL,
+	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
+	CONSTRAINT "primary" PRIMARY KEY (contacts_id ASC, user_id ASC),
+	UNIQUE INDEX contacts_update_time_index (contacts_id ASC, update_time DESC)
+);
 
 -- CREATE INDEX update_time_index ON add_contacts_apply (update_time)
 -- //may cause hotspot 

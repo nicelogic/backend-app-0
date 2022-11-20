@@ -31,3 +31,12 @@ order by
 	update_time desc
 limit $3
 `
+
+const DeleteAddContactsApply = `
+delete
+from
+	add_contacts_apply
+where
+	contacts_id = $1
+	and user_id = $2
+`

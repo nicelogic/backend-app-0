@@ -129,7 +129,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AddContactsApply.contacts_id":
+	case "AddContactsApply.contactsId":
 		if e.complexity.AddContactsApply.ContactsID == nil {
 			break
 		}
@@ -143,14 +143,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AddContactsApply.Message(childComplexity), true
 
-	case "AddContactsApply.update_time":
+	case "AddContactsApply.updateTime":
 		if e.complexity.AddContactsApply.UpdateTime == nil {
 			break
 		}
 
 		return e.complexity.AddContactsApply.UpdateTime(childComplexity), true
 
-	case "AddContactsApply.user_id":
+	case "AddContactsApply.userId":
 		if e.complexity.AddContactsApply.UserID == nil {
 			break
 		}
@@ -442,16 +442,16 @@ input ApplyAddContactsInput {
 
 #
 input ReplyAddContactsInput {
-  contacts_id: ID!
-  reply: String!
+  contactsId: ID!
+  isAgree: Boolean!
   remarkName: String!
 }
 
 #
 type AddContactsApply {
-  user_id: ID!
-  contacts_id: ID!
-  update_time: String!
+  userId: ID!
+  contactsId: ID!
+  updateTime: String!
   message: String!
 }
 
@@ -685,8 +685,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AddContactsApply_user_id(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AddContactsApply_user_id(ctx, field)
+func (ec *executionContext) _AddContactsApply_userId(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_userId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -716,7 +716,7 @@ func (ec *executionContext) _AddContactsApply_user_id(ctx context.Context, field
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_AddContactsApply_user_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AddContactsApply_userId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddContactsApply",
 		Field:      field,
@@ -729,8 +729,8 @@ func (ec *executionContext) fieldContext_AddContactsApply_user_id(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _AddContactsApply_contacts_id(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AddContactsApply_contacts_id(ctx, field)
+func (ec *executionContext) _AddContactsApply_contactsId(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_contactsId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -760,7 +760,7 @@ func (ec *executionContext) _AddContactsApply_contacts_id(ctx context.Context, f
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_AddContactsApply_contacts_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AddContactsApply_contactsId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddContactsApply",
 		Field:      field,
@@ -773,8 +773,8 @@ func (ec *executionContext) fieldContext_AddContactsApply_contacts_id(ctx contex
 	return fc, nil
 }
 
-func (ec *executionContext) _AddContactsApply_update_time(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AddContactsApply_update_time(ctx, field)
+func (ec *executionContext) _AddContactsApply_updateTime(ctx context.Context, field graphql.CollectedField, obj *model.AddContactsApply) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddContactsApply_updateTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -804,7 +804,7 @@ func (ec *executionContext) _AddContactsApply_update_time(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_AddContactsApply_update_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AddContactsApply_updateTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddContactsApply",
 		Field:      field,
@@ -1041,12 +1041,12 @@ func (ec *executionContext) fieldContext_AddContactsApplyEdge_node(ctx context.C
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "user_id":
-				return ec.fieldContext_AddContactsApply_user_id(ctx, field)
-			case "contacts_id":
-				return ec.fieldContext_AddContactsApply_contacts_id(ctx, field)
-			case "update_time":
-				return ec.fieldContext_AddContactsApply_update_time(ctx, field)
+			case "userId":
+				return ec.fieldContext_AddContactsApply_userId(ctx, field)
+			case "contactsId":
+				return ec.fieldContext_AddContactsApply_contactsId(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_AddContactsApply_updateTime(ctx, field)
 			case "message":
 				return ec.fieldContext_AddContactsApply_message(ctx, field)
 			}
@@ -3941,26 +3941,26 @@ func (ec *executionContext) unmarshalInputReplyAddContactsInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"contacts_id", "reply", "remarkName"}
+	fieldsInOrder := [...]string{"contactsId", "isAgree", "remarkName"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "contacts_id":
+		case "contactsId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contacts_id"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactsId"))
 			it.ContactsID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "reply":
+		case "isAgree":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reply"))
-			it.Reply, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isAgree"))
+			it.IsAgree, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3996,23 +3996,23 @@ func (ec *executionContext) _AddContactsApply(ctx context.Context, sel ast.Selec
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("AddContactsApply")
-		case "user_id":
+		case "userId":
 
-			out.Values[i] = ec._AddContactsApply_user_id(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "contacts_id":
-
-			out.Values[i] = ec._AddContactsApply_contacts_id(ctx, field, obj)
+			out.Values[i] = ec._AddContactsApply_userId(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "update_time":
+		case "contactsId":
 
-			out.Values[i] = ec._AddContactsApply_update_time(ctx, field, obj)
+			out.Values[i] = ec._AddContactsApply_contactsId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTime":
+
+			out.Values[i] = ec._AddContactsApply_updateTime(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
