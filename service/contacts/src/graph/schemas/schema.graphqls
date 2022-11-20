@@ -1,6 +1,5 @@
 
 type Mutation {
-  addContacts(contactsId: ID!): Boolean!
   removeContacts(contactsId: ID!): Boolean!
 }
 

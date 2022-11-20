@@ -13,11 +13,6 @@ import (
 	"github.com/nicelogic/auth"
 )
 
-// AddContacts is the resolver for the addContacts field.
-func (r *mutationResolver) AddContacts(ctx context.Context, contactsID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: AddContacts - addContacts"))
-}
-
 // RemoveContacts is the resolver for the removeContacts field.
 func (r *mutationResolver) RemoveContacts(ctx context.Context, contactsID string) (bool, error) {
 	panic(fmt.Errorf("not implemented: RemoveContacts - removeContacts"))
@@ -56,3 +51,4 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+

@@ -84,7 +84,6 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddContacts      func(childComplexity int, contactsID string) int
 		ApplyAddContacts func(childComplexity int, input model.ApplyAddContactsInput) int
 		RemoveContacts   func(childComplexity int, contactsID string) int
 		ReplyAddContacts func(childComplexity int, input model.ReplyAddContactsInput) int
@@ -103,7 +102,6 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	AddContacts(ctx context.Context, contactsID string) (bool, error)
 	RemoveContacts(ctx context.Context, contactsID string) (bool, error)
 	ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (bool, error)
 	ReplyAddContacts(ctx context.Context, input model.ReplyAddContactsInput) (bool, error)
@@ -254,18 +252,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Edge.Node(childComplexity), true
-
-	case "Mutation.addContacts":
-		if e.complexity.Mutation.AddContacts == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_addContacts_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.AddContacts(childComplexity, args["contactsId"].(string)), true
 
 	case "Mutation.applyAddContacts":
 		if e.complexity.Mutation.ApplyAddContacts == nil {
@@ -472,7 +458,6 @@ type AddContactsApplyEdgePageInfo{
 }`, BuiltIn: false},
 	{Name: "../schemas/schema.graphqls", Input: `
 type Mutation {
-  addContacts(contactsId: ID!): Boolean!
   removeContacts(contactsId: ID!): Boolean!
 }
 
@@ -508,21 +493,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) field_Mutation_addContacts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["contactsId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactsId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["contactsId"] = arg0
-	return args, nil
-}
 
 func (ec *executionContext) field_Mutation_applyAddContacts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1498,61 +1468,6 @@ func (ec *executionContext) fieldContext_Edge_cursor(ctx context.Context, field 
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_addContacts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_addContacts(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddContacts(rctx, fc.Args["contactsId"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_addContacts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_addContacts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
 	}
 	return fc, nil
 }
@@ -4263,15 +4178,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "addContacts":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_addContacts(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "removeContacts":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
