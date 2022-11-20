@@ -7,6 +7,7 @@ import (
 	"contacts/graph/model"
 	"contacts/sql"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"time"
@@ -99,8 +100,10 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 
 	cursor := time.Now().Format(time.RFC3339)
 	if after != nil {
-		cursor = *after
+		decodeAfter, _ := base64.StdEncoding.DecodeString(*after)
+		cursor = string(decodeAfter)
 	}
+	fmt.Printf("after: %s\n", cursor)
 	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, cursor, *first)
 	if err != nil {
 		fmt.Printf("query err: %v\n", err)
@@ -122,8 +125,9 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
 		endCursor = apply.UpdateTime
 	}
+	base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
 	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
-	addContactsApplyConnection.PageInfo.EndCursor = &endCursor
+	addContactsApplyConnection.PageInfo.EndCursor = &base64EndCursor
 	addContactsApplyConnection.PageInfo.HasNextPage = addContactsApplyConnection.TotalCount == *first
 	return addContactsApplyConnection, err
 }
