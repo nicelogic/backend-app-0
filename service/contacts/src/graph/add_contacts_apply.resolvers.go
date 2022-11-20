@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	pgx "github.com/jackc/pgx/v4"
@@ -98,13 +99,16 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	fmt.Printf("user: %#v query add contacts apply\n", user)
 
-	cursor := time.Now().Format(time.RFC3339)
+	updateTime := time.Now().Format(time.RFC3339)
+	contactsId := ""
 	if after != nil {
 		decodeAfter, _ := base64.StdEncoding.DecodeString(*after)
-		cursor = string(decodeAfter)
+		args := strings.Split(string(decodeAfter), "|")
+		updateTime = args[0]
+		contactsId = args[1]
 	}
-	fmt.Printf("after: %s\n", cursor)
-	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, cursor, *first)
+	fmt.Printf("after: updateTime: %s, contactsId: %s\n", updateTime, contactsId)
+	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, updateTime, contactsId, *first)
 	if err != nil {
 		fmt.Printf("query err: %v\n", err)
 		return nil, err
@@ -125,7 +129,10 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
 	if addContactsApplyConnection.TotalCount != 0 {
-		endCursor := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges) -1].Node.UpdateTime
+		lastNode := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges) -1].Node
+		lastUpdateTime := lastNode.UpdateTime
+		lastContactsId := lastNode.ContactsID
+		endCursor := lastUpdateTime + "|" + lastContactsId
 		base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
 		addContactsApplyConnection.PageInfo.EndCursor = &base64EndCursor
 	}
