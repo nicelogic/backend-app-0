@@ -100,15 +100,15 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	fmt.Printf("user: %#v query add contacts apply\n", user)
 
 	updateTime := time.Now().Format(time.RFC3339)
-	contactsId := ""
+	applyAddMeUserId := ""
 	if after != nil {
 		decodeAfter, _ := base64.StdEncoding.DecodeString(*after)
 		args := strings.Split(string(decodeAfter), "|")
 		updateTime = args[0]
-		contactsId = args[1]
+		applyAddMeUserId = args[1]
 	}
-	fmt.Printf("after: updateTime: %s, contactsId: %s\n", updateTime, contactsId)
-	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, updateTime, contactsId, *first)
+	fmt.Printf("after: updateTime: %s, contactsId: %s\n", updateTime, applyAddMeUserId)
+	addContactsApplys, err := r.CrdbClient.Query(ctx, sql.QueryAddContactsApply, user.Id, updateTime, applyAddMeUserId, *first)
 	if err != nil {
 		fmt.Printf("query err: %v\n", err)
 		return nil, err
@@ -131,7 +131,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	if addContactsApplyConnection.TotalCount != 0 {
 		lastNode := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges) -1].Node
 		lastUpdateTime := lastNode.UpdateTime
-		lastContactsId := lastNode.ContactsID
+		lastContactsId := lastNode.UserID
 		endCursor := lastUpdateTime + "|" + lastContactsId
 		base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
 		addContactsApplyConnection.PageInfo.EndCursor = &base64EndCursor
