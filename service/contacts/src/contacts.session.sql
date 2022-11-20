@@ -19,7 +19,7 @@ CREATE TABLE public.add_contacts_apply (
 -- ON add_contacts_apply(update_time DESC)
 -- USING HASH WITH BUCKET_COUNT=6;
 -- //may not hint the index
--- create unique index contacts_update_time_index on add_contacts_apply(contacts_id asc, update_time desc) 
+create unique index default_unique_index on add_contacts_apply(contacts_id asc, update_time desc, user_id asc) 
 
 
 CREATE TABLE contacts(
@@ -28,5 +28,7 @@ CREATE TABLE contacts(
 	remark_name STRING NOT NULL, 
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now(),
 	CONSTRAINT "primary" PRIMARY KEY (user_id ASC, contacts_id ASC),
-    INDEX remark_name_index(remark_name ASC)
+    UNIQUE INDEX default_unique_index(user_id asc, remark_name asc, contacts_id asc)
 );
+
+create unique index default_unique_index on contacts(user_id asc, remark_name asc, contacts_id asc) 

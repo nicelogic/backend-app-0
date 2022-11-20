@@ -23,7 +23,7 @@ select
 	message,
 	update_time
 from
-	add_contacts_apply@contacts_update_time_index
+	add_contacts_apply@default_unique_index
 where
 	contacts_id = $1
 	and update_time < $2

@@ -111,23 +111,24 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	addContactsApplyConnection := &model.AddContactsApplyConnection{}
 	addContactsApplyConnection.TotalCount = len(addContactsApplys)
-	endCursor := ""
 	for _, addContactsApply := range addContactsApplys {
 		fmt.Printf("apply: %#v\n", addContactsApply)
 		addContactsApply := addContactsApply.([]any)
-		edge := &model.AddContactsApplyEdge{}
 		apply := model.AddContactsApply{}
 		apply.ContactsID = user.Id
 		apply.UserID = addContactsApply[0].(string)
 		apply.Message = addContactsApply[1].(string)
 		apply.UpdateTime = addContactsApply[2].(time.Time).Format(time.RFC3339)
+		edge := &model.AddContactsApplyEdge{}
 		edge.Node = &apply
 		addContactsApplyConnection.Edges = append(addContactsApplyConnection.Edges, edge)
-		endCursor = apply.UpdateTime
 	}
-	base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
 	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
-	addContactsApplyConnection.PageInfo.EndCursor = &base64EndCursor
+	if addContactsApplyConnection.TotalCount != 0 {
+		endCursor := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges) -1].Node.UpdateTime
+		base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
+		addContactsApplyConnection.PageInfo.EndCursor = &base64EndCursor
+	}
 	addContactsApplyConnection.PageInfo.HasNextPage = addContactsApplyConnection.TotalCount == *first
 	return addContactsApplyConnection, err
 }

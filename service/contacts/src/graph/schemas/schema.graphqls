@@ -4,7 +4,7 @@ type Mutation {
 }
 
 type Query {
-  contacts(first: Int! = 100, after: String!): ContactsConnection!
+  contacts(first: Int = 100, after: String): ContactsConnection!
   addedMe(userId: ID!): Boolean!
 }
 
