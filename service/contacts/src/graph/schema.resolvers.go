@@ -63,7 +63,7 @@ func (r *queryResolver) Contacts(ctx context.Context, first *int, after *string)
 	}
 	contactsConnection.PageInfo = &model.PageInfo{}
 	if contactsConnection.TotalCount != 0 {
-		lastNode := contactsConnection.Edges[len(contactsConnection.Edges) - 1].Node
+		lastNode := contactsConnection.Edges[len(contactsConnection.Edges)-1].Node
 		lastRemarkName := lastNode.RemarkName
 		lastContactsId := lastNode.ID
 		endCursor := lastRemarkName + "|" + lastContactsId

@@ -25,6 +25,11 @@ type AddContactsApplyEdgePageInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
+type AddContactsApplyNtf struct {
+	UserID   string `json:"userId"`
+	UserName string `json:"userName"`
+}
+
 type ApplyAddContactsInput struct {
 	ContactsID string `json:"contactsId"`
 	RemarkName string `json:"remarkName"`

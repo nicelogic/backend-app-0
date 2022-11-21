@@ -4,6 +4,7 @@ package graph
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"contacts/graph/generated"
 	"contacts/graph/model"
 	"contacts/sql"
 	"context"
@@ -129,7 +130,7 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	addContactsApplyConnection.PageInfo = &model.AddContactsApplyEdgePageInfo{}
 	if addContactsApplyConnection.TotalCount != 0 {
-		lastNode := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges) -1].Node
+		lastNode := addContactsApplyConnection.Edges[len(addContactsApplyConnection.Edges)-1].Node
 		lastUpdateTime := lastNode.UpdateTime
 		lastContactsId := lastNode.UserID
 		endCursor := lastUpdateTime + "|" + lastContactsId
@@ -139,3 +140,34 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	addContactsApplyConnection.PageInfo.HasNextPage = addContactsApplyConnection.TotalCount == *first
 	return addContactsApplyConnection, err
 }
+
+// AddContactsApplyReceived is the resolver for the addContactsApplyReceived field.
+func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, token string) (<-chan *model.AddContactsApplyNtf, error) {
+	//subscription check user by payload, because playground not work
+	//check flutter client test whether ok, then do optimize
+	ch := make(chan *model.AddContactsApplyNtf)
+	go func() {
+		for {
+			time.Sleep(3 * time.Second)
+			ntf := &model.AddContactsApplyNtf{
+				UserID:   time.Now().Format(time.RFC3339),
+				UserName: "111",
+			}
+			select {
+			case ch <- ntf:
+				log.Printf("send addContactsApplyNtf: %v\n", ntf)
+			case <-ctx.Done():
+				log.Println("ctx done")
+				return
+			}
+
+		}
+	}()
+
+	return ch, nil
+}
+
+// Subscription returns generated.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+
+type subscriptionResolver struct{ *Resolver }

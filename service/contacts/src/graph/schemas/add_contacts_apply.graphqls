@@ -8,6 +8,10 @@ extend type Query{
   addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
 }
 
+type Subscription {
+  addContactsApplyReceived(token: String!): AddContactsApplyNtf!
+}
+
 #
 input ApplyAddContactsInput {
   contactsId: ID!
@@ -44,4 +48,10 @@ type AddContactsApplyEdge{
 type AddContactsApplyEdgePageInfo{
   endCursor: String
   hasNextPage: Boolean!
+}
+
+#
+type AddContactsApplyNtf{
+  userId: ID!
+  userName: String!
 }

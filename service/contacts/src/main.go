@@ -11,15 +11,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt"
+	"github.com/gorilla/websocket"
 	"github.com/nicelogic/auth"
 	"github.com/nicelogic/config"
 	"github.com/nicelogic/errs"
+	"github.com/rs/cors"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -70,12 +75,25 @@ func main() {
 		return err
 	})
 
-	path := serviceConfig.Path
+	server.AddTransport(transport.POST{})
+	server.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+	}) 
+	server.Use(extension.Introspection{})
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            false,
+	})
 	router := chi.NewRouter()
 	router.Use(auth.Middleware())
-	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", server)
-
+	router.Handle(serviceConfig.Path, playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", corsHandler.Handler(server))
 	log.Printf("connect to http://%s%s for GraphQL playground", serviceConfig.Listen_address, serviceConfig.Path)
 	log.Fatal(http.ListenAndServe(serviceConfig.Listen_address, router))
 }
