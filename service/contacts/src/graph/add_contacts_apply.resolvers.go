@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/apache/pulsar-client-go/pulsar"
 	pgx "github.com/jackc/pgx/v4"
 	"github.com/nicelogic/auth"
 )
@@ -52,6 +53,20 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		return false, err
 	}
 	log.Printf("apply success")
+	producer, err := (*r.PulsarClient).CreateProducer(pulsar.ProducerOptions{
+        Topic: "tenant-0/contacts/add_contacts_apply",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    _, err = producer.Send(context.Background(), &pulsar.ProducerMessage{
+        Payload: []byte("hello"),
+    })
+    defer producer.Close()
+    if err != nil {
+        fmt.Println("Failed to publish message", err)
+    }
+    fmt.Println("Published message")
 	return true, nil
 }
 
@@ -146,12 +161,32 @@ func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, tok
 	//subscription check user by payload, because playground not work
 	//check flutter client test whether ok, then do optimize
 	ch := make(chan *model.AddContactsApplyNtf)
-	go func() {
+	go func(token string) {
+		userId := ""
+		userName := ""
+		consumer, err := (*r.PulsarClient).Subscribe(pulsar.ConsumerOptions{
+			Topic:            "tenant-0/contacts/add_contacts_apply",
+			SubscriptionName: userName,
+			Type:             pulsar.Shared,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer consumer.Close()
 		for {
-			time.Sleep(3 * time.Second)
+			msg, err := consumer.Receive(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("Received message msgId: %#v -- content: '%s'\n",
+				msg.ID(), string(msg.Payload()))
+
+			consumer.Ack(msg)
+
 			ntf := &model.AddContactsApplyNtf{
-				UserID:   time.Now().Format(time.RFC3339),
-				UserName: "111",
+				UserID:   userId,
+				UserName: userName,
 			}
 			select {
 			case ch <- ntf:
@@ -162,7 +197,7 @@ func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, tok
 			}
 
 		}
-	}()
+	}(token)
 
 	return ch, nil
 }

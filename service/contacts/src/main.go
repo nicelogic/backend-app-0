@@ -18,6 +18,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/websocket"
@@ -33,6 +34,7 @@ func main() {
 		Db_name:            "contacts",
 		Db_pool_connections_num: 4,
 		Db_config_file_path:     "/Users/bryan.wu/code/secret/config-crdb.yml",
+		Pulsar_url: "pulsar+ssl://broker.pulsar.env0.luojm.com:9443",
 		Path:                   "/",
 		Listen_address:         ":80"}
 	config.Init(constant.ConfigPath, &serviceConfig)
@@ -42,12 +44,20 @@ func main() {
 		serviceConfig.Db_name,
 		serviceConfig.Db_pool_connections_num)
 	if err != nil {
-		log.Fatalf("crdb init err: %v\n", err)
+		log.Fatalf("crdb init err: %v", err)
 	}
+	pulsarClient, err := pulsar.NewClient(pulsar.ClientOptions{
+        URL:               "pulsar+ssl://broker.pulsar.env0.luojm.com:9443",
+        OperationTimeout:  30 * time.Second,
+        ConnectionTimeout: 30 * time.Second,
+    })
+    if err != nil {
+        log.Fatalf("Could not instantiate Pulsar client: %v", err)
+    }
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
-				Resolvers: &graph.Resolver{CrdbClient: &crdbClient}}))
+				Resolvers: &graph.Resolver{CrdbClient: &crdbClient, PulsarClient: &pulsarClient}}))
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
 		fmt.Printf("panic: %v\n", panicErr)
 		err := &gqlerror.Error{
