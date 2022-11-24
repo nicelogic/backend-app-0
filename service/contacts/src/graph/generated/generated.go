@@ -483,6 +483,7 @@ type Subscription {
 #
 input ApplyAddContactsInput {
   contactsId: ID!
+  userName: String!
   remarkName: String!
   message: String!
 }
@@ -4057,7 +4058,7 @@ func (ec *executionContext) unmarshalInputApplyAddContactsInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"contactsId", "remarkName", "message"}
+	fieldsInOrder := [...]string{"contactsId", "userName", "remarkName", "message"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4069,6 +4070,14 @@ func (ec *executionContext) unmarshalInputApplyAddContactsInput(ctx context.Cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactsId"))
 			it.ContactsID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userName"))
+			it.UserName, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

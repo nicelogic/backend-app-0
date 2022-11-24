@@ -32,6 +32,7 @@ type AddContactsApplyNtf struct {
 
 type ApplyAddContactsInput struct {
 	ContactsID string `json:"contactsId"`
+	UserName   string `json:"userName"`
 	RemarkName string `json:"remarkName"`
 	Message    string `json:"message"`
 }

@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"pulsarclient"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -18,7 +19,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/websocket"
@@ -31,12 +31,12 @@ import (
 
 func main() {
 	serviceConfig := contactsConfig.Config{
-		Db_name:            "contacts",
+		Db_name:                 "contacts",
 		Db_pool_connections_num: 4,
-		Db_config_file_path:     "/Users/bryan.wu/code/secret/config-crdb.yml",
-		Pulsar_url: "pulsar+ssl://broker.pulsar.env0.luojm.com:9443",
-		Path:                   "/",
-		Listen_address:         ":80"}
+		Db_config_file_path:     "../../../test/config/config-crdb.yml",
+		Pulsar_config_file_path: "../../../test/config/config-pulsar.yml",
+		Path:                    "/",
+		Listen_address:          ":80"}
 	config.Init(constant.ConfigPath, &serviceConfig)
 	crdbClient := crdb.Client{}
 	err := crdbClient.Init(context.Background(),
@@ -46,14 +46,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("crdb init err: %v", err)
 	}
-	pulsarClient, err := pulsar.NewClient(pulsar.ClientOptions{
-        URL:               "pulsar+ssl://broker.pulsar.env0.luojm.com:9443",
-        OperationTimeout:  30 * time.Second,
-        ConnectionTimeout: 30 * time.Second,
-    })
-    if err != nil {
-        log.Fatalf("Could not instantiate Pulsar client: %v", err)
-    }
+	pulsarClient := pulsarclient.Client{}
+	err = pulsarClient.Init(serviceConfig.Pulsar_config_file_path,
+		constant.PulsarTopic)
+	if err != nil {
+		log.Fatalf("Could not init Pulsar client: %v", err)
+	}
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
@@ -93,7 +91,7 @@ func main() {
 				return true
 			},
 		},
-	}) 
+	})
 	server.Use(extension.Introspection{})
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

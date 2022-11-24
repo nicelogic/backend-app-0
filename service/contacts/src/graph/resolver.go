@@ -2,8 +2,7 @@ package graph
 
 import (
 	"crdb"
-
-	"github.com/apache/pulsar-client-go/pulsar"
+	"pulsarclient"
 )
 
 //go:generate go run github.com/99designs/gqlgen generate
@@ -14,5 +13,5 @@ import (
 
 type Resolver struct{
 	CrdbClient *crdb.Client
-	PulsarClient *pulsar.Client
+	PulsarClient *pulsarclient.Client
 }

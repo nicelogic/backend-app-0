@@ -15,6 +15,7 @@ type Subscription {
 #
 input ApplyAddContactsInput {
   contactsId: ID!
+  userName: String!
   remarkName: String!
   message: String!
 }

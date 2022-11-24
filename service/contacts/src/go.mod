@@ -62,7 +62,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/nicelogic/auth v0.1.0
+	github.com/nicelogic/auth v0.2.0
 	github.com/nicelogic/config v0.1.0
 	github.com/nicelogic/errs v0.1.0
 	github.com/rs/cors v1.8.2
