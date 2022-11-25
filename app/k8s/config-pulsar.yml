@@ -6,7 +6,7 @@ metadata:
   namespace: app-0
 data:
   config-pulsar.yml: |+
-    url: "pulsar+ssl://broker.pulsar.env0.luojm.com:9443"
+    url: "pulsar://pulsar-proxy.pulsar:6650"
     operation_timeout: 30 
     connection_timeout: 30
     

@@ -8,8 +8,8 @@ data:
   config-crdb.yml: |+
     user_name: luojm
     pwd: ccccc123
-    host: crdb.env0.luojm.com
-    port: 9080
+    host: cockroach-lb-service.cockroach-operator-system
+    port: 26257
     ssl_mode: verify-ca
     ssl_root_cert_path: "/etc/app-0/secret-crdb-ca-crt/ca.crt"
     max_connection_idle_time: 9 #unit: seconds
