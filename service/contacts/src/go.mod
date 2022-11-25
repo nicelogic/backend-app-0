@@ -30,6 +30,7 @@ require (
 	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/jackc/pgtype v1.12.0 // indirect
+	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/klauspost/compress v1.14.4 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/linkedin/goavro/v2 v2.9.8 // indirect
@@ -64,7 +65,9 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nicelogic/auth v0.2.0
 	github.com/nicelogic/config v0.1.0
+	github.com/nicelogic/crdb v0.2.0
 	github.com/nicelogic/errs v0.1.0
+	github.com/nicelogic/pulsarclient v0.3.0
 	github.com/rs/cors v1.8.2
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

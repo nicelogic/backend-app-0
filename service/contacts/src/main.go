@@ -6,13 +6,14 @@ import (
 	"contacts/graph"
 	"contacts/graph/generated"
 	"context"
-	"crdb"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"pulsarclient"
 	"time"
+
+	"github.com/nicelogic/crdb"
+	"github.com/nicelogic/pulsarclient"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"

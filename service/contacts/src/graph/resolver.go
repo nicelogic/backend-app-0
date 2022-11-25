@@ -1,8 +1,9 @@
 package graph
 
 import (
-	"crdb"
-	"pulsarclient"
+	"github.com/nicelogic/pulsarclient"
+
+	"github.com/nicelogic/crdb"
 )
 
 //go:generate go run github.com/99designs/gqlgen generate
