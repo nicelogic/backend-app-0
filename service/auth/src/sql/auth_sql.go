@@ -17,36 +17,14 @@ values (
 	)
 `
 
-const QueryUserAddedMe = `
+const QueryAuth = `
 select
+	auth_id,
+	auth_id_type,
 	user_id,
-	contacts_id
+	auth_id_type_username_pwd
 from
-	contacts c
+	public.auth
 where
-	user_id = $1
-	and contacts_id = $2
-`
-
-const QueryContacts = `
-select
-	contacts_id ,
-	remark_name 
-from
-	contacts@default_unique_index
-where 
-	user_id = $1
-	and (remark_name, contacts_id ) > ($2, $3)
-order by
-	remark_name, contacts_id 
-limit $4
-`
-
-const DeleteContacts = `
-delete
-from
-	public.contacts
-where
-	user_id = $1
-	and contacts_id = $2
+	auth_id = $1
 `

@@ -14,11 +14,11 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/jaevor/go-nanoid"
 )
 
@@ -31,7 +31,7 @@ func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string
 		return nil, err
 	}
 	userId := canonicID()
-	token, err := r.AuthUtil.SignToken(userId, 30 * time.Second)
+	token, err := r.AuthUtil.SignToken(userId, time.Duration(r.Config.Token_expire_second)*time.Second)
 	if err != nil {
 		log.Printf("sign token err: %v\n", err)
 		return nil, err
@@ -45,8 +45,7 @@ func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string
 		userId)
 	if err, ok := err.(*pgconn.PgError); ok && err.Code == "23505" {
 		return nil, errors.New(autherror.UserExist)
-	}
-	if err != nil {
+	} else if err != nil {
 		log.Printf("insert auth err: %v\n", err)
 		return nil, err
 	}
@@ -63,7 +62,37 @@ func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string
 
 // SignInByUserName is the resolver for the signInByUserName field.
 func (r *queryResolver) SignInByUserName(ctx context.Context, userName string, pwd string) (*model.Result, error) {
-	panic(fmt.Errorf("not implemented: SignInByUserName - signInByUserName"))
+	log.Printf("signin by user name: %s\n", userName)
+	row := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryAuth, userName)
+	var auth_id, auth_id_type, user_id, auth_id_type_username_pwd string
+	err := row.Scan(&auth_id, &auth_id_type, &user_id, &auth_id_type_username_pwd)
+	if err == pgx.ErrNoRows {
+		log.Printf("query row, but no rows")
+		return nil, errors.New(autherror.UserNotExist)
+	} else if err != nil {
+		log.Printf("query row err: %v\n", err)
+		return nil, err
+	}
+	byteMd5Pwd := md5.Sum([]byte(pwd))
+	md5Pwd := hex.EncodeToString(byteMd5Pwd[:])
+	if md5Pwd != auth_id_type_username_pwd {
+		log.Println("pwd wrong")
+		return nil, errors.New(autherror.PwdWrong)
+	}
+	token, err := r.AuthUtil.SignToken(user_id, time.Duration(r.Config.Token_expire_second)*time.Second)
+	if err != nil {
+		log.Printf("sign token err: %v\n", err)
+		return nil, err
+	}
+	result := &model.Result{
+		Auth: &model.Auth{
+			AuthID:     auth_id,
+			AuthIDType: auth_id_type,
+			UserID:     user_id,
+		},
+		Token: &token,
+	}
+	return result, err
 }
 
 // Mutation returns generated.MutationResolver implementation.
