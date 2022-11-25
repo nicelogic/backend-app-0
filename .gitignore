@@ -2,3 +2,5 @@
 node_modules
 __debug_bin
 test/config
+app/cert
+0-env/env-0/token

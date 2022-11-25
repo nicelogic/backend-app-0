@@ -4,7 +4,7 @@ package graph
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
-	"contacts/constant"
+	contactserror "contacts/graph/error"
 	"contacts/graph/generated"
 	"contacts/graph/model"
 	"contacts/sql"
@@ -41,7 +41,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		}
 		defer rows.Close()
 		if rows.Next() {
-			return fmt.Errorf(ContactsAddedMe)
+			return fmt.Errorf(contactserror.ContactsAddedMe)
 		}
 		_, err = tx.Exec(ctx, sql.UpsertAddContactsApply, user.Id, input.ContactsID, input.Message, updateTime)
 		if err != nil {
@@ -167,7 +167,7 @@ func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, tok
 		log.Printf("user: %v subscribe addContactsApply ntf\n", user)
 
 		consumer, err := r.PulsarClient.Client.Subscribe(pulsar.ConsumerOptions{
-			Topic:            constant.PulsarTopic,
+			Topic:            r.Config.Pulsar_topic,
 			SubscriptionName: user.Id,
 			Type: pulsar.Failover,
 		})
