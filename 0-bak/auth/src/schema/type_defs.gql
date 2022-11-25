@@ -1,0 +1,22 @@
+
+type Auth {
+  auth_id: String!
+  auth_id_type: String!
+  user_id: String!
+  create_time: String!
+}
+
+type Result {
+  auth: Auth
+  token: String
+}
+
+type Query {
+  signInByUserName(userName: String!, pwd: String!): Result!
+}
+
+type Mutation {
+  signUpByUserName(userName: String!, pwd: String!): Result!
+}
+
+

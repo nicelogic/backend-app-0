@@ -1,0 +1,105 @@
+
+# auth 
+
+[toc]
+
+## gql
+
+```gql
+
+query signInByUserName($userName: String!, $pwd: String!) {
+  signInByUserName(userName: $userName, pwd: $pwd) {
+    error_code
+    error_code_description
+    auth {
+      auth_id
+      auth_id_type
+      user_id
+      create_time
+    }
+    token
+  }
+}
+
+mutation signUpByUserName($userName: String!, $pwd: String!) {
+  signUpByUserName(userName: $userName, pwd: $pwd) {
+    error_code
+    error_code_description
+    auth {
+      auth_id
+      auth_id_type
+      user_id
+    }
+    token
+  }
+}
+
+
+```
+
+
+
+## 需求
+
+* 支持用户名密码登陆-仅用于测试-不对外开放
+* 支持微信登陆(手机一键登录，web扫码)
+* 能足够盈利之后仅支持手机号码一键登录
+
+## 总体思想
+
+授权服务肯定是一个单独的微服务。他的目的就是鉴别谁是谁的问题
+微信/手机号码，甚至人脸识别唯一识别一个用户
+这块采用jwt的方式提供验证成功的用户token, token是有时间的。当前设定一个无限的值提供给用户
+当前对这块还没有非常深入的了解，为什么需要定时失效，仅仅是为了安全吗？
+还是为了能够控制用户啥时候登陆。不能够登陆一次之后，就无限存在了。
+这部分逻辑是，客户端拿到token之后去各个服务去请求。
+这块要做可以很复杂。区分每个用户都有哪些服务的权限。
+token过期之后，还需要auth继续请求token
+
+对于warmth而言，首先不需要区分用户。就一种用户。授权用户。大家都一样。所有服务都能访问。
+针对用户权限这个粒度的，在数据库这种系统里面是存在的。管理员等角色各有不同操作权限。
+这种后续要加也简单。jwt的字段里面应该是个json，里面包含了授权后的各种用户权限信息。
+各个服务对于不同权限做校验。
+授权，权限，时间过期。这块是比较安全相关的。某些服务要做得好，可以做得非常复杂。
+异地多中心，基于角色的授权，access token + auth token
+有时候，这块是个权衡。用户体验上和安全上。
+warmth想让用户用得尽量舒服些。而安全可稍微放宽。
+
+第一阶段： 授权时间无限，验证过就可以拿到token.token可一直使用。
+
+注册成功生成一个唯一ID.
+用户需要感知ID吗？
+给用户一个足够短的ID，能够让别人找到他。
+
+支持多种方式auth
+每种auth方式，生成唯一ID
+为了逻辑简单，牺牲不正常用户的需求，是推荐做法。
+考虑极端用户使用场景，然后把业务搞得非常复杂，完全没有必要。那部分用户不要也罢。
+搞到后面烦都烦死了，有什么意思。
+无论哪个用户，他都有唯一ID.就是标识这个人。
+他有手机，微信账号，等等都是他的信息
+
+用户可以用他觉得舒服的方式去登陆账号。可能一个人可以有多个方式去登陆
+暂不支持修改账号
+
+```json
+
+{
+	"id": "xxx",
+	"userNameAuth": {
+		"userName": "xxx",
+		"pwd": "xxx"
+	},
+	"wechatAuth": {
+		"id": "xxx"
+	}
+}
+
+```
+
+这部分用mongodb的replication模式即可。
+再大的并发注册。我感觉肯定也可以撑得住。有时间可以测试下。
+这种服务，就是注册一次，后续基本都是读的。
+而且读，可以异步读。最终一致性即可。
+注册了直接让登陆了。下一次登陆不知道啥时候了。
+
