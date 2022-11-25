@@ -1,6 +1,8 @@
 
 resources:
   - namespace.yml
-  - config.yml
   - secret-cassandra.yml
   - certificate.yml
+  - config.yml
+  - config-pulsar.yml
+  - config-crdb.yml

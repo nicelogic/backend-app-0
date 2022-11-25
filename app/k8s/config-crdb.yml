@@ -1,0 +1,17 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-crdb
+  namespace: app-0
+data:
+  config-crdb.yml: |+
+    user_name: luojm
+    pwd: ccccc123
+    host: crdb.env0.luojm.com
+    port: 9080
+    ssl_mode: verify-ca
+    ssl_root_cert_path: "/etc/app-0/secret-crdb-ca-crt/ca.crt"
+    max_connection_idle_time: 9 #unit: seconds
+    
+

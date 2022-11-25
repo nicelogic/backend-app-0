@@ -4,3 +4,4 @@ __debug_bin
 test/config
 app/cert
 0-env/env-0/token
+app/crdb/cert

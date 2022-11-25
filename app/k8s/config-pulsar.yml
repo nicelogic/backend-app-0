@@ -1,0 +1,13 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-pulsar
+  namespace: app-0
+data:
+  config-pulsar.yml: |+
+    url: "pulsar+ssl://broker.pulsar.env0.luojm.com:9443"
+    operation_timeout: 30 
+    connection_timeout: 30
+    
+
