@@ -3,7 +3,6 @@ type Auth {
   auth_id: String!
   auth_id_type: String!
   user_id: String!
-  create_time: String!
 }
 
 type Result {

@@ -2,19 +2,19 @@ package error
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/golang-jwt/jwt"
 	"github.com/nicelogic/errs"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 const (
+	UserExist = "user already exist"
+	UserNotExist = "user not exist"
+	PwdWrong = "password wrong"
 )
-
 
 func HandleError(server *handler.Server){
 	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
@@ -29,13 +29,11 @@ func HandleError(server *handler.Server){
 	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		log.Printf("error: %v\n", e)
 		err := graphql.DefaultErrorPresenter(ctx, e)
-		var jwtError *jwt.ValidationError
-		hasJwtError := errors.As(e, &jwtError)
 		switch {
-		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
-			err.Message = errs.TokenExpired
-		case hasJwtError:
-			err.Message = errs.TokenInvalid
+		case err.Message == UserExist:
+		case err.Message == UserNotExist:
+		case err.Message == PwdWrong:
+			log.Printf(err.Message)
 		default:
 			err.Message = errs.ServerInternalError
 		}

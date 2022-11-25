@@ -10,7 +10,7 @@
 			"request": "launch",
 			"mode": "auto",
 			//"program": "${fileDirname}"
-			"program": "/Users/bryan.wu/code/nicelogic/backend-app-0/service/contacts/src"
+			"program": "/Users/bryan.wu/code/nicelogic/backend-app-0/service/auth/src"
 		}
 	]
 }

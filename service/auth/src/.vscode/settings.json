@@ -4,7 +4,7 @@
 		{
 			"pgOptions": {
 				"ssl": {
-					"ca": "/Users/bryan.wu/Downloads/certs/ca.crt"
+					"ca": "/Users/bryan.wu/code/nicelogic/backend-app-0/app/crdb/cert/ca.crt"
 				}
 			},
 			"previewLimit": 50,

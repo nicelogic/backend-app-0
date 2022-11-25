@@ -47,7 +47,6 @@ type ComplexityRoot struct {
 	Auth struct {
 		AuthID     func(childComplexity int) int
 		AuthIDType func(childComplexity int) int
-		CreateTime func(childComplexity int) int
 		UserID     func(childComplexity int) int
 	}
 
@@ -100,13 +99,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Auth.AuthIDType(childComplexity), true
-
-	case "Auth.create_time":
-		if e.complexity.Auth.CreateTime == nil {
-			break
-		}
-
-		return e.complexity.Auth.CreateTime(childComplexity), true
 
 	case "Auth.user_id":
 		if e.complexity.Auth.UserID == nil {
@@ -225,7 +217,6 @@ type Auth {
   auth_id: String!
   auth_id_type: String!
   user_id: String!
-  create_time: String!
 }
 
 type Result {
@@ -471,50 +462,6 @@ func (ec *executionContext) _Auth_user_id(ctx context.Context, field graphql.Col
 }
 
 func (ec *executionContext) fieldContext_Auth_user_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Auth",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Auth_create_time(ctx context.Context, field graphql.CollectedField, obj *model.Auth) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Auth_create_time(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CreateTime, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Auth_create_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Auth",
 		Field:      field,
@@ -820,8 +767,6 @@ func (ec *executionContext) fieldContext_Result_auth(ctx context.Context, field 
 				return ec.fieldContext_Auth_auth_id_type(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Auth_user_id(ctx, field)
-			case "create_time":
-				return ec.fieldContext_Auth_create_time(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Auth", field.Name)
 		},
@@ -2678,13 +2623,6 @@ func (ec *executionContext) _Auth(ctx context.Context, sel ast.SelectionSet, obj
 		case "user_id":
 
 			out.Values[i] = ec._Auth_user_id(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "create_time":
-
-			out.Values[i] = ec._Auth_create_time(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

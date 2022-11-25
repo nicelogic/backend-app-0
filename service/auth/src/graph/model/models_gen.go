@@ -6,7 +6,6 @@ type Auth struct {
 	AuthID     string `json:"auth_id"`
 	AuthIDType string `json:"auth_id_type"`
 	UserID     string `json:"user_id"`
-	CreateTime string `json:"create_time"`
 }
 
 type Result struct {

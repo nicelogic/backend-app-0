@@ -22,7 +22,7 @@ import (
 func main() {
 	serviceConfig := authConfig.Config{}
 	config.Init(constant.ConfigPath, &serviceConfig)
-	crdbClient, err := dependence.Init(&serviceConfig)
+	authUtil, crdbClient, err := dependence.Init(&serviceConfig)
 	if err != nil {
 		log.Printf("dependence init err: %v\n", err)
 	}
@@ -31,6 +31,7 @@ func main() {
 			generated.Config{
 				Resolvers: &graph.Resolver{
 					Config:       &serviceConfig,
+					AuthUtil: authUtil,
 					CrdbClient:   crdbClient,
 					}}))
 	autherror.HandleError(server)

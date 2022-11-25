@@ -3,6 +3,7 @@ package graph
 import (
 	authConfig "auth/config"
 
+	"github.com/nicelogic/authutil"
 	"github.com/nicelogic/crdb"
 )
 
@@ -14,5 +15,6 @@ import (
 
 type Resolver struct{
 	Config *authConfig.Config
+	AuthUtil *authutil.Auth
 	CrdbClient *crdb.Client
 }

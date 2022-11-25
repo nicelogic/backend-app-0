@@ -1,18 +1,20 @@
 package sql
 
-const UpsertContacts = `
-upsert
-into
-	contacts  
-	(user_id,
-		contacts_id,
-		remark_name,
-		update_time
+const InsertAuth = `
+insert
+	into
+	auth  
+	(auth_id,
+		auth_id_type,
+		auth_id_type_username_pwd ,
+		user_id  
 	)
-values ($1,
+values (
+	$1,
 	$2,
 	$3,
-	$4)
+	$4
+	)
 `
 
 const QueryUserAddedMe = `
