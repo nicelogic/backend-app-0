@@ -4,13 +4,13 @@ import (
 	"context"
 	"log"
 
-	contactsConfig "auth/config"
+	authConfig "auth/config"
 
 	"github.com/nicelogic/authutil"
 	"github.com/nicelogic/crdb"
 )
 
-func Init(serviceConfig *contactsConfig.Config) (*authutil.Auth, *crdb.Client, error) {
+func Init(serviceConfig *authConfig.Config) (*authutil.Auth, *crdb.Client, error) {
 	authUtil := &authutil.Auth{}
 	err := authUtil.Init(serviceConfig.Public_key_file_path,
 		serviceConfig.Private_key_file_path)
