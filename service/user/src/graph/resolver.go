@@ -1,6 +1,9 @@
 package graph
 
-import "github.com/nicelogic/cassandra"
+import (
+	"github.com/nicelogic/authutil"
+	"github.com/nicelogic/crdb"
+)
 
 //go:generate go run github.com/99designs/gqlgen generate
 
@@ -9,5 +12,6 @@ import "github.com/nicelogic/cassandra"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct{
-	CassandraClient *cassandra.Client
+	AuthUtil *authutil.Auth
+	CrdbClient *crdb.Client
 }

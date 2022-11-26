@@ -1,0 +1,181 @@
+
+mutation createKeyspace{
+  user: createKeyspace(
+    name: "app_0_user"
+    ifNotExists: true
+    #replicas: 3
+    datacenters: [
+      { name: "dc1", replicas: 3 }
+    ]
+)
+}
+
+
+mutation createTables {
+  user: createTable(
+    keyspaceName:"app_0_user",
+    tableName:"user",
+    partitionKeys: [ 
+      { name: "id", type: {basic: TEXT} }
+    ]
+    clusteringKeys: [
+    ]
+    values: [
+      { name: "name", type: {basic: TEXT} }
+      { name: "signature", type: {basic: TEXT} }
+      { name: "update_time", type: {basic: TIMESTAMP} }
+    ]
+  )
+}
+
+mutation createNameIndex{
+  createNameIndex: createIndex(
+    keyspaceName: "app_0_user"
+    tableName: "user"
+    columnName: "name"
+    ifNotExists: true
+  )
+}
+
+mutation dropTable {
+  dropUser: dropTable(
+    keyspaceName: "app_0_user"
+    tableName: "user"
+    ifExists: true
+  )
+}
+
+
+
+
+# mutation alterTableDrop{
+#   alterTableDrop(keyspaceName: "app_0", tableName:"auth", toDrop: "create_time")
+# }
+# mutation alterTableAdd{
+#   alterTableAdd(keyspaceName: "app_0", tableName:"auth", toAdd: { name: "create_time", type: {basic: TIMESTAMP}})
+# }
+
+query GetTables {
+  keyspace(name: "app_0_user") {
+      name
+      tables {
+          name
+          columns {
+              name
+              kind
+              type {
+                  basic
+                  info {
+                      name
+                  }
+              }
+          }
+      }
+  }
+}
+
+mutation insertuser {
+  insertuser: insertuser(value: {
+                    id: "pdKBcAc7lKzSC9nyglCwQ"
+                    name:"username",
+                    signature: "well",
+                    update_time: "2022-10-07T04:03:18.879Z"
+                  },
+    							ifNotExists: true,
+                  ) {
+          applied,
+          accepted,
+          value {
+            id,
+            name,
+            signature,
+            update_time
+          }
+        }
+}
+
+# ifExists: false, means: if not exist, will insert user
+mutation updateuser {
+  updateuser: updateuser(value: {
+    								id: "uGiDk3f21pwmmvwXu2lFV"
+                    name:"test_same_name",
+                    signature: "hehe",
+                    update_time: "2022-10-22T04:03:18.879Z"
+                  },
+    							ifExists: false,
+                  
+                  ) {
+          applied,
+          accepted,
+          value {
+            id,
+            name,
+            signature,
+            update_time
+
+          }
+        }
+}
+
+
+query queryuser($id: String!) {
+  queryuser: user(value: {
+                    id:$id, 
+                  },
+                  ) {
+          pageState,
+          values {
+						id,
+            name,
+            signature,
+            update_time
+          }
+        }
+}
+
+#search all
+query queryalluser {
+  queryalluser: user(filter: {
+                  },
+                  ) {
+          pageState,
+          values {
+      	    id,
+            name,
+            signature,
+            update_time
+          }
+        }
+}
+
+query queryuserbyname($name: String!) {
+  queryuserbyname: user(filter: {
+                name: {eq: $name}
+                  },
+                  ) {
+          pageState,
+          values {
+      	    id,
+            name,
+            signature,
+            update_time
+          }
+        }
+}
+
+mutation deleteuser($id: String!) {
+  deleteuser: deleteuser(value: {
+                    id: $id, 
+                  },
+    							ifExists: true
+                  ) {
+          applied,
+    			accepted,
+          value {
+            id,
+            name,
+            signature,
+            update_time
+          }
+        }
+}

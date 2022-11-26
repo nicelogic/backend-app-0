@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  namespace: app-0
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: user
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - name: user
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/user:v0.1.3
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: secret-jwt
+          mountPath: /etc/app-0/secret-jwt
+          readOnly: true
+        - name: secret-cassandra
+          mountPath: /etc/app-0/secret-cassandra
+          readOnly: true
+        - name: config
+          mountPath: /etc/app-0/config
+          readOnly: true
+        - name: config-user
+          mountPath: /etc/app-0/config-user
+          readOnly: true
+      volumes:
+        - name: secret-jwt
+          secret:
+            secretName: secret-jwt
+        - name: secret-cassandra
+          secret:
+            secretName: secret-cassandra
+            optional: false # 默认设置，意味着 secret 必须已经存在
+        - name: config
+          configMap:
+            name: config
+        - name: config-user
+          configMap:
+            name: config-user
+
+        

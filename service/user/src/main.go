@@ -1,70 +1,50 @@
 package main
 
 import (
-	"context"
-	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	userConfig "user/config"
+	"user/constant"
 	"user/graph"
+	"user/graph/dependence"
+	usererror "user/graph/error"
 	"user/graph/generated"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
-	"github.com/golang-jwt/jwt"
-	"github.com/nicelogic/auth"
-	"github.com/nicelogic/cassandra"
 	"github.com/nicelogic/config"
-	"github.com/nicelogic/errs"
-	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/rs/cors"
 )
 
 func main() {
-
-	client := cassandra.Client{}
-	client.Init("app_0_user")
+	serviceConfig := userConfig.Config{}
+	config.Init(constant.ConfigPath, &serviceConfig)
+	authUtil, crdbClient, err := dependence.Init(&serviceConfig)
+	if err != nil {
+		log.Printf("dependence init err: %v\n", err)
+	}
 	server := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{
-				Resolvers: &graph.Resolver{ CassandraClient: &client}}))
-	server.SetRecoverFunc(func(ctx context.Context, panicErr interface{}) error {
-		fmt.Printf("panic: %v\n", panicErr)
-		err := &gqlerror.Error{
-			Path:       graphql.GetPath(ctx),
-			Message:    errs.ServerInternalError,
-			Extensions: map[string]interface{}{},
-		}
-		return err
+				Resolvers: &graph.Resolver{
+					AuthUtil:   authUtil,
+					CrdbClient: crdbClient,
+				}}))
+	usererror.HandleError(server)
+	server.AddTransport(transport.POST{})
+	server.Use(extension.Introspection{})
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            false,
 	})
-	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
-		fmt.Printf("error: %v\n", e)
-		err := graphql.DefaultErrorPresenter(ctx, e)
-		var jwtError *jwt.ValidationError
-		hasJwtError := errors.As(e, &jwtError)
-		switch{
-		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
-			err.Message = errs.TokenExpired
-		case hasJwtError:
-			err.Message = errs.TokenInvalid
-		case err.Message == UserNotExist:
-			break
-		default:
-			err.Message = errs.ServerInternalError
-		}
-		return err
-	})
-
-	userConfig := userConfig.Config{Path: "/", Listen_address: ":80"}
-	config.Init("/etc/app-0/config-user/config-user.yml", &userConfig)
-	path := userConfig.Path
 	router := chi.NewRouter()
-	router.Use(auth.Middleware())
-	router.Handle(path, playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", server)
-
-	log.Printf("connect to http://%s%s for GraphQL playground", userConfig.Listen_address, userConfig.Path)
-	log.Fatal(http.ListenAndServe(userConfig.Listen_address, router))
+	router.Use(authUtil.Middleware())
+	router.Handle(serviceConfig.Path, playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", corsHandler.Handler(server))
+	log.Printf("connect to http://%s%s for GraphQL playground", serviceConfig.Listen_address, serviceConfig.Path)
+	log.Fatal(http.ListenAndServe(serviceConfig.Listen_address, router))
 }

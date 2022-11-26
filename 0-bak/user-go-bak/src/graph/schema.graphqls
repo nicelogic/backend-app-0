@@ -1,0 +1,17 @@
+
+type User {
+  id: ID!
+  name: String!
+  signature: String!
+}
+
+type Query {
+  me: User!
+  users(idOrName: String!): [User!]
+}
+
+scalar Map
+
+type Mutation {
+  updateUser(changes: Map!): User!
+}

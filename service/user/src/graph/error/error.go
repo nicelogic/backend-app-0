@@ -11,9 +11,7 @@ import (
 )
 
 const (
-	UserExist = "user already exist"
 	UserNotExist = "user not exist"
-	PwdWrong = "password wrong"
 )
 
 func HandleError(server *handler.Server){
@@ -30,9 +28,7 @@ func HandleError(server *handler.Server){
 		log.Printf("error: %v\n", e)
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		switch {
-		case err.Message == UserExist:
 		case err.Message == UserNotExist:
-		case err.Message == PwdWrong:
 			log.Printf(err.Message)
 		default:
 			err.Message = errs.ServerInternalError

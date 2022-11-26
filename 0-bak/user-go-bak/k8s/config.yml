@@ -1,0 +1,9 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-user
+  namespace: app-0
+data:
+  config-user.yml: |+
+    path: /
