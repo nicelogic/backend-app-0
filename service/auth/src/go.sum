@@ -116,6 +116,8 @@ github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/
 github.com/mitchellh/mapstructure v1.3.1/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mitchellh/mapstructure v1.4.1 h1:CpVNEelQCZBooIPDn+AR3NpivK/TIKU8bDxdASFVQag=
 github.com/mitchellh/mapstructure v1.4.1/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/nicelogic/authutil v0.3.0 h1:x4iDkO9zuCOdLr/2mWQlZHyREwhOg2kLlxj460YYTX4=
+github.com/nicelogic/authutil v0.3.0/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
 github.com/nicelogic/config v0.1.0 h1:OM+5QvjZmK0DUml99d/H/9CapfU6P3b6S6bqrFzd0C0=
 github.com/nicelogic/config v0.1.0/go.mod h1:qDKz0cJSwmjaPE4S1lE6mqU5CDRL44e6OXKBi9e+kbo=
 github.com/nicelogic/crdb v0.2.0 h1:qtM0RQbxzjFvd9M5eljwYWacvR7nncn/OzmTpsG6qyM=

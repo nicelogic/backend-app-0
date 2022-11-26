@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: tls-env0-app0-contacts
+  name: tls-env0-app0-auth
   namespace: app-0
 spec:
   dnsNames:
-    - contacts.app0.env0.luojm.com
-  secretName: tls-env0-app0-contacts
+    - auth.app0.env0.luojm.com
+  secretName: tls-env0-app0-auth
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
@@ -16,19 +16,18 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: contacts
+  name: auth
   namespace: app-0
 spec:
   entryPoints:
     - websecure
   tls: 
-    secretName: tls-env0-app0-contacts
+    secretName: tls-env0-app0-auth
   routes:
-    - match: Host(`contacts.app0.env0.luojm.com`) 
+    - match: Host(`auth.app0.env0.luojm.com`) 
       kind: Rule
       services:
-      - name: contacts
+      - name: auth
         kind: Service
-        namespace: app-0
         port: 80
 

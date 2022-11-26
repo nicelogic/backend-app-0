@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: contacts
+  name: auth
   namespace: app-0
 spec:
   #externalTrafficPolicy: Cluster  # default
@@ -11,7 +11,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: contacts
+    app: auth
   sessionAffinity: None # default
   type: ClusterIP
 

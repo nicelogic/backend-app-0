@@ -35,11 +35,11 @@ spec:
         - name: secret-crdb-ca-crt
           mountPath: /etc/app-0/secret-crdb-ca-crt
           readOnly: true
-        - name: config-pulsar
-          mountPath: /etc/app-0/config-pulsar
-          readOnly: true
         - name: config-crdb
           mountPath: /etc/app-0/config-crdb
+          readOnly: true
+        - name: config-pulsar
+          mountPath: /etc/app-0/config-pulsar
           readOnly: true
         - name: config-contacts
           mountPath: /etc/app-0/config-contacts
@@ -53,13 +53,13 @@ spec:
           secret:
             secretName: secret-crdb-ca-crt
             optional: false 
-        - name: config-pulsar
-          configMap:
-            name: config-pulsar
-            optional: false 
         - name: config-crdb
           configMap:
             name: config-crdb
+            optional: false 
+        - name: config-pulsar
+          configMap:
+            name: config-pulsar
             optional: false 
         - name: config-contacts
           configMap:

@@ -1,13 +1,16 @@
 
-FROM node
+FROM golang
 
 ENV APP_PATH=/opt/service/auth
+ENV GOPROXY https://goproxy.cn
+
 WORKDIR $APP_PATH
 
 COPY ./src/. $APP_PATH
 
 RUN cd $APP_PATH
-RUN npm install
-CMD [ "npm", "start" ]
+RUN go mod tidy
+RUN go build .
+CMD [ "./auth" ]
 
 EXPOSE 80

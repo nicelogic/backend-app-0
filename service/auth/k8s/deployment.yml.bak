@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth:1.0.4
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth:v1.0.6
         imagePullPolicy: Always
         resources:
           requests:
@@ -32,11 +32,11 @@ spec:
         - name: secret-jwt
           mountPath: /etc/app-0/secret-jwt
           readOnly: true
-        - name: secret-cassandra
-          mountPath: /etc/app-0/secret-cassandra
+        - name: secret-crdb-ca-crt
+          mountPath: /etc/app-0/secret-crdb-ca-crt
           readOnly: true
-        - name: config
-          mountPath: /etc/app-0/config
+        - name: config-crdb
+          mountPath: /etc/app-0/config-crdb
           readOnly: true
         - name: config-auth
           mountPath: /etc/app-0/config-auth
@@ -45,13 +45,15 @@ spec:
         - name: secret-jwt
           secret:
             secretName: secret-jwt
-        - name: secret-cassandra
-          secret:
-            secretName: secret-cassandra
             optional: false # 默认设置，意味着 secret 必须已经存在
-        - name: config
+        - name: secret-crdb-ca-crt
+          secret:
+            secretName: secret-crdb-ca-crt
+            optional: false 
+        - name: config-crdb
           configMap:
-            name: config
+            name: config-crdb
+            optional: false 
         - name: config-auth
           configMap:
             name: config-auth
