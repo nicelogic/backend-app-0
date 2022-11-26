@@ -1,3 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-env0-app0-auth
+  namespace: app-0
+spec:
+  dnsNames:
+    - auth.app0.env0.luojm.com
+  secretName: tls-env0-app0-auth
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+
+---
 
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -8,13 +22,12 @@ spec:
   entryPoints:
     - websecure
   tls: 
-    secretName: tls-env0-app0
+    secretName: tls-env0-app0-auth
   routes:
-    - match: Host(`app0.env0.luojm.com`) && PathPrefix(`/auth`) 
+    - match: Host(`auth.app0.env0.luojm.com`) 
       kind: Rule
       services:
       - name: auth
         kind: Service
-        namespace: app-0
         port: 80
 
