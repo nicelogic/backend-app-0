@@ -6,4 +6,10 @@ metadata:
   namespace: app-0
 data:
   config-user.yml: |+
+    listen_address: ":80"
     path: /
+    db_name: userdb
+    db_pool_connections_num: 4
+    db_config_file_path: "/etc/app-0/config-crdb/config-crdb.yml"
+    public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
+    private_key_file_path: "/etc/app-0/secret-jwt/jwt-privatekey"
