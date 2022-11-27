@@ -81,51 +81,32 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.Us
 		return nil, err
 	}
 	fmt.Printf("user: %v query idOrName: %s\n", user.Id, idOrName)
-	return nil, nil
-	// variables := map[string]interface{}{
-	// 	"id": idOrName,
-	// }
-	// response, err := r.CassandraClient.Query(cassandra.QueryUserByIdGql, variables)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// fmt.Printf("query user by id response: %v\n", response)
-
-	// mapUsers := make(map[string]*model.User)
-	// queriedByIdUser, err := cassandra.GetUserFromQueryUserByIdResponse(response)
-	// if err != nil {
-	// 	return nil, err
-	// } else if queriedByIdUser != nil {
-	// 	mapUsers[queriedByIdUser.ID] = queriedByIdUser
-	// }
-
-	// variables = map[string]interface{}{
-	// 	"name": idOrName,
-	// }
-	// for {
-	// 	response, err = r.CassandraClient.Query(cassandra.QueryUserByNameGql, variables)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	fmt.Printf("query user by name response: %v\n", response)
-
-	// 	queriedUsers, pageState, getErr := cassandra.GetUserFromQueryUserByNameResponse(response)
-	// 	if getErr != nil {
-	// 		err = getErr
-	// 		return nil, err
-	// 	}
-	// 	for id, user := range queriedUsers {
-	// 		mapUsers[id] = user
-	// 	}
-	// 	if pageState == "" {
-	// 		break
-	// 	} else {
-	// 		variables["pageState"] = pageState
-	// 	}
-	// }
-
-	// users := maps.Values(mapUsers)
-	// return users, nil
+	userSlice, err := r.CrdbClient.Query(ctx, sql.QueryNameOrId, idOrName)
+	if err != nil {
+		log.Printf("query users(idOrName: %s) err: %v\n", idOrName, err)
+		return nil, err
+	}
+	queriedUsers := make([]*model.User, 0)
+	for _, plainUser := range userSlice {
+		plainUser := plainUser.([]any)
+		queriedUser := &model.User{}
+		queriedUser.ID = plainUser[0].(string)
+		data := plainUser[1].(map[string]interface{})
+		log.Printf("qeuried user (%v), data(%v)\n", queriedUser.ID, data)
+		dataJson, _ := json.Marshal(data)
+		dataJsonString := string(dataJson)
+		queriedUser.Data = &dataJsonString
+		name := plainUser[2].(string)
+		queriedUser.Name = &name
+		updateTime := plainUser[3].(time.Time)
+		log.Printf("qeuried user(%s), data(%s), name(%s), updateTime: %v\n",
+			queriedUser.ID,
+			*queriedUser.Data,
+			*queriedUser.Name,
+			updateTime)
+		queriedUsers = append(queriedUsers, queriedUser)
+	}
+	return queriedUsers, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

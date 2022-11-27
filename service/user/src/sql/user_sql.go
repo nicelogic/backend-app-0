@@ -30,3 +30,15 @@ from
 where
 	id = $1
 `
+
+const QueryNameOrId = `
+select
+	id,
+	"data",
+	"name",
+	update_time
+from
+	public."user"
+where
+	(name = $1 or id = $1)
+`
