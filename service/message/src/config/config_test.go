@@ -1,7 +1,7 @@
 package config
 
 import (
-	"contacts/constant"
+	"message/constant"
 	"testing"
 
 	"github.com/nicelogic/config"

@@ -1,12 +1,12 @@
 package main
 
 import (
-	contactsConfig "contacts/config"
-	"contacts/constant"
-	"contacts/graph"
-	"contacts/graph/dependence"
-	contactserror "contacts/graph/error"
-	"contacts/graph/generated"
+	messageConfig "message/config"
+	"message/constant"
+	"message/graph"
+	"message/graph/dependence"
+	messageerror "message/graph/error"
+	"message/graph/generated"
 	"log"
 	"net/http"
 	"time"
@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	serviceConfig := contactsConfig.Config{}
+	serviceConfig := messageConfig.Config{}
 	config.Init(constant.ConfigPath, &serviceConfig)
 	crdbClient, pulsarClient, err := dependence.Init(&serviceConfig)
 	if err != nil {
@@ -36,7 +36,7 @@ func main() {
 					Config:       &serviceConfig,
 					CrdbClient:   crdbClient,
 					PulsarClient: pulsarClient}}))
-	contactserror.HandleError(server)
+	messageerror.HandleError(server)
 	server.AddTransport(transport.POST{})
 	server.AddTransport(transport.Websocket{
 		KeepAlivePingInterval: 10 * time.Second,

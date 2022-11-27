@@ -4,13 +4,13 @@ import (
 	"context"
 	"log"
 
-	contactsConfig "contacts/config"
+	messageConfig "message/config"
 
 	"github.com/nicelogic/crdb"
 	"github.com/nicelogic/pulsarclient"
 )
 
-func Init(serviceConfig *contactsConfig.Config)(*crdb.Client, *pulsarclient.Client, error){
+func Init(serviceConfig *messageConfig.Config)(*crdb.Client, *pulsarclient.Client, error){
 	crdbClient := &crdb.Client{}
 	err := crdbClient.Init(context.Background(),
 		serviceConfig.Db_config_file_path,

@@ -1,0 +1,23 @@
+extend type Query {
+  getMessages(chatId: String!): Chat!
+}
+
+extend type Mutation {
+  createMessage(UserId: String!, chatId: String!, text: String!): Message!
+}
+
+type Subscription {
+  newMessageReceived(UserId: String!): ChatMessage!
+}
+
+type Message {
+  id: String!
+  text: String
+  sender: User!
+  date: String!
+}
+
+type ChatMessage{
+  id: String!
+  message: Message!
+}

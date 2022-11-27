@@ -1,7 +1,7 @@
 package graph
 
 import (
-	contactsConfig "contacts/config"
+	messageConfig "message/config"
 
 	"github.com/nicelogic/crdb"
 	"github.com/nicelogic/pulsarclient"
@@ -14,7 +14,7 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct{
-	Config *contactsConfig.Config
+	Config *messageConfig.Config
 	CrdbClient *crdb.Client
 	PulsarClient *pulsarclient.Client
 }

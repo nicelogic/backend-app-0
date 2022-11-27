@@ -1,4 +1,4 @@
-module contacts
+module message
 
 go 1.19
 
@@ -19,7 +19,7 @@ require (
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible 
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
@@ -57,11 +57,11 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/apache/pulsar-client-go v0.9.0
+	github.com/apache/pulsar-client-go v0.9.0 // indirect
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/websocket v1.5.0 // direct
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
-	github.com/jackc/pgx/v4 v4.17.2
+	github.com/jackc/pgx/v4 v4.17.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nicelogic/auth v0.2.0
 	github.com/nicelogic/config v0.1.0

@@ -2,64 +2,27 @@
 
 package model
 
-type AddContactsApply struct {
-	UserID     string `json:"userId"`
-	ContactsID string `json:"contactsId"`
-	UpdateTime string `json:"updateTime"`
-	Message    string `json:"message"`
+type Chat struct {
+	ID          string     `json:"id"`
+	Members     []*User    `json:"members"`
+	Messages    []*Message `json:"messages"`
+	Name        string     `json:"name"`
+	LastMessage *Message   `json:"lastMessage"`
 }
 
-type AddContactsApplyConnection struct {
-	TotalCount int                           `json:"totalCount"`
-	Edges      []*AddContactsApplyEdge       `json:"edges"`
-	PageInfo   *AddContactsApplyEdgePageInfo `json:"pageInfo"`
+type ChatMessage struct {
+	ID      string   `json:"id"`
+	Message *Message `json:"message"`
 }
 
-type AddContactsApplyEdge struct {
-	Node   *AddContactsApply `json:"node"`
-	Cursor *string           `json:"cursor"`
+type Message struct {
+	ID     string  `json:"id"`
+	Text   *string `json:"text"`
+	Sender *User   `json:"sender"`
+	Date   string  `json:"date"`
 }
 
-type AddContactsApplyEdgePageInfo struct {
-	EndCursor   *string `json:"endCursor"`
-	HasNextPage bool    `json:"hasNextPage"`
-}
-
-type AddContactsApplyNtf struct {
-	UserID   string `json:"userId"`
-	UserName string `json:"userName"`
-}
-
-type ApplyAddContactsInput struct {
-	ContactsID string `json:"contactsId"`
-	UserName   string `json:"userName"`
-	RemarkName string `json:"remarkName"`
-	Message    string `json:"message"`
-}
-
-type Contacts struct {
-	ID         string `json:"id"`
-	RemarkName string `json:"remarkName"`
-}
-
-type ContactsConnection struct {
-	TotalCount int       `json:"totalCount"`
-	Edges      []*Edge   `json:"edges"`
-	PageInfo   *PageInfo `json:"pageInfo"`
-}
-
-type Edge struct {
-	Node   *Contacts `json:"node"`
-	Cursor *string   `json:"cursor"`
-}
-
-type PageInfo struct {
-	EndCursor   *string `json:"endCursor"`
-	HasNextPage bool    `json:"hasNextPage"`
-}
-
-type ReplyAddContactsInput struct {
-	ContactsID string `json:"contactsId"`
-	IsAgree    bool   `json:"isAgree"`
-	RemarkName string `json:"remarkName"`
+type User struct {
+	ID   string  `json:"id"`
+	Name *string `json:"name"`
 }
