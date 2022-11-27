@@ -8,7 +8,7 @@ data:
   config-auth.yml: |+
     listen_address: ":80"
     path: /
-    db_name: contacts
+    db_name: auth
     db_pool_connections_num: 4
     db_config_file_path: "/etc/app-0/config-crdb/config-crdb.yml"
     public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
