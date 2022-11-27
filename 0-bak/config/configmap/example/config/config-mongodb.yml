@@ -1,2 +1,0 @@
-
-url: mongodb://name:pwd@warmth-mongo.luojm.com:27017/warmth?readPreference=secondaryPreferred&directConnection=true&ssl=true

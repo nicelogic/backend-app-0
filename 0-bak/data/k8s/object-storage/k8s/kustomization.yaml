@@ -1,7 +1,0 @@
-
-resources:
-  - storage-class.yaml
-  - pv.yaml
-  - ingress-minio-operator.yaml
-  - ingress-minio-tenant-base.yaml
-
