@@ -16,17 +16,17 @@ update
 set
 	data = public.user.data || $2,
 	update_time = now()
-returning * 
+returning id, data, name, update_time
 `
 
-const QueryAuth = `
+const QueryMe = `
 select
-	auth_id,
-	auth_id_type,
-	user_id,
-	auth_id_type_username_pwd
+	id,
+	"data",
+	"name",
+	update_time
 from
-	public.auth
+	public."user"
 where
-	auth_id = $1
+	id = $1
 `

@@ -13,6 +13,7 @@ import (
 	"user/graph/model"
 	"user/sql"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/nicelogic/authutil"
 )
 
@@ -34,15 +35,15 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	var id, data, name string
 	var update_time time.Time
 	err = row.Scan(&id, &data, &name, &update_time)
-	if err != nil{
+	if err != nil {
 		log.Printf("scan err: %v", err)
 		return nil, err
 	}
 	log.Printf("update_time: %v\n", update_time)
 	updatedUser := &model.User{
-		ID: id,
+		ID:   id,
 		Name: &name,
-		Data: &changesJsonString,
+		Data: &data,
 	}
 	return updatedUser, err
 }
@@ -54,23 +55,23 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 		return nil, err
 	}
 	fmt.Printf("user: %v query own info\n", user.Id)
-	return nil, nil
-	// variables := map[string]interface{}{
-	// 	"id": user.Id,
-	// }
-	// response, err := r.CassandraClient.Query(cassandra.QueryUserByIdGql, variables)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// fmt.Printf("response: %v\n", response)
-	// me, err := cassandra.GetUserFromQueryUserByIdResponse(response)
-	// if err != nil {
-	// 	return nil, err
-	// } else if me == nil {
-	// 	err = errors.New("not found me")
-	// 	return nil, err
-	// }
-	// return me, nil
+	row := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryMe, user.Id)
+	var id, data, name string
+	var update_time time.Time
+	err = row.Scan(&id, &data, &name, &update_time)
+	if err == pgx.ErrNoRows {
+		log.Printf("user never update his data")
+	} else if err != nil {
+		log.Printf("scan err: %v", err)
+		return nil, err
+	}
+	log.Printf("update_time: %v\n", update_time)
+	me := &model.User{
+		ID:   user.Id,
+		Name: &name,
+		Data: &data,
+	}
+	return me, nil
 }
 
 // Users is the resolver for the users field.
