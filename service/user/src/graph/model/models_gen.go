@@ -3,7 +3,7 @@
 package model
 
 type User struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Signature string `json:"signature"`
+	ID   string  `json:"id"`
+	Name *string `json:"name"`
+	Data *string `json:"data"`
 }

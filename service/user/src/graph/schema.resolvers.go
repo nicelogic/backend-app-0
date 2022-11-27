@@ -5,38 +5,46 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"time"
 	"user/graph/generated"
 	"user/graph/model"
+	"user/sql"
 
-	"github.com/nicelogic/auth"
 	"github.com/nicelogic/authutil"
 )
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]interface{}) (*model.User, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 	fmt.Printf("user: %v update: %v\n", user.Id, changes)
-	return nil, nil
-
-	// gql, variables, err := cassandra.UpdateUserGql(changes)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// variables["id"] = user.Id
-	// response, err := r.CassandraClient.Mutation(gql, variables)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// fmt.Printf("response: %v\n", response)
-	// responseUser, err := cassandra.GetUpdatedUserFromResponse(response)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return responseUser, nil
+	changesJson, err := json.Marshal(changes)
+	if err != nil {
+		log.Printf("json marshal changes err: %v\n", err)
+		return nil, err
+	}
+	changesJsonString := string(changesJson)
+	log.Printf("changes: %s\n", changesJsonString)
+	row := r.CrdbClient.Pool.QueryRow(ctx, sql.UpsertUser, user.Id, changesJsonString)
+	var id, data, name string
+	var update_time time.Time
+	err = row.Scan(&id, &data, &name, &update_time)
+	if err != nil{
+		log.Printf("scan err: %v", err)
+		return nil, err
+	}
+	log.Printf("update_time: %v\n", update_time)
+	updatedUser := &model.User{
+		ID: id,
+		Name: &name,
+		Data: &changesJsonString,
+	}
+	return updatedUser, err
 }
 
 // Me is the resolver for the me field.
@@ -67,7 +75,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.User, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,8 @@
 
 type User {
   id: ID!
-  name: String!
-  signature: String!
+  name: String
+  data: String
 }
 
 type Query {
