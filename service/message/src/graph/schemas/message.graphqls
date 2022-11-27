@@ -3,21 +3,14 @@ extend type Query {
 }
 
 extend type Mutation {
-  createMessage(UserId: String!, chatId: String!, text: String!): Message!
+  createMessage(userId: ID!, chatId: String!, text: String!): Message!
 }
 
 type Subscription {
-  newMessageReceived(UserId: String!): ChatMessage!
-}
-
-type Message {
-  id: String!
-  text: String
-  sender: User!
-  date: String!
+  newMessageReceived(userId: String!): ChatMessage!
 }
 
 type ChatMessage{
-  id: String!
+  id: ID!
   message: Message!
 }

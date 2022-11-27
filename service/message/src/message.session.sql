@@ -1,13 +1,32 @@
 
--- for test sql & DDL/schema/table design (sqltool needed)
--- CREATE DATABASE contacts ;
+-- CREATE DATABASE message;
 
-CREATE TABLE public.add_contacts_apply (
+CREATE TABLE public.user_chat(
 	user_id STRING NOT NULL,
-	contacts_id STRING NOT NULL,
+	chat_id STRING NOT NULL,
+	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
+	CONSTRAINT "primary" PRIMARY KEY (id ASC),
+	UNIQUE INDEX contacts_update_time_index (contacts_id ASC, update_time DESC)
+);
+
+CREATE TABLE public.chat(
+	id UUID DEFAULT gen_random_uuid()
+	name STRING NOT NULL,
+	last_message_id STRING NOT NULL,
+	members STRING[] NOT NULL,
+	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
+	CONSTRAINT "primary" PRIMARY KEY (id ASC),
+	UNIQUE INDEX contacts_update_time_index (contacts_id ASC, update_time DESC)
+);
+
+CREATE TABLE public.chat_message(
+	id UUID DEFAULT gen_random_uuid()
+	name STRING NOT NULL,
+	last_message_id STRING NOT NULL,
+	members
 	message STRING NOT NULL,
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
-	CONSTRAINT "primary" PRIMARY KEY (contacts_id ASC, user_id ASC),
+	CONSTRAINT "primary" PRIMARY KEY (id ASC),
 	UNIQUE INDEX contacts_update_time_index (contacts_id ASC, update_time DESC)
 );
 

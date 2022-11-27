@@ -11,17 +11,17 @@ import (
 )
 
 // CreateChat is the resolver for the createChat field.
-func (r *mutationResolver) CreateChat(ctx context.Context, userID string, memberIds []string, name string) (*model.Chat, error) {
+func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, name string) (*model.Chat, error) {
 	panic(fmt.Errorf("not implemented: CreateChat - createChat"))
 }
 
 // DeleteChat is the resolver for the deleteChat field.
-func (r *mutationResolver) DeleteChat(ctx context.Context, chatID string) (string, error) {
+func (r *mutationResolver) DeleteChat(ctx context.Context, id string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteChat - deleteChat"))
 }
 
 // GetChats is the resolver for the getChats field.
-func (r *queryResolver) GetChats(ctx context.Context, userID string) ([]*model.Chat, error) {
+func (r *queryResolver) GetChats(ctx context.Context) ([]*model.Chat, error) {
 	panic(fmt.Errorf("not implemented: GetChats - getChats"))
 }
 
@@ -38,4 +38,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-

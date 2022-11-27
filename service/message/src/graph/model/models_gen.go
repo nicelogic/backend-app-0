@@ -4,10 +4,10 @@ package model
 
 type Chat struct {
 	ID          string     `json:"id"`
-	Members     []*User    `json:"members"`
-	Messages    []*Message `json:"messages"`
 	Name        string     `json:"name"`
+	Members     []*User    `json:"members"`
 	LastMessage *Message   `json:"lastMessage"`
+	Messages    []*Message `json:"messages"`
 }
 
 type ChatMessage struct {
@@ -23,6 +23,5 @@ type Message struct {
 }
 
 type User struct {
-	ID   string  `json:"id"`
-	Name *string `json:"name"`
+	ID string `json:"id"`
 }

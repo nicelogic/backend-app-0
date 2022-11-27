@@ -1,22 +1,28 @@
 type Query {
-  getChats(UserId: String!): [Chat!]
-  getChat(chatId: String!): Chat!
+  getChats: [Chat!]
+  getChat(chatId: ID!): Chat
 }
 
 type Mutation {
-  createChat(UserId: String!, memberIds: [String!]!, name: String!): Chat!
-  deleteChat(chatId: String!): String!
+  createChat(memberIds: [String!]!, name: String!): Chat!
+  deleteChat(id: ID!): String!
 }
 
 type Chat {
-  id: String!
-  members: [User!]!
-  messages: [Message]
+  id: ID!
   name: String!
+  members: [User!]!
   lastMessage: Message
+  messages: [Message]
+}
+
+type Message {
+  id: ID!
+  text: String
+  sender: User!
+  date: String!
 }
 
 type User {
-  id: String!
-  name: String
+  id: ID!
 }

@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	ContactsAddedMe = "contacts added me"
 )
 
 
@@ -37,8 +36,6 @@ func HandleError(server *handler.Server){
 			err.Message = errs.TokenExpired
 		case hasJwtError:
 			err.Message = errs.TokenInvalid
-		case ContactsAddedMe == e.Error():
-			log.Printf("ContactsAlreadyAddedU")
 		default:
 			err.Message = errs.ServerInternalError
 		}
