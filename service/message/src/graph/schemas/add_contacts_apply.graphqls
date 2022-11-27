@@ -1,0 +1,58 @@
+
+extend type Mutation {
+  applyAddContacts(input: ApplyAddContactsInput!): Boolean!
+  replyAddContacts(input: ReplyAddContactsInput!): Boolean!
+}
+
+extend type Query{
+  addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
+}
+
+type Subscription {
+  addContactsApplyReceived(token: String!): AddContactsApplyNtf!
+}
+
+#
+input ApplyAddContactsInput {
+  contactsId: ID!
+  userName: String!
+  remarkName: String!
+  message: String!
+}
+
+#
+input ReplyAddContactsInput {
+  contactsId: ID!
+  isAgree: Boolean!
+  remarkName: String!
+}
+
+#
+type AddContactsApply {
+  userId: ID!
+  contactsId: ID!
+  updateTime: String!
+  message: String!
+}
+
+type AddContactsApplyConnection {
+  totalCount: Int!
+  edges: [AddContactsApplyEdge!]
+  pageInfo: AddContactsApplyEdgePageInfo!
+}
+
+type AddContactsApplyEdge{
+  node: AddContactsApply!
+  cursor: String
+}
+
+type AddContactsApplyEdgePageInfo{
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+#
+type AddContactsApplyNtf{
+  userId: ID!
+  userName: String!
+}
