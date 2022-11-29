@@ -1,16 +1,16 @@
 extend type Query {
-  getMessages(chatId: String!): Chat!
+  getMessages(chatId: String!): [Message!]
 }
 
 extend type Mutation {
-  createMessage(userId: ID!, chatId: String!, text: String!): Message!
+  createMessage(chatId: String!, message: String!): Message!
 }
 
 type Subscription {
-  newMessageReceived(userId: String!): ChatMessage!
+  newMessageReceived(userId: String!): NewChatMessage!
 }
 
-type ChatMessage{
+type NewChatMessage{
   id: ID!
   message: Message!
 }

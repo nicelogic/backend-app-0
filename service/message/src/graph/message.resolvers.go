@@ -11,17 +11,17 @@ import (
 )
 
 // CreateMessage is the resolver for the createMessage field.
-func (r *mutationResolver) CreateMessage(ctx context.Context, userID string, chatID string, text string) (*model.Message, error) {
+func (r *mutationResolver) CreateMessage(ctx context.Context, chatID string, message string) (*model.Message, error) {
 	panic(fmt.Errorf("not implemented: CreateMessage - createMessage"))
 }
 
 // GetMessages is the resolver for the getMessages field.
-func (r *queryResolver) GetMessages(ctx context.Context, chatID string) (*model.Chat, error) {
+func (r *queryResolver) GetMessages(ctx context.Context, chatID string) ([]*model.Message, error) {
 	panic(fmt.Errorf("not implemented: GetMessages - getMessages"))
 }
 
 // NewMessageReceived is the resolver for the newMessageReceived field.
-func (r *subscriptionResolver) NewMessageReceived(ctx context.Context, userID string) (<-chan *model.ChatMessage, error) {
+func (r *subscriptionResolver) NewMessageReceived(ctx context.Context, userID string) (<-chan *model.NewChatMessage, error) {
 	panic(fmt.Errorf("not implemented: NewMessageReceived - newMessageReceived"))
 }
 

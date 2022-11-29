@@ -3,23 +3,22 @@
 package model
 
 type Chat struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Members     []*User    `json:"members"`
-	LastMessage *Message   `json:"lastMessage"`
-	Messages    []*Message `json:"messages"`
-}
-
-type ChatMessage struct {
-	ID      string   `json:"id"`
-	Message *Message `json:"message"`
+	ID          string   `json:"id"`
+	Members     []*User  `json:"members"`
+	Name        *string  `json:"name"`
+	LastMessage *Message `json:"lastMessage"`
 }
 
 type Message struct {
-	ID     string  `json:"id"`
-	Text   *string `json:"text"`
-	Sender *User   `json:"sender"`
-	Date   string  `json:"date"`
+	ID      string `json:"id"`
+	Message string `json:"message"`
+	Sender  *User  `json:"sender"`
+	Date    string `json:"date"`
+}
+
+type NewChatMessage struct {
+	ID      string   `json:"id"`
+	Message *Message `json:"message"`
 }
 
 type User struct {

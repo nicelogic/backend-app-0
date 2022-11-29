@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	ChatExist = "chat already exist"
 )
 
 
@@ -36,6 +37,8 @@ func HandleError(server *handler.Server){
 			err.Message = errs.TokenExpired
 		case hasJwtError:
 			err.Message = errs.TokenInvalid
+		case err.Message == ChatExist:
+			log.Printf("%v\n", err)
 		default:
 			err.Message = errs.ServerInternalError
 		}

@@ -1,6 +1,5 @@
 type Query {
   getChats: [Chat!]
-  getChat(chatId: ID!): Chat
 }
 
 type Mutation {
@@ -10,15 +9,15 @@ type Mutation {
 
 type Chat {
   id: ID!
-  name: String!
   members: [User!]!
+  # optinal, if no set,  use members remakrname/nickname
+  name: String
   lastMessage: Message
-  messages: [Message]
 }
 
 type Message {
   id: ID!
-  text: String
+  message: String!
   sender: User!
   date: String!
 }

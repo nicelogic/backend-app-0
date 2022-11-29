@@ -25,11 +25,6 @@ func (r *queryResolver) GetChats(ctx context.Context) ([]*model.Chat, error) {
 	panic(fmt.Errorf("not implemented: GetChats - getChats"))
 }
 
-// GetChat is the resolver for the getChat field.
-func (r *queryResolver) GetChat(ctx context.Context, chatID string) (*model.Chat, error) {
-	panic(fmt.Errorf("not implemented: GetChat - getChat"))
-}
-
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -38,3 +33,4 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
