@@ -1,50 +1,26 @@
 package sql
 
-const UpsertContacts = `
-upsert
-into
-	contacts  
-	(user_id,
-		contacts_id,
-		remark_name,
-		update_time
-	)
-values ($1,
-	$2,
-	$3,
-	$4)
-`
-
-const QueryUserAddedMe = `
+const QuerySameMembersChatWhetherExist = `
 select
 	user_id,
-	contacts_id
+	chat_id,
+	c.members
 from
-	contacts c
+	public.user_chat u
+join public.chat c 
+on
+	(u.chat_id = c.id)
 where
-	user_id = $1
-	and contacts_id = $2
+	u.user_id = $1
+	and c.members @> array[$2]
+	and array_length(c.members, 1) = $3
 `
 
-const QueryContacts = `
-select
-	contacts_id ,
-	remark_name 
-from
-	contacts@default_unique_index
-where 
-	user_id = $1
-	and (remark_name, contacts_id ) > ($2, $3)
-order by
-	remark_name, contacts_id 
-limit $4
+const InsertChat = `
+
 `
 
-const DeleteContacts = `
-delete
-from
-	public.contacts
-where
-	user_id = $1
-	and contacts_id = $2
+const QueryChats = `
+
 `
+
