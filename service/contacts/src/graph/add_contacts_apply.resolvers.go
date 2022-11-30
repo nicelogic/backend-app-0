@@ -17,12 +17,12 @@ import (
 
 	"github.com/apache/pulsar-client-go/pulsar"
 	pgx "github.com/jackc/pgx/v4"
-	"github.com/nicelogic/auth"
+	"github.com/nicelogic/authutil"
 )
 
 // ApplyAddContacts is the resolver for the applyAddContacts field.
 func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.ApplyAddContactsInput) (bool, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -69,7 +69,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 
 // ReplyAddContacts is the resolver for the replyAddContacts field.
 func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.ReplyAddContactsInput) (bool, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -106,7 +106,7 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 
 // AddContactsApply is the resolver for the addContactsApply field.
 func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, tok
 	go func(token string) {
 		//subscription check user by payload, because playground not work
 		//check flutter client test whether ok, then do optimize
-		user, err := auth.UserFromJwt(token)
+		user, err := r.AuthUtil.UserFromJwt(token)
 		if err != nil {
 			log.Printf("subscription token err: %v\n", err)
 			return

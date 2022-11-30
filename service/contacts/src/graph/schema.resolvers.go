@@ -12,12 +12,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/nicelogic/auth"
+	"github.com/nicelogic/authutil"
 )
 
 // RemoveContacts is the resolver for the removeContacts field.
 func (r *mutationResolver) RemoveContacts(ctx context.Context, contactsID string) (bool, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -32,7 +32,7 @@ func (r *mutationResolver) RemoveContacts(ctx context.Context, contactsID string
 
 // Contacts is the resolver for the contacts field.
 func (r *queryResolver) Contacts(ctx context.Context, first *int, after *string) (*model.ContactsConnection, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r *queryResolver) Contacts(ctx context.Context, first *int, after *string)
 
 // AddedMe is the resolver for the addedMe field.
 func (r *queryResolver) AddedMe(ctx context.Context, userID string) (bool, error) {
-	user, err := auth.GetUser(ctx)
+	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return false, err
 	}
