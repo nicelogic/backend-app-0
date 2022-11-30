@@ -13,4 +13,6 @@ data:
     db_config_file_path: "/etc/app-0/config-crdb/config-crdb.yml"
     pulsar_config_file_path: "/etc/app-0/config-pulsar/config-pulsar.yml"
     pulsar_topic: "tenant-0/contacts/add_contacts_apply"
+    public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
+    private_key_file_path: "/etc/app-0/secret-jwt/jwt-privatekey"
 
