@@ -3,6 +3,7 @@ package graph
 import (
 	messageConfig "message/config"
 
+	"github.com/nicelogic/authutil"
 	"github.com/nicelogic/crdb"
 	"github.com/nicelogic/pulsarclient"
 )
@@ -15,6 +16,7 @@ import (
 
 type Resolver struct{
 	Config *messageConfig.Config
+	AuthUtil *authutil.Auth
 	CrdbClient *crdb.Client
 	PulsarClient *pulsarclient.Client
 }

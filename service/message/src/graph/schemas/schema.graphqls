@@ -3,21 +3,20 @@ type Query {
 }
 
 type Mutation {
-  createChat(memberIds: [String!]!, name: String!): Chat!
+  createChat(memberIds: [String!]!, name: String): Chat!
   deleteChat(id: ID!): String!
 }
 
 type Chat {
   id: ID!
   members: [User!]!
-  # optinal, if no set,  use members remakrname/nickname
   name: String
   lastMessage: Message
 }
 
 type Message {
   id: ID!
-  message: String!
+  content: String!
   sender: User!
   date: String!
 }

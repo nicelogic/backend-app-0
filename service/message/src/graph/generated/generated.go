@@ -53,14 +53,14 @@ type ComplexityRoot struct {
 	}
 
 	Message struct {
+		Content func(childComplexity int) int
 		Date    func(childComplexity int) int
 		ID      func(childComplexity int) int
-		Message func(childComplexity int) int
 		Sender  func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateChat    func(childComplexity int, memberIds []string, name string) int
+		CreateChat    func(childComplexity int, memberIds []string, name *string) int
 		CreateMessage func(childComplexity int, chatID string, message string) int
 		DeleteChat    func(childComplexity int, id string) int
 	}
@@ -85,7 +85,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateChat(ctx context.Context, memberIds []string, name string) (*model.Chat, error)
+	CreateChat(ctx context.Context, memberIds []string, name *string) (*model.Chat, error)
 	DeleteChat(ctx context.Context, id string) (string, error)
 	CreateMessage(ctx context.Context, chatID string, message string) (*model.Message, error)
 }
@@ -140,6 +140,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Chat.Name(childComplexity), true
 
+	case "Message.content":
+		if e.complexity.Message.Content == nil {
+			break
+		}
+
+		return e.complexity.Message.Content(childComplexity), true
+
 	case "Message.date":
 		if e.complexity.Message.Date == nil {
 			break
@@ -153,13 +160,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Message.ID(childComplexity), true
-
-	case "Message.message":
-		if e.complexity.Message.Message == nil {
-			break
-		}
-
-		return e.complexity.Message.Message(childComplexity), true
 
 	case "Message.sender":
 		if e.complexity.Message.Sender == nil {
@@ -178,7 +178,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateChat(childComplexity, args["memberIds"].([]string), args["name"].(string)), true
+		return e.complexity.Mutation.CreateChat(childComplexity, args["memberIds"].([]string), args["name"].(*string)), true
 
 	case "Mutation.createMessage":
 		if e.complexity.Mutation.CreateMessage == nil {
@@ -362,21 +362,20 @@ type NewChatMessage{
 }
 
 type Mutation {
-  createChat(memberIds: [String!]!, name: String!): Chat!
+  createChat(memberIds: [String!]!, name: String): Chat!
   deleteChat(id: ID!): String!
 }
 
 type Chat {
   id: ID!
   members: [User!]!
-  # optinal, if no set,  use members remakrname/nickname
   name: String
   lastMessage: Message
 }
 
 type Message {
   id: ID!
-  message: String!
+  content: String!
   sender: User!
   date: String!
 }
@@ -404,10 +403,10 @@ func (ec *executionContext) field_Mutation_createChat_args(ctx context.Context, 
 		}
 	}
 	args["memberIds"] = arg0
-	var arg1 string
+	var arg1 *string
 	if tmp, ok := rawArgs["name"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -709,8 +708,8 @@ func (ec *executionContext) fieldContext_Chat_lastMessage(ctx context.Context, f
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Message_id(ctx, field)
-			case "message":
-				return ec.fieldContext_Message_message(ctx, field)
+			case "content":
+				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
 			case "date":
@@ -766,8 +765,8 @@ func (ec *executionContext) fieldContext_Message_id(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Message_message(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Message_message(ctx, field)
+func (ec *executionContext) _Message_content(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_content(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -780,7 +779,7 @@ func (ec *executionContext) _Message_message(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Message, nil
+		return obj.Content, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -797,7 +796,7 @@ func (ec *executionContext) _Message_message(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -916,7 +915,7 @@ func (ec *executionContext) _Mutation_createChat(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateChat(rctx, fc.Args["memberIds"].([]string), fc.Args["name"].(string))
+		return ec.resolvers.Mutation().CreateChat(rctx, fc.Args["memberIds"].([]string), fc.Args["name"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1063,8 +1062,8 @@ func (ec *executionContext) fieldContext_Mutation_createMessage(ctx context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Message_id(ctx, field)
-			case "message":
-				return ec.fieldContext_Message_message(ctx, field)
+			case "content":
+				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
 			case "date":
@@ -1172,8 +1171,8 @@ func (ec *executionContext) fieldContext_NewChatMessage_message(ctx context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Message_id(ctx, field)
-			case "message":
-				return ec.fieldContext_Message_message(ctx, field)
+			case "content":
+				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
 			case "date":
@@ -1274,8 +1273,8 @@ func (ec *executionContext) fieldContext_Query_getMessages(ctx context.Context, 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Message_id(ctx, field)
-			case "message":
-				return ec.fieldContext_Message_message(ctx, field)
+			case "content":
+				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
 			case "date":
@@ -3387,9 +3386,9 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "message":
+		case "content":
 
-			out.Values[i] = ec._Message_message(ctx, field, obj)
+			out.Values[i] = ec._Message_content(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

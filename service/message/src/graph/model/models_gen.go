@@ -11,7 +11,7 @@ type Chat struct {
 
 type Message struct {
 	ID      string `json:"id"`
-	Message string `json:"message"`
+	Content string `json:"content"`
 	Sender  *User  `json:"sender"`
 	Date    string `json:"date"`
 }

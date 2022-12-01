@@ -1,13 +1,13 @@
 package main
 
 import (
+	"log"
 	messageConfig "message/config"
 	"message/constant"
 	"message/graph"
 	"message/graph/dependence"
 	messageerror "message/graph/error"
 	"message/graph/generated"
-	"log"
 	"net/http"
 	"time"
 
@@ -17,7 +17,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
-	"github.com/nicelogic/auth"
 	"github.com/nicelogic/config"
 	"github.com/rs/cors"
 )
@@ -25,7 +24,7 @@ import (
 func main() {
 	serviceConfig := messageConfig.Config{}
 	config.Init(constant.ConfigPath, &serviceConfig)
-	crdbClient, pulsarClient, err := dependence.Init(&serviceConfig)
+	authUtil, crdbClient, pulsarClient, err := dependence.Init(&serviceConfig)
 	if err != nil {
 		log.Printf("dependence init err: %v\n", err)
 	}
@@ -34,6 +33,7 @@ func main() {
 			generated.Config{
 				Resolvers: &graph.Resolver{
 					Config:       &serviceConfig,
+					AuthUtil: authUtil,
 					CrdbClient:   crdbClient,
 					PulsarClient: pulsarClient}}))
 	messageerror.HandleError(server)
@@ -53,7 +53,7 @@ func main() {
 		Debug:            false,
 	})
 	router := chi.NewRouter()
-	router.Use(auth.Middleware())
+	router.Use(authUtil.Middleware())
 	router.Handle(serviceConfig.Path, playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", corsHandler.Handler(server))
 	log.Printf("connect to http://%s%s for GraphQL playground", serviceConfig.Listen_address, serviceConfig.Path)

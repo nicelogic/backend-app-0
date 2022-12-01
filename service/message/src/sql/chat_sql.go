@@ -1,19 +1,16 @@
 package sql
 
-const QuerySameMembersChatWhetherExist = `
+const QuerySameMembersP2pChatWhetherExist = `
 select
-	user_id,
-	chat_id,
-	c.members
-from
-	public.user_chat u
-join public.chat c 
-on
-	(u.chat_id = c.id)
+	id,
+	members, 
+	name,
+	last_message 
+from public.chat
 where
-	u.user_id = $1
-	and c.members @> array[$2]
-	and array_length(c.members, 1) = $3
+	members @> $1
+	and array_length(members, 1) = $2
+	and type = 'p2p'
 `
 
 const InsertChat = `
