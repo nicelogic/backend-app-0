@@ -2,8 +2,15 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Chat struct {
 	ID          string   `json:"id"`
+	Type        ChatType `json:"type"`
 	Members     []*User  `json:"members"`
 	Name        *string  `json:"name"`
 	LastMessage *Message `json:"lastMessage"`
@@ -23,4 +30,45 @@ type NewChatMessage struct {
 
 type User struct {
 	ID string `json:"id"`
+}
+
+type ChatType string
+
+const (
+	ChatTypeP2p   ChatType = "P2P"
+	ChatTypeGroup ChatType = "GROUP"
+)
+
+var AllChatType = []ChatType{
+	ChatTypeP2p,
+	ChatTypeGroup,
+}
+
+func (e ChatType) IsValid() bool {
+	switch e {
+	case ChatTypeP2p, ChatTypeGroup:
+		return true
+	}
+	return false
+}
+
+func (e ChatType) String() string {
+	return string(e)
+}
+
+func (e *ChatType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ChatType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ChatType", str)
+	}
+	return nil
+}
+
+func (e ChatType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

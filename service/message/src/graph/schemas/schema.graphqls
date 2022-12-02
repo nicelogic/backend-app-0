@@ -4,11 +4,21 @@ type Query {
 
 type Mutation {
   createChat(memberIds: [String!]!, name: String): Chat!
-  deleteChat(id: ID!): String!
+  updateChatSetting(id: ID!, setting: String!): Boolean!
+  notShowChat(id: ID!): Boolean!
+  addGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
+  removeGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
+  deleteGroupChat(id: ID!): Boolean!
+}
+
+enum ChatType{
+  P2P
+  GROUP
 }
 
 type Chat {
   id: ID!
+  type: ChatType!
   members: [User!]!
   name: String
   lastMessage: Message

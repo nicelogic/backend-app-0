@@ -7,7 +7,10 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.1
 )
 
-require github.com/golang-jwt/jwt/v4 v4.4.2
+require (
+	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/google/uuid v1.1.2
+)
 
 require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
