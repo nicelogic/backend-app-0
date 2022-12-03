@@ -54,7 +54,16 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, chatID string, mes
 		},
 		CreateTime: messageTime,
 	}
-	//public new message to chat members
+
+	//get chat members,then ntf all members except for sender
+	ntf := &model.NewMessage{
+		Message: &createdMessage,
+	}
+	msgId, err := r.PulsarClient.Send(ctx, ntf)
+	if err != nil {
+		log.Printf("pulsar send ntf: %v, err: %v\n", ntf, err)
+	}
+	log.Printf("pulsar send ntf: %v, success, msgId: %v\n", ntf, msgId)
 	return &createdMessage, err
 }
 
@@ -85,8 +94,8 @@ func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *i
 		fmt.Printf("messageVlues: %#v\n", messageValues)
 		messageValues := messageValues.([]any)
 		message := model.Message{
-			ID: messageValues[0].(string),
-			Content: messageValues[1].(string),	
+			ID:      messageValues[0].(string),
+			Content: messageValues[1].(string),
 			Sender: &model.User{
 				ID: messageValues[2].(string),
 			},
@@ -111,7 +120,7 @@ func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *i
 }
 
 // NewMessageReceived is the resolver for the newMessageReceived field.
-func (r *subscriptionResolver) NewMessageReceived(ctx context.Context, userID string) (<-chan *model.NewChatMessage, error) {
+func (r *subscriptionResolver) NewMessageReceived(ctx context.Context, token string) (<-chan *model.NewMessage, error) {
 	panic(fmt.Errorf("not implemented: NewMessageReceived - newMessageReceived"))
 }
 

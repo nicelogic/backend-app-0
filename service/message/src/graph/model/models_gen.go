@@ -52,8 +52,7 @@ type MessagePageInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 }
 
-type NewChatMessage struct {
-	ID      string   `json:"id"`
+type NewMessage struct {
 	Message *Message `json:"message"`
 }
 

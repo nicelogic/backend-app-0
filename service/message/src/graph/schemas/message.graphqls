@@ -7,11 +7,10 @@ extend type Mutation {
 }
 
 type Subscription {
-  newMessageReceived(userId: String!): NewChatMessage!
+  newMessageReceived(token: String!): NewMessage!
 }
 
-type NewChatMessage{
-  id: ID!
+type NewMessage{
   message: Message!
 }
 
