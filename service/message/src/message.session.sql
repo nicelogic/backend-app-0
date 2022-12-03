@@ -33,7 +33,9 @@ CREATE TABLE public.user_chat(
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
 	CONSTRAINT "primary" PRIMARY KEY (user_id ASC, chat_id ASC),
 	UNIQUE INDEX (user_id ASC, priority DESC, last_message_time DESC, chat_id ASC)
+	INDEX (chat_id ASC)
 );
+CREATE INDEX ON user_chat (chat_id) STORING (priority);
 
 CREATE TABLE public.message(
 	id UUID DEFAULT gen_random_uuid(),

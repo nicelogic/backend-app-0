@@ -19,6 +19,13 @@ import (
 )
 
 // CreateChat is the resolver for the createChat field.
+/*
+	create p2p chat need check whether p2p chat exist
+	but needn't transaction
+	because the id: "userid_low" | "userid_high" decide the p2p chat's id
+	create p2p chat at the same time, created after will fail
+	if group, It is to create multiple, do not judge whether there are the same members
+*/
 func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, name *string) (*model.Chat, error) {
 	user, err := authutil.GetUser(ctx)
 	if err != nil {
@@ -27,30 +34,56 @@ func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, n
 	log.Printf("user: %#v create chat, name(%v), members(%v)\n", user, name, memberIds)
 	memberIds = append(memberIds, user.Id)
 	chatId := uuid.New().String()
+	chatType := constant.ChatTypeGroup
 	if len(memberIds) == 2 {
 		sort.Strings(memberIds)
 		chatId = memberIds[0] + "|" + memberIds[1]
-		sameMembersChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QuerySameMembersP2pChatWhetherExist, chatId)
+		chatType = constant.ChatTypeP2p
+		sameMembersChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryChat, user.Id, chatId)
 		sameMembersChat, err := sql.ChatRowToChatModel(sameMembersChatRow)
 		if err == pgx.ErrNoRows {
 			log.Printf("no same memerbs p2p chat, can create new p2p chat\n")
 		} else if err != nil {
 			return nil, err
+		} else {
+			log.Printf("find same members p2p chat,just return that chat\n")
+			return sameMembersChat, nil
 		}
-		log.Printf("find same members p2p chat,just return that chat\n")
-		return sameMembersChat, nil
 	}
 	if name == nil {
 		emptyString := ""
 		name = &emptyString
 	}
 	log.Printf("begin create new chat\n")
-	newChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.InsertChat, chatId, constant.ChatTypeGroup, memberIds, *name)
-	newChat, err := sql.ChatRowToChatModel(newChatRow)
+	err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
+		_, err := r.CrdbClient.Pool.Exec(ctx, sql.InsertChat, chatId, chatType, memberIds, *name)
+		if err != nil {
+			log.Printf("in transcation create chat , insert chat err(%v)\n", err)
+			return err
+		}
+		for _, memberId := range memberIds {
+			_, err = r.CrdbClient.Pool.Exec(ctx, sql.InsertUserChat, memberId, chatId)
+			if err != nil {
+				log.Printf("in transaction create user chat, insert user chat err(%v)\n", err)
+				return err
+			}
+		}
+		return err
+	})
 	if err != nil {
+		log.Printf("create chat transcation err(%v)\n", err)
 		return nil, err
 	}
-	return newChat, err
+	log.Printf("apply success")
+	log.Printf("begin query new created chat\n")
+	createdChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryChat, user.Id, chatId)
+	createdChat, err := sql.ChatRowToChatModel(createdChatRow)
+	if err != nil {
+		log.Printf("query new created chat err(%v)\n", err)
+		return nil, err
+	}
+	log.Printf("find chat, return that chat\n")
+	return createdChat, nil
 }
 
 // UpdateChatSetting is the resolver for the updateChatSetting field.

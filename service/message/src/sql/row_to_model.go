@@ -3,6 +3,7 @@ package sql
 import (
 	"encoding/json"
 	"log"
+	"message/constant"
 	"message/graph/model"
 
 	"github.com/jackc/pgx/v4"
@@ -12,7 +13,8 @@ func ChatRowToChatModel(chatRow pgx.Row)(chatModel *model.Chat, err error){
 	var id, Type string
 	var memberIds []string
 	var name, last_message *string
-	err = chatRow.Scan(&id, &Type, &memberIds, &name, &last_message)
+	var priority int
+	err = chatRow.Scan(&id, &Type, &memberIds, &name, &last_message, &priority)
 	if err != nil {
 		log.Printf("query row err: %v\n", err)
 		return nil, err
@@ -29,12 +31,17 @@ func ChatRowToChatModel(chatRow pgx.Row)(chatModel *model.Chat, err error){
 				return nil, err
 			}
 		}
+		pinned := false
+		if priority == constant.PriorityPinned{
+			pinned = true
+		}
 		return &model.Chat{
 			ID:          id,
 			Type: model.ChatType(Type),
 			Members:     members,
 			Name:        name,
 			LastMessage: lastMessage,
+			Pinned: pinned,
 		}, nil
 	}
 }
