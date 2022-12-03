@@ -66,7 +66,6 @@ func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *i
 	}
 	log.Printf("user(%#v) get messages in chat(%s)\n", user, chatID)
 
-
 	messageCreateTime := time.Now().Format(time.RFC3339)
 	messageId := ""
 	if after != nil {
