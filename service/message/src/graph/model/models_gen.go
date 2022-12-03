@@ -30,10 +30,10 @@ type Edge struct {
 }
 
 type Message struct {
-	ID      string `json:"id"`
-	Content string `json:"content"`
-	Sender  *User  `json:"sender"`
-	Date    string `json:"date"`
+	ID         string `json:"id"`
+	Content    string `json:"content"`
+	Sender     *User  `json:"sender"`
+	CreateTime string `json:"createTime"`
 }
 
 type MessageConnection struct {

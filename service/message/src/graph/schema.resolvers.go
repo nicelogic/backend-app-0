@@ -148,8 +148,8 @@ func (r *queryResolver) GetChats(ctx context.Context, first *int, after *string)
 	defer chatRows.Close()
 	chatApplyConnection := &model.ChatConnection{}
 	for chatRows.Next() {
-		chat, err := sql.ChatRowToChatModel(chatRows)	
-		if err != nil{
+		chat, err := sql.ChatRowToChatModel(chatRows)
+		if err != nil {
 			log.Printf("chat row scan err: %v\n", err)
 			return nil, err
 		}
@@ -170,7 +170,7 @@ func (r *queryResolver) GetChats(ctx context.Context, first *int, after *string)
 			lastNodePriority = "1"
 		}
 		lastMessageTime := time.Now().Format(time.RFC3339)
-		if lastNode.LastMessageTime != nil{
+		if lastNode.LastMessageTime != nil {
 			lastMessageTime = *lastNode.LastMessageTime
 		}
 		lastChatId := lastNode.ID

@@ -28,7 +28,7 @@ type Message {
   id: ID!
   content: String!
   sender: User!
-  date: String!
+  createTime: String!
 }
 
 type User {

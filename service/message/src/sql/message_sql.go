@@ -1,42 +1,53 @@
 package sql
 
-
-
-const UpsertAddContactsApply = `
-upsert
-into
-	add_contacts_apply (
-	user_id,
-	contacts_id,
-	message,
-	update_time
-)
-values ($1,
+const InsertMessage = `
+insert
+	into
+	public.message
+(id,
+	chat_id,
+	content,
+	sender_id,
+	create_time)
+values($1,
 $2,
 $3,
-$4)
+$4,
+now())
 `
 
-const QueryAddContactsApply = `
+const UpdateChatLastMessage = `
+update
+	public.chat
+set
+	last_message = $1,
+	last_message_time = $2,
+	update_time = now()
+where
+	id = $3
+`
+
+const UpdateUserChatLastMessage = `
+update
+	public.user_chat
+set
+	last_message_time = $1,
+	update_time = now()
+where
+	user_id = $2
+	and chat_id = $3
+`
+
+const QueryMessages = `
 select
-	user_id,
-	message,
-	update_time
+	id,
+	content,
+	sender_id,
+	create_time
 from
-	add_contacts_apply@default_unique_index
+	public.message
 where
-	contacts_id = $1
-	and update_time < $2 or user_id > $3
-order by
-	update_time desc, user_id asc
-limit $4
-`
-
-const DeleteAddContactsApply = `
-delete
-from
-	add_contacts_apply
-where
-	contacts_id = $1
-	and user_id = $2
+	chat_id = $1
+	and (create_time < $2 
+	or id > $3)
 `

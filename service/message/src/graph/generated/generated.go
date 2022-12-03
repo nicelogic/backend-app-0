@@ -68,10 +68,10 @@ type ComplexityRoot struct {
 	}
 
 	Message struct {
-		Content func(childComplexity int) int
-		Date    func(childComplexity int) int
-		ID      func(childComplexity int) int
-		Sender  func(childComplexity int) int
+		Content    func(childComplexity int) int
+		CreateTime func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Sender     func(childComplexity int) int
 	}
 
 	MessageConnection struct {
@@ -243,12 +243,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Message.Content(childComplexity), true
 
-	case "Message.date":
-		if e.complexity.Message.Date == nil {
+	case "Message.createTime":
+		if e.complexity.Message.CreateTime == nil {
 			break
 		}
 
-		return e.complexity.Message.Date(childComplexity), true
+		return e.complexity.Message.CreateTime(childComplexity), true
 
 	case "Message.id":
 		if e.complexity.Message.ID == nil {
@@ -592,7 +592,7 @@ type Message {
   id: ID!
   content: String!
   sender: User!
-  date: String!
+  createTime: String!
 }
 
 type User {
@@ -1079,8 +1079,8 @@ func (ec *executionContext) fieldContext_Chat_lastMessage(ctx context.Context, f
 				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
-			case "date":
-				return ec.fieldContext_Message_date(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Message_createTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -1548,8 +1548,8 @@ func (ec *executionContext) fieldContext_Message_sender(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Message_date(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Message_date(ctx, field)
+func (ec *executionContext) _Message_createTime(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_createTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1562,7 +1562,7 @@ func (ec *executionContext) _Message_date(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Date, nil
+		return obj.CreateTime, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1579,7 +1579,7 @@ func (ec *executionContext) _Message_date(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_date(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_createTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -1778,8 +1778,8 @@ func (ec *executionContext) fieldContext_MessageEdge_node(ctx context.Context, f
 				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
-			case "date":
-				return ec.fieldContext_Message_date(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Message_createTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -2194,8 +2194,8 @@ func (ec *executionContext) fieldContext_Mutation_createMessage(ctx context.Cont
 				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
-			case "date":
-				return ec.fieldContext_Message_date(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Message_createTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -2303,8 +2303,8 @@ func (ec *executionContext) fieldContext_NewChatMessage_message(ctx context.Cont
 				return ec.fieldContext_Message_content(ctx, field)
 			case "sender":
 				return ec.fieldContext_Message_sender(ctx, field)
-			case "date":
-				return ec.fieldContext_Message_date(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Message_createTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -4715,9 +4715,9 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "date":
+		case "createTime":
 
-			out.Values[i] = ec._Message_date(ctx, field, obj)
+			out.Values[i] = ec._Message_createTime(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++

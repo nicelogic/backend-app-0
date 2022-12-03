@@ -1,7 +1,6 @@
 
--- CREATE DATABASE message;
--- CREATE TYPE chat_type AS ENUM ('p2p', 'group');
-
+CREATE DATABASE message;
+CREATE TYPE chat_type AS ENUM ('p2p', 'group');
 CREATE TABLE public.chat(
 	id STRING NOT NULL,
 	type CHAT_TYPE NOT NULL,
@@ -15,21 +14,7 @@ CREATE TABLE public.chat(
 	--INVERTED INDEX (members)
 );
 
---这种设计，每次chat发送一条消息，会更新每个members,排序相关,需要更新时间
---创建chat事务创建
---查询需要join
---个人的配置不影响主体chat
---主体chat信息更改也不影响个人配置
---没办法在一个chat表里面遍历更改所有的user setting(JSONB方式)
---影响用户对chat特定状态+影响排序的一个表， chat通用信息一个表
---还要一个方案，每次排序user_chat,都全部查询user所有chat,再排序
---但每次查询都全量查找
---还要就是未读信息数量，也是每个用户特定，又和每条消息关联的
---每次有新消息，就得更新用户特定状态。。顺带也更新时间
---最终选择last_message_time在user_chat维护的方案
---获取可以在chat表里做last_message_time index来支持Join排序
---先不做复杂。join获取chat last_message_time再做排序
--- last_message_time是必须的。。paginatin必须要求所有字段在一个表里
+
 CREATE TABLE public.user_chat(
 	user_id STRING NOT NULL,
 	chat_id STRING NOT NULL references public.chat(id) ON DELETE CASCADE,
@@ -42,14 +27,37 @@ CREATE TABLE public.user_chat(
 );
 
 CREATE TABLE public.message(
-	id UUID DEFAULT gen_random_uuid(),
+	id STRING NOT NULL,
 	chat_id STRING NOT NULL,
-	content JSONB,
-	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
+	content JSONB NOT NULL,
+	sender_Id STRING NOT NULL,
+	create_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
 	CONSTRAINT "primary" PRIMARY KEY (id ASC),
-	UNIQUE INDEX (chat_id ASC, update_time DESC, id ASC)
+	UNIQUE INDEX (chat_id ASC, create_time DESC, id ASC) STORING(content, sender_Id)
 );
 
 
+/*
+这种设计，每次chat发送一条消息，会更新每个members,排序相关,需要更新时间
+创建chat事务创建
+查询需要join
+个人的配置不影响主体chat
+主体chat信息更改也不影响个人配置
+没办法在一个chat表里面遍历更改所有的user setting(JSONB方式)
+影响用户对chat特定状态+影响排序的一个表， chat通用信息一个表
+还要一个方案，每次排序user_chat,都全部查询user所有chat,再排序
+但每次查询都全量查找
+还要就是未读信息数量，也是每个用户特定，又和每条消息关联的
+每次有新消息，就得更新用户特定状态。。顺带也更新时间
+最终选择last_message_time在user_chat维护的方案
+获取可以在chat表里做last_message_time index来支持Join排序
+先不做复杂。join获取chat last_message_time再做排序
+last_message_time是必须的。。paginatin必须要求所有字段在一个表里
+有时间思考几个问题:
+	* 是否chat表members数组可以去掉
+	* user chat的pagination last message time是否可以去掉，依赖chat last message time
+	* 如果第二点做不到。则怎么做到cascade update user chat table last message time
 
 
+
+*/
