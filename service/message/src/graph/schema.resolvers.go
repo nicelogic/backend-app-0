@@ -19,14 +19,14 @@ import (
 )
 
 // CreateChat is the resolver for the createChat field.
-/*
-	create p2p chat need check whether p2p chat exist
-	but needn't transaction
-	because the id: "userid_low" | "userid_high" decide the p2p chat's id
-	create p2p chat at the same time, created after will fail
-	if group, It is to create multiple, do not judge whether there are the same members
-*/
 func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, name *string) (*model.Chat, error) {
+	/*
+		create p2p chat need check whether p2p chat exist
+		but needn't transaction
+		because the id: "userid_low" | "userid_high" decide the p2p chat's id
+		create p2p chat at the same time, created after will fail
+		if group, It is to create multiple, do not judge whether there are the same members
+	*/
 	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -84,16 +84,6 @@ func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, n
 	}
 	log.Printf("find chat, return that chat\n")
 	return createdChat, nil
-}
-
-// UpdateChatSetting is the resolver for the updateChatSetting field.
-func (r *mutationResolver) UpdateChatSetting(ctx context.Context, id string, setting string) (bool, error) {
-	panic(fmt.Errorf("not implemented: UpdateChatSetting - updateChatSetting"))
-}
-
-// NotShowChat is the resolver for the notShowChat field.
-func (r *mutationResolver) NotShowChat(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: NotShowChat - notShowChat"))
 }
 
 // AddGroupChatMembers is the resolver for the addGroupChatMembers field.

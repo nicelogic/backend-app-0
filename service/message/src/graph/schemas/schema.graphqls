@@ -4,8 +4,6 @@ type Query {
 
 type Mutation {
   createChat(memberIds: [String!]!, name: String): Chat!
-  updateChatSetting(id: ID!, setting: String!): Boolean!
-  notShowChat(id: ID!): Boolean!
   addGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   removeGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   deleteGroupChat(id: ID!): Boolean!

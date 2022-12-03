@@ -94,9 +94,7 @@ type ComplexityRoot struct {
 		CreateChat             func(childComplexity int, memberIds []string, name *string) int
 		CreateMessage          func(childComplexity int, chatID string, message string) int
 		DeleteGroupChat        func(childComplexity int, id string) int
-		NotShowChat            func(childComplexity int, id string) int
 		RemoveGroupChatMembers func(childComplexity int, id string, memberIds []string) int
-		UpdateChatSetting      func(childComplexity int, id string, setting string) int
 	}
 
 	NewChatMessage struct {
@@ -125,8 +123,6 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateChat(ctx context.Context, memberIds []string, name *string) (*model.Chat, error)
-	UpdateChatSetting(ctx context.Context, id string, setting string) (bool, error)
-	NotShowChat(ctx context.Context, id string) (bool, error)
 	AddGroupChatMembers(ctx context.Context, id string, memberIds []string) (bool, error)
 	RemoveGroupChatMembers(ctx context.Context, id string, memberIds []string) (bool, error)
 	DeleteGroupChat(ctx context.Context, id string) (bool, error)
@@ -357,18 +353,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteGroupChat(childComplexity, args["id"].(string)), true
 
-	case "Mutation.notShowChat":
-		if e.complexity.Mutation.NotShowChat == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_notShowChat_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.NotShowChat(childComplexity, args["id"].(string)), true
-
 	case "Mutation.removeGroupChatMembers":
 		if e.complexity.Mutation.RemoveGroupChatMembers == nil {
 			break
@@ -380,18 +364,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RemoveGroupChatMembers(childComplexity, args["id"].(string), args["memberIds"].([]string)), true
-
-	case "Mutation.updateChatSetting":
-		if e.complexity.Mutation.UpdateChatSetting == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_updateChatSetting_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdateChatSetting(childComplexity, args["id"].(string), args["setting"].(string)), true
 
 	case "NewChatMessage.id":
 		if e.complexity.NewChatMessage.ID == nil {
@@ -588,8 +560,6 @@ type MessagePageInfo{
 
 type Mutation {
   createChat(memberIds: [String!]!, name: String): Chat!
-  updateChatSetting(id: ID!, setting: String!): Boolean!
-  notShowChat(id: ID!): Boolean!
   addGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   removeGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   deleteGroupChat(id: ID!): Boolean!
@@ -729,21 +699,6 @@ func (ec *executionContext) field_Mutation_deleteGroupChat_args(ctx context.Cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_notShowChat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_removeGroupChatMembers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -765,30 +720,6 @@ func (ec *executionContext) field_Mutation_removeGroupChatMembers_args(ctx conte
 		}
 	}
 	args["memberIds"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_updateChatSetting_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["setting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["setting"] = arg1
 	return args, nil
 }
 
@@ -1993,116 +1924,6 @@ func (ec *executionContext) fieldContext_Mutation_createChat(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createChat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_updateChatSetting(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_updateChatSetting(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateChatSetting(rctx, fc.Args["id"].(string), fc.Args["setting"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_updateChatSetting(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_updateChatSetting_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_notShowChat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_notShowChat(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().NotShowChat(rctx, fc.Args["id"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_notShowChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_notShowChat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4980,24 +4801,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createChat(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "updateChatSetting":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_updateChatSetting(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "notShowChat":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_notShowChat(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
