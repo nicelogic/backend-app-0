@@ -6,7 +6,7 @@ type Mutation {
   createChat(memberIds: [String!]!, name: String): Chat!
   addGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   removeGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
-  deleteGroupChat(id: ID!): Boolean!
+  deleteChat(id: ID!): Boolean!
 }
 
 enum ChatType{
@@ -20,6 +20,7 @@ type Chat {
   members: [User!]!
   pinned: Boolean!
   lastMessage: Message
+  lastMessageTime: String
   name: String
 }
 

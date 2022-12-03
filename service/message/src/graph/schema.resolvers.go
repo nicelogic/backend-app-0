@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"message/constant"
@@ -12,6 +13,9 @@ import (
 	"message/graph/model"
 	"message/sql"
 	"sort"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	pgx "github.com/jackc/pgx/v4"
@@ -39,7 +43,7 @@ func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, n
 		sort.Strings(memberIds)
 		chatId = memberIds[0] + "|" + memberIds[1]
 		chatType = constant.ChatTypeP2p
-		sameMembersChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryChat, user.Id, chatId)
+		sameMembersChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryUserChat, user.Id, chatId)
 		sameMembersChat, err := sql.ChatRowToChatModel(sameMembersChatRow)
 		if err == pgx.ErrNoRows {
 			log.Printf("no same memerbs p2p chat, can create new p2p chat\n")
@@ -76,7 +80,7 @@ func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, n
 	}
 	log.Printf("apply success")
 	log.Printf("begin query new created chat\n")
-	createdChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryChat, user.Id, chatId)
+	createdChatRow := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryUserChat, user.Id, chatId)
 	createdChat, err := sql.ChatRowToChatModel(createdChatRow)
 	if err != nil {
 		log.Printf("query new created chat err(%v)\n", err)
@@ -96,14 +100,86 @@ func (r *mutationResolver) RemoveGroupChatMembers(ctx context.Context, id string
 	panic(fmt.Errorf("not implemented: RemoveGroupChatMembers - removeGroupChatMembers"))
 }
 
-// DeleteGroupChat is the resolver for the deleteGroupChat field.
-func (r *mutationResolver) DeleteGroupChat(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteGroupChat - deleteGroupChat"))
+// DeleteChat is the resolver for the deleteChat field.
+func (r *mutationResolver) DeleteChat(ctx context.Context, id string) (bool, error) {
+	user, err := authutil.GetUser(ctx)
+	if err != nil {
+		return false, err
+	}
+	log.Printf("user(%#v) delete chat(%s)\n", user, id)
+	//TODO
+	//if group chat, need group chat's admin role user
+	//Only when one of the parties deletes the contact, delete the chat at the same time
+	_, err = r.CrdbClient.Pool.Exec(ctx, sql.DeleteChat, id)
+	if err != nil {
+		log.Printf("delete chat err(%v)\n", err)
+		return false, err
+	}
+	return true, nil
 }
 
 // GetChats is the resolver for the getChats field.
 func (r *queryResolver) GetChats(ctx context.Context, first *int, after *string) (*model.ChatConnection, error) {
-	panic(fmt.Errorf("not implemented: GetChats - getChats"))
+	user, err := authutil.GetUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("user(%#v) query chats\n", user)
+	priority := 100
+	lastMessagTime := time.Now().Format(time.RFC3339)
+	chatId := ""
+	if after != nil {
+		decodeAfter, _ := base64.StdEncoding.DecodeString(*after)
+		args := strings.Split(string(decodeAfter), ",")
+		priority, err = strconv.Atoi(args[0])
+		if err != nil {
+			log.Printf("cursor decode and atoi(args[0]) for priority err(%v)\n", err)
+			return nil, err
+		}
+		lastMessagTime = args[1]
+		chatId = args[2]
+	}
+	log.Printf("after: priority: %v, updateTime: %s, chatId: %s\n", priority, lastMessagTime, chatId)
+	chatRows, err := r.CrdbClient.Pool.Query(ctx, sql.QueryChats, user.Id, priority, lastMessagTime, chatId, *first)
+	if err != nil {
+		log.Printf("query err: %v\n", err)
+		return nil, err
+	}
+	defer chatRows.Close()
+	chatApplyConnection := &model.ChatConnection{}
+	for chatRows.Next() {
+		chat, err := sql.ChatRowToChatModel(chatRows)	
+		if err != nil{
+			log.Printf("chat row scan err: %v\n", err)
+			return nil, err
+		}
+		edge := &model.Edge{}
+		edge.Node = chat
+		chatApplyConnection.Edges = append(chatApplyConnection.Edges, edge)
+	}
+	if err = chatRows.Err(); err != nil {
+		log.Printf("rows error(%v)\n", err)
+		return nil, err
+	}
+	chatApplyConnection.TotalCount = len(chatApplyConnection.Edges)
+	chatApplyConnection.PageInfo = &model.PageInfo{}
+	if chatApplyConnection.TotalCount != 0 {
+		lastNode := chatApplyConnection.Edges[len(chatApplyConnection.Edges)-1].Node
+		lastNodePriority := "0"
+		if lastNode.Pinned {
+			lastNodePriority = "1"
+		}
+		lastMessageTime := time.Now().Format(time.RFC3339)
+		if lastNode.LastMessageTime != nil{
+			lastMessageTime = *lastNode.LastMessageTime
+		}
+		lastChatId := lastNode.ID
+		endCursor := lastNodePriority + "," + lastMessageTime + "," + lastChatId
+		base64EndCursor := base64.StdEncoding.EncodeToString([]byte(endCursor))
+		chatApplyConnection.PageInfo.EndCursor = &base64EndCursor
+	}
+	chatApplyConnection.PageInfo.HasNextPage = chatApplyConnection.TotalCount == *first
+	return chatApplyConnection, err
 }
 
 // Mutation returns generated.MutationResolver implementation.

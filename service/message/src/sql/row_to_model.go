@@ -5,6 +5,7 @@ import (
 	"log"
 	"message/constant"
 	"message/graph/model"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -13,10 +14,11 @@ func ChatRowToChatModel(chatRow pgx.Row)(chatModel *model.Chat, err error){
 	var id, Type string
 	var memberIds []string
 	var name, last_message *string
+	var last_message_time time.Time
 	var priority int
-	err = chatRow.Scan(&id, &Type, &memberIds, &name, &last_message, &priority)
+	err = chatRow.Scan(&id, &Type, &memberIds, &name, &last_message, &last_message_time, &priority)
 	if err != nil {
-		log.Printf("query row err: %v\n", err)
+		log.Printf("query row err(%v)\n", err)
 		return nil, err
 	} else {
 		members := []*model.User{}
@@ -35,12 +37,14 @@ func ChatRowToChatModel(chatRow pgx.Row)(chatModel *model.Chat, err error){
 		if priority == constant.PriorityPinned{
 			pinned = true
 		}
+		last_message_time_string := last_message_time.Format(time.RFC3339)
 		return &model.Chat{
 			ID:          id,
 			Type: model.ChatType(Type),
 			Members:     members,
 			Name:        name,
 			LastMessage: lastMessage,
+			LastMessageTime: &last_message_time_string,
 			Pinned: pinned,
 		}, nil
 	}

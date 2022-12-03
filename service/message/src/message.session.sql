@@ -8,11 +8,13 @@ CREATE TABLE public.chat(
 	members STRING[] NOT NULL,
 	name STRING, 
 	last_message JSONB,
+	last_message_time TIMESTAMPTZ,
 	--last_message_update_time STRING AS (last_message->>'update_time') STORED,
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
 	CONSTRAINT "primary" PRIMARY KEY (id ASC)
 	--INVERTED INDEX (members)
 );
+
 --这种设计，每次chat发送一条消息，会更新每个members,排序相关,需要更新时间
 --创建chat事务创建
 --查询需要join
@@ -25,17 +27,19 @@ CREATE TABLE public.chat(
 --还要就是未读信息数量，也是每个用户特定，又和每条消息关联的
 --每次有新消息，就得更新用户特定状态。。顺带也更新时间
 --最终选择last_message_time在user_chat维护的方案
+--获取可以在chat表里做last_message_time index来支持Join排序
+--先不做复杂。join获取chat last_message_time再做排序
+-- last_message_time是必须的。。paginatin必须要求所有字段在一个表里
 CREATE TABLE public.user_chat(
 	user_id STRING NOT NULL,
-	chat_id STRING NOT NULL,
-	priority INT DEFAULT 0, --default: 0, pinned: 10
+	chat_id STRING NOT NULL references public.chat(id) ON DELETE CASCADE,
+	priority INT DEFAULT 0, --default: 0, pinned: 1
 	last_message_time TIMESTAMPTZ,
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
 	CONSTRAINT "primary" PRIMARY KEY (user_id ASC, chat_id ASC),
-	UNIQUE INDEX (user_id ASC, priority DESC, last_message_time DESC, chat_id ASC)
+	UNIQUE INDEX (user_id ASC, priority DESC, last_message_time DESC, chat_id ASC),
 	INDEX (chat_id ASC)
 );
-CREATE INDEX ON user_chat (chat_id) STORING (priority);
 
 CREATE TABLE public.message(
 	id UUID DEFAULT gen_random_uuid(),
@@ -49,22 +53,3 @@ CREATE TABLE public.message(
 
 
 
--- CREATE INVERTED INDEX ON chat (members);
--- deprecate
--- CREATE TABLE public.user_chat(
--- 	user_id STRING NOT NULL,
--- 	chat_id UUID NOT NULL,
--- 	pinned BOOL DEFAULT false,
--- 	unread_message_count INT DEFAULT 0,
--- 	last_deleted_time TIMESTAMPTZ, -- whether show chat(last_deleted_time < last_message_update_time)
--- 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
--- 	CONSTRAINT "primary" PRIMARY KEY (user_id ASC, chat_id ASC)
--- );
-
-
-
-
-
-
-{"1": {"last_deleted_time": "", "pinned": true, "unread_message_count": 0}, "2": {"last_deleted_time": "", "pinned": true, "unread_message_count": 0}}
-{"1": {"last_deleted_time": "", "pinned": true, "unread_message_count": 0}, "2": {"last_deleted_time": "", "pinned": true, "unread_message_count": 0}, "3": {"last_deleted_time": "", "pinned": true, "unread_message_count": 0}}

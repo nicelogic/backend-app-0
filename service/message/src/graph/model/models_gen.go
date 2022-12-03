@@ -9,12 +9,13 @@ import (
 )
 
 type Chat struct {
-	ID          string   `json:"id"`
-	Type        ChatType `json:"type"`
-	Members     []*User  `json:"members"`
-	Pinned      bool     `json:"pinned"`
-	LastMessage *Message `json:"lastMessage"`
-	Name        *string  `json:"name"`
+	ID              string   `json:"id"`
+	Type            ChatType `json:"type"`
+	Members         []*User  `json:"members"`
+	Pinned          bool     `json:"pinned"`
+	LastMessage     *Message `json:"lastMessage"`
+	LastMessageTime *string  `json:"lastMessageTime"`
+	Name            *string  `json:"name"`
 }
 
 type ChatConnection struct {

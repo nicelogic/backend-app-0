@@ -1,12 +1,13 @@
 package sql
 
-const QueryChat = `
+const QueryUserChat = `
 select
 	id,
 	type,
 	members, 
 	name,
 	last_message,
+	uc.last_message_time,
 	uc."priority" 
 from public.chat c
 join public.user_chat uc 
@@ -41,10 +42,42 @@ insert
 values($1,
 $2,
 0,
-now());
+now())
+`
+
+const DeleteChat = `
+delete
+from
+	public.chat
+where
+	id = $1
 `
 
 const QueryChats = `
-
+select
+	c.id,
+	c.type,
+	c.members, 
+	c.name,
+	c.last_message,
+	uc.last_message_time,
+	uc."priority"
+from
+	public.user_chat uc
+join 
+	public.chat c
+on
+	(uc.chat_id = c.id)
+where
+	uc.user_id = $1
+	and (
+		(uc."priority" = $2 and (uc.last_message_time < $3 or uc.chat_id > $4))
+		or (uc."priority" < $2) 
+	)
+order by
+	uc."priority" desc,
+	uc.last_message_time desc,
+	uc.chat_id asc
+limit $5
 `
 

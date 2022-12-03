@@ -47,12 +47,13 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Chat struct {
-		ID          func(childComplexity int) int
-		LastMessage func(childComplexity int) int
-		Members     func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Pinned      func(childComplexity int) int
-		Type        func(childComplexity int) int
+		ID              func(childComplexity int) int
+		LastMessage     func(childComplexity int) int
+		LastMessageTime func(childComplexity int) int
+		Members         func(childComplexity int) int
+		Name            func(childComplexity int) int
+		Pinned          func(childComplexity int) int
+		Type            func(childComplexity int) int
 	}
 
 	ChatConnection struct {
@@ -93,7 +94,7 @@ type ComplexityRoot struct {
 		AddGroupChatMembers    func(childComplexity int, id string, memberIds []string) int
 		CreateChat             func(childComplexity int, memberIds []string, name *string) int
 		CreateMessage          func(childComplexity int, chatID string, message string) int
-		DeleteGroupChat        func(childComplexity int, id string) int
+		DeleteChat             func(childComplexity int, id string) int
 		RemoveGroupChatMembers func(childComplexity int, id string, memberIds []string) int
 	}
 
@@ -125,7 +126,7 @@ type MutationResolver interface {
 	CreateChat(ctx context.Context, memberIds []string, name *string) (*model.Chat, error)
 	AddGroupChatMembers(ctx context.Context, id string, memberIds []string) (bool, error)
 	RemoveGroupChatMembers(ctx context.Context, id string, memberIds []string) (bool, error)
-	DeleteGroupChat(ctx context.Context, id string) (bool, error)
+	DeleteChat(ctx context.Context, id string) (bool, error)
 	CreateMessage(ctx context.Context, chatID string, message string) (*model.Message, error)
 }
 type QueryResolver interface {
@@ -164,6 +165,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Chat.LastMessage(childComplexity), true
+
+	case "Chat.lastMessageTime":
+		if e.complexity.Chat.LastMessageTime == nil {
+			break
+		}
+
+		return e.complexity.Chat.LastMessageTime(childComplexity), true
 
 	case "Chat.members":
 		if e.complexity.Chat.Members == nil {
@@ -341,17 +349,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateMessage(childComplexity, args["chatId"].(string), args["message"].(string)), true
 
-	case "Mutation.deleteGroupChat":
-		if e.complexity.Mutation.DeleteGroupChat == nil {
+	case "Mutation.deleteChat":
+		if e.complexity.Mutation.DeleteChat == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteGroupChat_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_deleteChat_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteGroupChat(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.DeleteChat(childComplexity, args["id"].(string)), true
 
 	case "Mutation.removeGroupChatMembers":
 		if e.complexity.Mutation.RemoveGroupChatMembers == nil {
@@ -562,7 +570,7 @@ type Mutation {
   createChat(memberIds: [String!]!, name: String): Chat!
   addGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
   removeGroupChatMembers(id: ID!, memberIds: [String!]!): Boolean!
-  deleteGroupChat(id: ID!): Boolean!
+  deleteChat(id: ID!): Boolean!
 }
 
 enum ChatType{
@@ -576,6 +584,7 @@ type Chat {
   members: [User!]!
   pinned: Boolean!
   lastMessage: Message
+  lastMessageTime: String
   name: String
 }
 
@@ -684,7 +693,7 @@ func (ec *executionContext) field_Mutation_createMessage_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteGroupChat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_deleteChat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1079,6 +1088,47 @@ func (ec *executionContext) fieldContext_Chat_lastMessage(ctx context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Chat_lastMessageTime(ctx context.Context, field graphql.CollectedField, obj *model.Chat) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Chat_lastMessageTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LastMessageTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Chat_lastMessageTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Chat",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Chat_name(ctx context.Context, field graphql.CollectedField, obj *model.Chat) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Chat_name(ctx, field)
 	if err != nil {
@@ -1310,6 +1360,8 @@ func (ec *executionContext) fieldContext_Edge_node(ctx context.Context, field gr
 				return ec.fieldContext_Chat_pinned(ctx, field)
 			case "lastMessage":
 				return ec.fieldContext_Chat_lastMessage(ctx, field)
+			case "lastMessageTime":
+				return ec.fieldContext_Chat_lastMessageTime(ctx, field)
 			case "name":
 				return ec.fieldContext_Chat_name(ctx, field)
 			}
@@ -1910,6 +1962,8 @@ func (ec *executionContext) fieldContext_Mutation_createChat(ctx context.Context
 				return ec.fieldContext_Chat_pinned(ctx, field)
 			case "lastMessage":
 				return ec.fieldContext_Chat_lastMessage(ctx, field)
+			case "lastMessageTime":
+				return ec.fieldContext_Chat_lastMessageTime(ctx, field)
 			case "name":
 				return ec.fieldContext_Chat_name(ctx, field)
 			}
@@ -2040,8 +2094,8 @@ func (ec *executionContext) fieldContext_Mutation_removeGroupChatMembers(ctx con
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_deleteGroupChat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deleteGroupChat(ctx, field)
+func (ec *executionContext) _Mutation_deleteChat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteChat(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2054,7 +2108,7 @@ func (ec *executionContext) _Mutation_deleteGroupChat(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteGroupChat(rctx, fc.Args["id"].(string))
+		return ec.resolvers.Mutation().DeleteChat(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2071,7 +2125,7 @@ func (ec *executionContext) _Mutation_deleteGroupChat(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_deleteGroupChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_deleteChat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -2088,7 +2142,7 @@ func (ec *executionContext) fieldContext_Mutation_deleteGroupChat(ctx context.Co
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deleteGroupChat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_deleteChat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4540,6 +4594,10 @@ func (ec *executionContext) _Chat(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = ec._Chat_lastMessage(ctx, field, obj)
 
+		case "lastMessageTime":
+
+			out.Values[i] = ec._Chat_lastMessageTime(ctx, field, obj)
+
 		case "name":
 
 			out.Values[i] = ec._Chat_name(ctx, field, obj)
@@ -4824,10 +4882,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "deleteGroupChat":
+		case "deleteChat":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteGroupChat(ctx, field)
+				return ec._Mutation_deleteChat(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
