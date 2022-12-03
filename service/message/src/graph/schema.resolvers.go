@@ -24,7 +24,7 @@ func (r *mutationResolver) CreateChat(ctx context.Context, memberIds []string, n
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("user: %#v crate chat, name(%v), members(%v)\n", user, name, memberIds)
+	log.Printf("user: %#v create chat, name(%v), members(%v)\n", user, name, memberIds)
 	memberIds = append(memberIds, user.Id)
 	chatId := uuid.New().String()
 	if len(memberIds) == 2 {
@@ -79,7 +79,7 @@ func (r *mutationResolver) DeleteGroupChat(ctx context.Context, id string) (bool
 }
 
 // GetChats is the resolver for the getChats field.
-func (r *queryResolver) GetChats(ctx context.Context) ([]*model.Chat, error) {
+func (r *queryResolver) GetChats(ctx context.Context, first *int, after *string) (*model.ChatConnection, error) {
 	panic(fmt.Errorf("not implemented: GetChats - getChats"))
 }
 
@@ -91,22 +91,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) UpdateChatMemberSetting(ctx context.Context, id string, setting string) (bool, error) {
-	panic(fmt.Errorf("not implemented: UpdateChatMemberSetting - updateChatMemberSetting"))
-}
-func (r *mutationResolver) DeleteChat(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteChat - deleteChat"))
-}
-func (r *mutationResolver) AddChatMembers(ctx context.Context, id string, memberIds []string) (bool, error) {
-	panic(fmt.Errorf("not implemented: AddChatMembers - addChatMembers"))
-}
-func (r *mutationResolver) RemoveChatMembers(ctx context.Context, id string, memberIds []string) (bool, error) {
-	panic(fmt.Errorf("not implemented: RemoveChatMembers - removeChatMembers"))
-}

@@ -1,5 +1,5 @@
 type Query {
-  getChats: [Chat!]
+  getChats(first: Int = 10, after: String): ChatConnection!
 }
 
 type Mutation {
@@ -20,8 +20,9 @@ type Chat {
   id: ID!
   type: ChatType!
   members: [User!]!
-  name: String
+  pinned: Boolean!
   lastMessage: Message
+  name: String
 }
 
 type Message {
@@ -33,4 +34,20 @@ type Message {
 
 type User {
   id: ID!
+}
+
+type ChatConnection {
+  totalCount: Int!
+  edges: [Edge!]
+  pageInfo: PageInfo!
+}
+
+type Edge{
+  node: Chat!
+  cursor: String
+}
+
+type PageInfo{
+  endCursor: String
+  hasNextPage: Boolean!
 }

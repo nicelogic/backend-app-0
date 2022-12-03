@@ -12,8 +12,20 @@ type Chat struct {
 	ID          string   `json:"id"`
 	Type        ChatType `json:"type"`
 	Members     []*User  `json:"members"`
-	Name        *string  `json:"name"`
+	Pinned      bool     `json:"pinned"`
 	LastMessage *Message `json:"lastMessage"`
+	Name        *string  `json:"name"`
+}
+
+type ChatConnection struct {
+	TotalCount int       `json:"totalCount"`
+	Edges      []*Edge   `json:"edges"`
+	PageInfo   *PageInfo `json:"pageInfo"`
+}
+
+type Edge struct {
+	Node   *Chat   `json:"node"`
+	Cursor *string `json:"cursor"`
 }
 
 type Message struct {
@@ -23,9 +35,30 @@ type Message struct {
 	Date    string `json:"date"`
 }
 
+type MessageConnection struct {
+	TotalCount int              `json:"totalCount"`
+	Edges      []*MessageEdge   `json:"edges"`
+	PageInfo   *MessagePageInfo `json:"pageInfo"`
+}
+
+type MessageEdge struct {
+	Node   *Message `json:"node"`
+	Cursor *string  `json:"cursor"`
+}
+
+type MessagePageInfo struct {
+	EndCursor   *string `json:"endCursor"`
+	HasNextPage bool    `json:"hasNextPage"`
+}
+
 type NewChatMessage struct {
 	ID      string   `json:"id"`
 	Message *Message `json:"message"`
+}
+
+type PageInfo struct {
+	EndCursor   *string `json:"endCursor"`
+	HasNextPage bool    `json:"hasNextPage"`
 }
 
 type User struct {

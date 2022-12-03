@@ -16,7 +16,7 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, chatID string, mes
 }
 
 // GetMessages is the resolver for the getMessages field.
-func (r *queryResolver) GetMessages(ctx context.Context, chatID string) ([]*model.Message, error) {
+func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *int, after *string) (*model.MessageConnection, error) {
 	panic(fmt.Errorf("not implemented: GetMessages - getMessages"))
 }
 

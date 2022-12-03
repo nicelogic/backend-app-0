@@ -1,5 +1,5 @@
 extend type Query {
-  getMessages(chatId: String!): [Message!]
+  getMessages(chatId: String!, first: Int = 10, after: String): MessageConnection!
 }
 
 extend type Mutation {
@@ -14,3 +14,20 @@ type NewChatMessage{
   id: ID!
   message: Message!
 }
+
+type MessageConnection {
+  totalCount: Int!
+  edges: [MessageEdge!]
+  pageInfo: MessagePageInfo!
+}
+
+type MessageEdge{
+  node: Message!
+  cursor: String
+}
+
+type MessagePageInfo{
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
