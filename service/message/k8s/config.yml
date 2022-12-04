@@ -5,7 +5,7 @@ metadata:
   name: config-message
   namespace: app-0
 data:
-  config-contacts.yml: |+
+  config-message.yml: |+
     listen_address: ":80"
     path: /
     public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
