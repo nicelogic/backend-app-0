@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message
+  namespace: app-0
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: message
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: message
+    spec:
+      containers:
+      - name: message
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/message:v0.1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: secret-jwt
+          mountPath: /etc/app-0/secret-jwt
+          readOnly: true
+        - name: secret-crdb-ca-crt
+          mountPath: /etc/app-0/secret-crdb-ca-crt
+          readOnly: true
+        - name: config-crdb
+          mountPath: /etc/app-0/config-crdb
+          readOnly: true
+        - name: config-pulsar
+          mountPath: /etc/app-0/config-pulsar
+          readOnly: true
+        - name: config-message
+          mountPath: /etc/app-0/config-message
+          readOnly: true
+      volumes:
+        - name: secret-jwt
+          secret:
+            secretName: secret-jwt
+            optional: false # 默认设置，意味着 secret 必须已经存在
+        - name: secret-crdb-ca-crt
+          secret:
+            secretName: secret-crdb-ca-crt
+            optional: false 
+        - name: config-crdb
+          configMap:
+            name: config-crdb
+            optional: false 
+        - name: config-pulsar
+          configMap:
+            name: config-pulsar
+            optional: false 
+        - name: config-message
+          configMap:
+            name: config-message
+            optional: false 
+
+        

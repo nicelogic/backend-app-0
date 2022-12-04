@@ -1,0 +1,33 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tls-env0-app0-message
+  namespace: app-0
+spec:
+  dnsNames:
+    - message.app0.env0.luojm.com
+  secretName: tls-env0-app0-message
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: message
+  namespace: app-0
+spec:
+  entryPoints:
+    - websecure
+  tls: 
+    secretName: tls-env0-app0-message
+  routes:
+    - match: Host(`message.app0.env0.luojm.com`) 
+      kind: Rule
+      services:
+      - name: message
+        kind: Service
+        port: 80
+

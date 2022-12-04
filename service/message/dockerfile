@@ -1,19 +1,16 @@
 
-FROM node
+FROM golang
 
-ENV APP_PATH=/opt/niceice/message-service
+ENV APP_PATH=/opt/service/message
+ENV GOPROXY https://goproxy.cn
+
 WORKDIR $APP_PATH
 
-COPY ./service/. /opt/niceice/message-service
+COPY ./src/. $APP_PATH
 
-RUN apt-get upgrade -y
-RUN apt-get update 
-RUN apt-get install -y nodejs
-RUN apt-get install -y npm
-RUN cd /opt/niceice/message-service/
-RUN npm install
-# RUN npm install express express-graphql graphql mongoose jsonwebtoken sha256 express-jwt js-md5 merge-json apollo-server apollo-server-express  graphql-subscriptions subscriptions-transport-ws @graphql-tools/schema @graphql-tools/graphql-file-loader @graphql-tools/load --save
-CMD [ "node", "/opt/niceice/message-service/main.js" ]
+RUN cd $APP_PATH
+RUN go mod tidy
+RUN go build .
+CMD [ "./message" ]
 
 EXPOSE 80
-EXPOSE 443
