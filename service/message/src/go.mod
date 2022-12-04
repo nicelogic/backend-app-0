@@ -62,7 +62,7 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/apache/pulsar-client-go v0.9.0 // indirect
+	github.com/apache/pulsar-client-go v0.9.0 
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/websocket v1.5.0 // direct
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
