@@ -48,6 +48,11 @@ from
 	public.message
 where
 	chat_id = $1
-	and (create_time < $2 
-	or id > $3)
+	and (create_time < $2
+		or (create_time = $2
+			and id > $3))
+order by 
+	create_time desc,
+	id asc
+limit $4
 `

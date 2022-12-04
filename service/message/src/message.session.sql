@@ -19,10 +19,11 @@ CREATE TABLE public.user_chat(
 	user_id STRING NOT NULL,
 	chat_id STRING NOT NULL references public.chat(id) ON DELETE CASCADE,
 	priority INT DEFAULT 0, --default: 0, pinned: 1
-	last_message_time TIMESTAMPTZ,
+	-- last_message_time TIMESTAMPTZ,
 	update_time TIMESTAMPTZ NOT NULL DEFAULT now():::TIMESTAMPTZ,
 	CONSTRAINT "primary" PRIMARY KEY (user_id ASC, chat_id ASC),
-	UNIQUE INDEX (user_id ASC, priority DESC, last_message_time DESC, chat_id ASC),
+	-- UNIQUE INDEX (user_id ASC, priority DESC, last_message_time DESC, chat_id ASC),
+	UNIQUE INDEX (user_id ASC, priority DESC, chat_id ASC),
 	INDEX (chat_id ASC)
 );
 
@@ -58,6 +59,16 @@ last_message_time是必须的。。paginatin必须要求所有字段在一个表
 	* user chat的pagination last message time是否可以去掉，依赖chat last message time
 	* 如果第二点做不到。则怎么做到cascade update user chat table last message time
 
-
+每次写一条消息都要更新member的信息  vs 查询的时候 先把user_chat join chat 再排序
+选择后者
+因为发消息是很频繁的事情。如果group内人很多。。一次都要更新几百个人的表记录（如果真要更新也是要批处理)
+而之所以要记录last_message_time 只是为了排序
+我对这块的理解没有系统了解和深入的做过实验。但是目前来看，只更新chat表，代码上更简单些。
+易于理解。发一条消息，只新增消息和更新chat表即可。不会涉及批量操作
+但是这种设计，导致user pagination chat 的性能不是最高的
+但是全局上来看, 无论读写都是分布式的部分用户数据
+对这块需要深入研究和做实验才能得出科学的结论。。目前不了解的情况下，选择简单的方案
+不对pagination做过早优化
+至少可以得到明显的数据简单的处理逻辑的好处。性能的好处，仅凭粗浅理解，没有实验数据做支撑。不可靠
 
 */

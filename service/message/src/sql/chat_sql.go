@@ -7,7 +7,7 @@ select
 	members, 
 	name,
 	last_message,
-	uc.last_message_time,
+	last_message_time,
 	uc."priority" 
 from public.chat c
 join public.user_chat uc 
@@ -60,7 +60,7 @@ select
 	c.members, 
 	c.name,
 	c.last_message,
-	uc.last_message_time,
+	c.last_message_time,
 	uc."priority"
 from
 	public.user_chat uc
@@ -71,12 +71,12 @@ on
 where
 	uc.user_id = $1
 	and (
-		(uc."priority" = $2 and (uc.last_message_time < $3 or uc.chat_id > $4))
+		(uc."priority" = $2 and (c.last_message_time < $3 or uc.chat_id > $4))
 		or (uc."priority" < $2) 
 	)
 order by
 	uc."priority" desc,
-	uc.last_message_time desc,
+	c.last_message_time desc,
 	uc.chat_id asc
 limit $5
 `

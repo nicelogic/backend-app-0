@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"message/graph/generated"
@@ -29,13 +30,26 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, chatID string, mes
 
 	messageId := uuid.New().String()
 	messageTime := time.Now().Format(time.RFC3339)
+	createdMessage := model.Message{
+		ID:      messageId,
+		Content: message,
+		Sender: &model.User{
+			ID: user.Id,
+		},
+		CreateTime: messageTime,
+	}
+	createdMessageJson, err := json.Marshal(createdMessage)
+	if err != nil{
+		log.Printf("json marshal created message err(%v)\n", err)
+		return nil, err
+	}
 	err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
 		_, err := r.CrdbClient.Pool.Exec(ctx, sql.InsertMessage, messageId, chatID, message, user.Id)
 		if err != nil {
 			log.Printf("in transcation create message , insert message err(%v)\n", err)
 			return err
 		}
-		_, err = r.CrdbClient.Pool.Exec(ctx, sql.UpdateChatLastMessage, message, messageTime, chatID)
+		_, err = r.CrdbClient.Pool.Exec(ctx, sql.UpdateChatLastMessage, createdMessageJson, messageTime, chatID)
 		if err != nil {
 			log.Printf("in transcation create message , insert message err(%v)\n", err)
 			return err
@@ -46,14 +60,7 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, chatID string, mes
 		log.Printf("create message transcation err(%v)\n", err)
 		return nil, err
 	}
-	createdMessage := model.Message{
-		ID:      messageId,
-		Content: message,
-		Sender: &model.User{
-			ID: user.Id,
-		},
-		CreateTime: messageTime,
-	}
+
 
 	//get chat members,then ntf all members except for sender
 	ntf := &model.NewMessage{
@@ -80,8 +87,8 @@ func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *i
 	if after != nil {
 		decodeAfter, _ := base64.StdEncoding.DecodeString(*after)
 		args := strings.Split(string(decodeAfter), ",")
-		messageCreateTime = args[1]
-		messageId = args[2]
+		messageCreateTime = args[0]
+		messageId = args[1]
 	}
 	log.Printf("after: createTime: %s, messageId: %s\n", messageCreateTime, messageId)
 	messagesValues, err := r.CrdbClient.Query(ctx, sql.QueryMessages, chatID, messageCreateTime, messageId, *first)
@@ -93,9 +100,15 @@ func (r *queryResolver) GetMessages(ctx context.Context, chatID string, first *i
 	for _, messageValues := range messagesValues {
 		fmt.Printf("messageVlues: %#v\n", messageValues)
 		messageValues := messageValues.([]any)
+		content := messageValues[1].(map[string]interface{})
+		byteContent, err := json.Marshal(content)
+		if err != nil{
+			log.Printf("json marshal content err(%v)\n", err)
+			return nil, err
+		}
 		message := model.Message{
 			ID:      messageValues[0].(string),
-			Content: messageValues[1].(string),
+			Content: string(byteContent),
 			Sender: &model.User{
 				ID: messageValues[2].(string),
 			},
