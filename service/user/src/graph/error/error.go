@@ -28,9 +28,9 @@ func HandleError(server *handler.Server){
 	})
 	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		log.Printf("error: %v\n", e)
-		err := graphql.DefaultErrorPresenter(ctx, e)
 		var jwtError *jwt.ValidationError
 		hasJwtError := errors.As(e, &jwtError)
+		err := graphql.DefaultErrorPresenter(ctx, e)
 		switch {
 		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
 			err.Message = errs.TokenExpired
