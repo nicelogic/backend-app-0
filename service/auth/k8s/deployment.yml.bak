@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth:v1.0.8
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/auth:1.1.5
         imagePullPolicy: Always
         resources:
           requests:

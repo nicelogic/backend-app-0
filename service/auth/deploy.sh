@@ -1,8 +1,7 @@
 #!/bin/bash
 
 version=$1
-#./build.sh $version
-serviceName="auth"
+serviceName=$2
     
 pathToEnv0="../../0-env"
 kubeConfigFilePath=$(cat $pathToEnv0/which-env-to-apply)

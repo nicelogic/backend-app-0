@@ -1,7 +1,7 @@
 #!/bin/bash
 
 version=$1
-serviceName="auth"
+serviceName=$2
 
 echo "inpurt aliyun docker reposigory password:"
 docker login --username=niceice220 --password-stdin registry.cn-shanghai.aliyuncs.com
