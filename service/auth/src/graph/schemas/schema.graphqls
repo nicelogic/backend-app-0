@@ -7,11 +7,13 @@ type Auth {
 
 type Result {
   auth: Auth
-  token: String
+  access_token: String!
+  refresh_token: String!
 }
 
 type Query {
   signInByUserName(userName: String!, pwd: String!): Result!
+  refreshToken(refreshToken: String!): Result!
 }
 
 type Mutation {

@@ -13,4 +13,5 @@ data:
     db_config_file_path: "/etc/app-0/config-crdb/config-crdb.yml"
     public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
     private_key_file_path: "/etc/app-0/secret-jwt/jwt-privatekey"
-    token_expire_second: 86400 # 60 * 60 * 24
+    access_token_expire_seconds: 7200 # 60 * 60 * 2 = 2 hours
+    refresh_token_expire_seconds: 7776000 # 60 * 60 * 24 * 90 = 3 months

@@ -8,6 +8,7 @@ type Config struct{
 	Db_pool_connections_num int32
 	Public_key_file_path string
 	Private_key_file_path string
-	Token_expire_second int32
+	Access_token_expire_seconds int32
+	Refresh_token_expire_seconds int32
 }
 

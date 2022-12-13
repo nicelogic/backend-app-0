@@ -2,10 +2,12 @@ package error
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/nicelogic/errs"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -28,8 +30,14 @@ func HandleError(server *handler.Server){
 	})
 	server.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		log.Printf("error: %v\n", e)
+		var jwtError *jwt.ValidationError
+		hasJwtError := errors.As(e, &jwtError)
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		switch {
+		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
+			err.Message = errs.TokenExpired
+		case hasJwtError:
+			err.Message = errs.TokenInvalid
 		case err.Message == UserExist:
 		case err.Message == UserNotExist:
 		case err.Message == PwdWrong:

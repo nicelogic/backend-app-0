@@ -9,6 +9,7 @@ type Auth struct {
 }
 
 type Result struct {
-	Auth  *Auth   `json:"auth"`
-	Token *string `json:"token"`
+	Auth         *Auth  `json:"auth"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }

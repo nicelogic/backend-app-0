@@ -13,12 +13,11 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-
 	"log"
 	"time"
 
 	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx/v4"
+	pgx "github.com/jackc/pgx/v4"
 	"github.com/jaevor/go-nanoid"
 )
 
@@ -31,9 +30,14 @@ func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string
 		return nil, err
 	}
 	userId := canonicID()
-	token, err := r.AuthUtil.SignToken(userId, time.Duration(r.Config.Token_expire_second)*time.Second)
+	accessToken, err := r.AuthUtil.SignToken(userId, time.Duration(r.Config.Access_token_expire_seconds)*time.Second)
 	if err != nil {
-		log.Printf("sign token err: %v\n", err)
+		log.Printf("sign access token err: %v\n", err)
+		return nil, err
+	}
+	refreshToken, err := r.AuthUtil.SignToken(userId, time.Duration(r.Config.Refresh_token_expire_seconds)*time.Second)
+	if err != nil {
+		log.Printf("sign refresh token err: %v\n", err)
 		return nil, err
 	}
 	byteMd5Pwd := md5.Sum([]byte(pwd))
@@ -55,7 +59,8 @@ func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string
 			AuthIDType: constant.AuthIdTypeUserName,
 			UserID:     userId,
 		},
-		Token: &token,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 	return result, nil
 }
@@ -79,9 +84,14 @@ func (r *queryResolver) SignInByUserName(ctx context.Context, userName string, p
 		log.Println("pwd wrong")
 		return nil, errors.New(autherror.PwdWrong)
 	}
-	token, err := r.AuthUtil.SignToken(user_id, time.Duration(r.Config.Token_expire_second)*time.Second)
+	accessToken, err := r.AuthUtil.SignToken(user_id, time.Duration(r.Config.Access_token_expire_seconds)*time.Second)
 	if err != nil {
-		log.Printf("sign token err: %v\n", err)
+		log.Printf("sign access token err: %v\n", err)
+		return nil, err
+	}
+	refreshToken, err := r.AuthUtil.SignToken(user_id, time.Duration(r.Config.Refresh_token_expire_seconds)*time.Second)
+	if err != nil {
+		log.Printf("sign refresh token err: %v\n", err)
 		return nil, err
 	}
 	result := &model.Result{
@@ -90,7 +100,33 @@ func (r *queryResolver) SignInByUserName(ctx context.Context, userName string, p
 			AuthIDType: auth_id_type,
 			UserID:     user_id,
 		},
-		Token: &token,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	return result, err
+}
+
+// RefreshToken is the resolver for the RefreshToken field.
+func (r *queryResolver) RefreshToken(ctx context.Context, refreshToken string) (*model.Result, error) {
+	//get user id from refresh token and check token not expired, then sign new access and refresh token
+	user, err := r.AuthUtil.UserFromJwt(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("user(%v) refresh token\n", user)
+	accessToken, err := r.AuthUtil.SignToken(user.Id, time.Duration(r.Config.Access_token_expire_seconds)*time.Second)
+	if err != nil {
+		log.Printf("sign access token err: %v\n", err)
+		return nil, err
+	}
+	newRefreshToken, err := r.AuthUtil.SignToken(user.Id, time.Duration(r.Config.Refresh_token_expire_seconds)*time.Second)
+	if err != nil {
+		log.Printf("sign refresh token err: %v\n", err)
+		return nil, err
+	}
+	result := &model.Result{
+		AccessToken:  accessToken,
+		RefreshToken: newRefreshToken,
 	}
 	return result, err
 }
