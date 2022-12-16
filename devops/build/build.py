@@ -1,8 +1,12 @@
 
 import os
 import yaml
+import sys
 
-configYmlPath = r'./service.yml'
+#configYmlPath = r'./service.yml'
+dockerFileDir = sys.argv[1]
+configYmlPath = sys.argv[1] + '/service.yml'
+print('configYmlPath: ', configYmlPath)
 configYml = open(configYmlPath)
 config = yaml.safe_load(configYml)
 lastVersionKey = 'last_version'
@@ -17,6 +21,6 @@ print('build version: ' + buildVersion)
 print('service name: ' + serviceName)
 config[lastVersionKey] = noVprefixBuildVersion
 
+os.system('./build.sh ' + buildVersion + ' ' + serviceName + ' ' + dockerFileDir)
 with open(configYmlPath, 'w') as updateYmlPath:
 	yaml.dump(config, updateYmlPath)
-os.system('./build.sh ' + buildVersion + ' ' + serviceName)

@@ -1,8 +1,10 @@
 #!/bin/bash
 
+serviceDir=$1
+
 pathToEnv0="../../0-env"
 kubeConfigFilePath=$(cat $pathToEnv0/which-env-to-apply)
 kubeConfigFilePath=$pathToEnv0"/"$kubeConfigFilePath
 echo "current env: $kubeConfigFilePath"
-kubectl --kubeconfig $kubeConfigFilePath apply -f ./k8s/ingress-route.yml
+kubectl --kubeconfig $kubeConfigFilePath apply -f $serviceDir/k8s/ingress-route.yml
 

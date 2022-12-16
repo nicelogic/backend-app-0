@@ -1,8 +1,10 @@
 #!/bin/bash
 
+serviceDir=$1
+
 pathToEnv0="../../0-env"
 kubeConfigFilePath=$(cat $pathToEnv0/which-env-to-apply)
 kubeConfigFilePath=$pathToEnv0"/"$kubeConfigFilePath
 echo "current env: $kubeConfigFilePath"
-kubectl --kubeconfig $kubeConfigFilePath apply -k ./k8s
+kubectl --kubeconfig $kubeConfigFilePath apply -k $serviceDir/k8s
 
