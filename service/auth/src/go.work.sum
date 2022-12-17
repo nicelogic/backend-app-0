@@ -1,6 +1,8 @@
 github.com/cpuguy83/go-md2man/v2 v2.0.1 h1:r/myEWzV9lfsM1tFLgDyu0atFtJ1fXn261LKYj/3DxU=
 github.com/jackc/chunkreader v1.0.0 h1:4s39bBR8ByfqH+DKm8rQA3E1LHZWB9XWcrz8fqaZbe0=
 github.com/jackc/pgproto3 v1.1.0 h1:FYYE4yRw+AgI8wXIinMlNjBbp/UitDJwfj5LqqewP1A=
+github.com/nicelogic/authutil v1.0.0 h1:CExjx4YJPUTGeLrz+iqqUHwAoUlwTy4HgQflp3AOMkU=
+github.com/nicelogic/authutil v1.0.0/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
 github.com/nicelogic/pulsarclient v0.3.0 h1:3ti0t6GaNIqKh7cbOYL+rwSuSBU5uzZTUWe3ese26Xc=
 github.com/nicelogic/pulsarclient v0.3.0/go.mod h1:izDufYrr/K4Ji6sh1CcckVxYWyy0kW3ctv1ycPQ0HCQ=
 github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
