@@ -13,7 +13,7 @@ import (
 	"user/graph/model"
 	"user/sql"
 
-	"github.com/jackc/pgx/v4"
+	pgx "github.com/jackc/pgx/v4"
 	"github.com/nicelogic/authutil"
 )
 
@@ -107,6 +107,11 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.Us
 		queriedUsers = append(queriedUsers, queriedUser)
 	}
 	return queriedUsers, nil
+}
+
+// PreSignedAvatarURL is the resolver for the preSignedAvatarUrl field.
+func (r *queryResolver) PreSignedAvatarURL(ctx context.Context) (string, error) {
+	panic(fmt.Errorf("not implemented: PreSignedAvatarURL - preSignedAvatarUrl"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

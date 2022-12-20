@@ -22,7 +22,7 @@ import (
 func main() {
 	serviceConfig := userConfig.Config{}
 	config.Init(constant.ConfigPath, &serviceConfig)
-	authUtil, crdbClient, err := dependence.Init(&serviceConfig)
+	authUtil, crdbClient, minioClient, err := dependence.Init(&serviceConfig)
 	if err != nil {
 		log.Printf("dependence init err: %v\n", err)
 	}
@@ -32,6 +32,7 @@ func main() {
 				Resolvers: &graph.Resolver{
 					AuthUtil:   authUtil,
 					CrdbClient: crdbClient,
+					MinioClient: minioClient,
 				}}))
 	usererror.HandleError(server)
 	server.AddTransport(transport.POST{})

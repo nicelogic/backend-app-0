@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/minio/minio-go/v7"
 	"github.com/nicelogic/authutil"
 	"github.com/nicelogic/crdb"
 )
@@ -14,4 +15,5 @@ import (
 type Resolver struct{
 	AuthUtil *authutil.Auth
 	CrdbClient *crdb.Client
+	MinioClient *minio.Client
 }

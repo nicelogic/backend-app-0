@@ -8,6 +8,7 @@ type User {
 type Query {
   me: User!
   users(idOrName: String!): [User!]
+  preSignedAvatarUrl: String!
 }
 
 scalar Map
