@@ -6,6 +6,7 @@
 english name: warmth
 中文: 抱团取暖
 
+
 ## 设计
 
 * only use go
@@ -84,3 +85,12 @@ getDetailData
 
 这种也主要针对多设备多终端情况
 而且要结合cache情况看
+
+## todo
+
+* k8s集群重启， crdb 和 service之间是tcp连接的。service需要不断重试连接失败的情况
+2022/12/22 08:48:33 error connecting to the database: failed to connect to `host=cockroach-lb-service.cockroach-operator-system user=luojm database=auth`: hostname resolving error (lookup cockroach-lb-service.cockroach-operator-system on 10.96.0.10:53: read udp 10.244.4.90:46007->10.96.0.10:53: read: connection refused)
+2022/12/22 08:48:33 crdb init err: failed to connect to `host=cockroach-lb-service.cockroach-operator-system user=luojm database=auth`: hostname resolving error (lookup cockroach-lb-service.cockroach-operator-system on 10.96.0.10:53: read udp 10.244.4.90:46007->10.96.0.10:53: read: connection refused)
+2022/12/22 08:48:33 dependence init err: failed to connect to `host=cockroach-lb-service.cockroach-operator-system user=luojm database=auth`: hostname resolving error (lookup cockroach-lb-service.cockroach-operator-system on 10.96.0.10:53: read udp 10.244.4.90:46007->10.96.0.10:53: read: connection refused)
+还有就是使用的过程中崩溃，然后要触发重新连接
+使用的情况，如果是nil,最好能够明确打印crdb == nil

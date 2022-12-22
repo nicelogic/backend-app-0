@@ -8,11 +8,16 @@ type User {
 type Query {
   me: User!
   users(idOrName: String!): [User!]
-  preSignedAvatarUrl: String!
+  preSignedAvatarUrl: Avatar!
 }
 
 scalar Map
 
 type Mutation {
   updateUser(changes: Map!): User!
+}
+
+type Avatar {
+  preSignedUrl: String!
+  anonymousAccessUrl: String!
 }
