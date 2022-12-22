@@ -23,10 +23,10 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("user: %v update: %v\n", user.Id, changes)
+	fmt.Printf("user(%v) update(%v)\n", user.Id, changes)
 	changesJson, err := json.Marshal(changes)
 	if err != nil {
-		log.Printf("json marshal changes err: %v\n", err)
+		log.Printf("json marshal changes err(%v)\n", err)
 		return nil, err
 	}
 	changesJsonString := string(changesJson)
@@ -36,10 +36,10 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	var update_time time.Time
 	err = row.Scan(&id, &data, &name, &update_time)
 	if err != nil {
-		log.Printf("scan err: %v", err)
+		log.Printf("scan err(%v)", err)
 		return nil, err
 	}
-	log.Printf("update_time: %v\n", update_time)
+	log.Printf("update_time(%v)\n", update_time)
 	updatedUser := &model.User{
 		ID:   id,
 		Name: &name,
@@ -54,7 +54,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("user: %v query own info\n", user.Id)
+	fmt.Printf("user(%v) query own info\n", user.Id)
 	row := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryMe, user.Id)
 	var id, data, name string
 	var update_time time.Time
@@ -62,10 +62,10 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	if err == pgx.ErrNoRows {
 		log.Printf("user never update his data")
 	} else if err != nil {
-		log.Printf("scan err: %v", err)
+		log.Printf("scan err(%v)", err)
 		return nil, err
 	}
-	log.Printf("update_time: %v\n", update_time)
+	log.Printf("update_time(%v)\n", update_time)
 	me := &model.User{
 		ID:   user.Id,
 		Name: &name,
@@ -80,10 +80,10 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.Us
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("user: %v query idOrName: %s\n", user.Id, idOrName)
+	fmt.Printf("user(%v) query idOrName(%s)\n", user.Id, idOrName)
 	userSlice, err := r.CrdbClient.Query(ctx, sql.QueryNameOrId, idOrName)
 	if err != nil {
-		log.Printf("query users(idOrName: %s) err: %v\n", idOrName, err)
+		log.Printf("query users idOrName(%s) err(%v)\n", idOrName, err)
 		return nil, err
 	}
 	queriedUsers := make([]*model.User, 0)
@@ -99,7 +99,7 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.Us
 		name := plainUser[2].(string)
 		queriedUser.Name = &name
 		updateTime := plainUser[3].(time.Time)
-		log.Printf("qeuried user(%s), data(%s), name(%s), updateTime: %v\n",
+		log.Printf("qeuried user(%s), data(%s), name(%s), updateTime(%v)\n",
 			queriedUser.ID,
 			*queriedUser.Data,
 			*queriedUser.Name,
@@ -110,8 +110,24 @@ func (r *queryResolver) Users(ctx context.Context, idOrName string) ([]*model.Us
 }
 
 // PreSignedAvatarURL is the resolver for the preSignedAvatarUrl field.
-func (r *queryResolver) PreSignedAvatarURL(ctx context.Context) (string, error) {
-	panic(fmt.Errorf("not implemented: PreSignedAvatarURL - preSignedAvatarUrl"))
+func (r *queryResolver) PreSignedAvatarURL(ctx context.Context) (*model.Avatar, error) {
+	user, err := authutil.GetUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("user(%v) PreSignedAvatarURL\n", user.Id)
+	presignedURL, err := r.MinioClient.PresignedPutObject(ctx,
+		r.Config.S3_bucket_name,
+		fmt.Sprintf("/users/%s/avatar.png", user.Id),
+		time.Duration(r.Config.S3_signed_object_expired_seconds)*time.Second)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("presigned url(%v)\n", presignedURL)
+	return &model.Avatar{
+		PreSignedURL:       presignedURL.String(),
+		AnonymousAccessURL: "https://" + presignedURL.Host + presignedURL.Path,
+	}, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

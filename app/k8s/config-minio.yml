@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-minio
+  namespace: app-0
+data:
+  config-minio.yml: |+
+    endpoint: "tenant0.minio.env0.luojm.com:9443"
+    access_key_id: "bUIacujwb7dMIALn"
+    secret_access_key: "oKG9Y1B2QBsDW6fmlyJYVARcVJJaqqs1"

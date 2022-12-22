@@ -2,6 +2,11 @@
 
 package model
 
+type Avatar struct {
+	PreSignedURL       string `json:"preSignedUrl"`
+	AnonymousAccessURL string `json:"anonymousAccessUrl"`
+}
+
 type User struct {
 	ID   string  `json:"id"`
 	Name *string `json:"name"`

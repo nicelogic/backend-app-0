@@ -44,6 +44,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Avatar struct {
+		AnonymousAccessURL func(childComplexity int) int
+		PreSignedURL       func(childComplexity int) int
+	}
+
 	Mutation struct {
 		UpdateUser func(childComplexity int, changes map[string]interface{}) int
 	}
@@ -67,7 +72,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
 	Users(ctx context.Context, idOrName string) ([]*model.User, error)
-	PreSignedAvatarURL(ctx context.Context) (string, error)
+	PreSignedAvatarURL(ctx context.Context) (*model.Avatar, error)
 }
 
 type executableSchema struct {
@@ -84,6 +89,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Avatar.anonymousAccessUrl":
+		if e.complexity.Avatar.AnonymousAccessURL == nil {
+			break
+		}
+
+		return e.complexity.Avatar.AnonymousAccessURL(childComplexity), true
+
+	case "Avatar.preSignedUrl":
+		if e.complexity.Avatar.PreSignedURL == nil {
+			break
+		}
+
+		return e.complexity.Avatar.PreSignedURL(childComplexity), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -221,13 +240,18 @@ type User {
 type Query {
   me: User!
   users(idOrName: String!): [User!]
-  preSignedAvatarUrl: String!
+  preSignedAvatarUrl: Avatar!
 }
 
 scalar Map
 
 type Mutation {
   updateUser(changes: Map!): User!
+}
+
+type Avatar {
+  preSignedUrl: String!
+  anonymousAccessUrl: String!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -318,6 +342,94 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Avatar_preSignedUrl(ctx context.Context, field graphql.CollectedField, obj *model.Avatar) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Avatar_preSignedUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PreSignedURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Avatar_preSignedUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Avatar",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Avatar_anonymousAccessUrl(ctx context.Context, field graphql.CollectedField, obj *model.Avatar) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Avatar_anonymousAccessUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AnonymousAccessURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Avatar_anonymousAccessUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Avatar",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_updateUser(ctx, field)
@@ -520,9 +632,9 @@ func (ec *executionContext) _Query_preSignedAvatarUrl(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Avatar)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNAvatar2ᚖuserᚋgraphᚋmodelᚐAvatar(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_preSignedAvatarUrl(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -532,7 +644,13 @@ func (ec *executionContext) fieldContext_Query_preSignedAvatarUrl(ctx context.Co
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "preSignedUrl":
+				return ec.fieldContext_Avatar_preSignedUrl(ctx, field)
+			case "anonymousAccessUrl":
+				return ec.fieldContext_Avatar_anonymousAccessUrl(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Avatar", field.Name)
 		},
 	}
 	return fc, nil
@@ -2574,6 +2692,41 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** object.gotpl ****************************
 
+var avatarImplementors = []string{"Avatar"}
+
+func (ec *executionContext) _Avatar(ctx context.Context, sel ast.SelectionSet, obj *model.Avatar) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, avatarImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Avatar")
+		case "preSignedUrl":
+
+			out.Values[i] = ec._Avatar_preSignedUrl(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "anonymousAccessUrl":
+
+			out.Values[i] = ec._Avatar_anonymousAccessUrl(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3074,6 +3227,20 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNAvatar2userᚋgraphᚋmodelᚐAvatar(ctx context.Context, sel ast.SelectionSet, v model.Avatar) graphql.Marshaler {
+	return ec._Avatar(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAvatar2ᚖuserᚋgraphᚋmodelᚐAvatar(ctx context.Context, sel ast.SelectionSet, v *model.Avatar) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Avatar(ctx, sel, v)
+}
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)

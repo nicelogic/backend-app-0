@@ -11,5 +11,8 @@ data:
     db_name: userdb
     db_pool_connections_num: 4
     db_config_file_path: "/etc/app-0/config-crdb/config-crdb.yml"
+    s3_config_file_path: "/etc/app-0/config-minio/config-minio.yml"
+    s3_bucket_name: "app-0"
+    s3_signed_object_expired_seconds: 600
     public_key_file_path: "/etc/app-0/secret-jwt/jwt-publickey"
     private_key_file_path: "/etc/app-0/secret-jwt/jwt-privatekey"

@@ -30,6 +30,7 @@ func main() {
 		generated.NewExecutableSchema(
 			generated.Config{
 				Resolvers: &graph.Resolver{
+					Config: &serviceConfig,
 					AuthUtil:   authUtil,
 					CrdbClient: crdbClient,
 					MinioClient: minioClient,

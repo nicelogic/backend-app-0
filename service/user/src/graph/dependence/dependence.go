@@ -9,6 +9,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/nicelogic/authutil"
+	"github.com/nicelogic/config"
 	"github.com/nicelogic/crdb"
 )
 
@@ -20,6 +21,8 @@ func Init(serviceConfig *userConfig.Config) (authUtil *authutil.Auth, crdbClient
 		log.Printf("auth init err(%v)", err)
 		return
 	}
+	log.Printf("authutil init success")
+
 	crdbClient = &crdb.Client{}
 	err = crdbClient.Init(context.Background(),
 		serviceConfig.Db_config_file_path,
@@ -30,17 +33,27 @@ func Init(serviceConfig *userConfig.Config) (authUtil *authutil.Auth, crdbClient
 		return
 	}
 
-	endpoint := "https://tenant0.minio.env0.luojm.com:9443"
-	accessKeyID := "bUIacujwb7dMIALn"
-	secretAccessKey := "oKG9Y1B2QBsDW6fmlyJYVARcVJJaqqs1"
-	useSSL := true
-	minioClient, err = minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
+	type MinioConfig struct {
+		Endpoint          string
+		Access_key_id     string
+		Secret_access_key string
+	}
+	minioConfig := &MinioConfig{}
+	err = config.Init(serviceConfig.S3_config_file_path, &minioConfig)
+	if err != nil{
+		log.Printf("minio config init err(%v), path(%v)\n", err, serviceConfig.S3_config_file_path)
+		return
+	}
+	minioClient, err = minio.New(minioConfig.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(minioConfig.Access_key_id, minioConfig.Secret_access_key, ""),
+		Secure: true,
 	})
 	if err != nil {
 		log.Printf("minio init err(%v)\n", err)
+		return
 	}
 	log.Printf("minio(%#v)\n", minioClient) // minioClient is now set up
+	log.Printf("minio init success\n") // minioClient is now set up
+
 	return
 }
