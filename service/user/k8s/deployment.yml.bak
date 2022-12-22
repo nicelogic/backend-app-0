@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: user
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/user:v0.2.0
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/user:v1.0.3
         imagePullPolicy: Always
         resources:
           requests:
@@ -38,6 +38,9 @@ spec:
         - name: config-crdb
           mountPath: /etc/app-0/config-crdb
           readOnly: true
+        - name: config-minio
+          mountPath: /etc/app-0/config-minio
+          readOnly: true
         - name: config-user
           mountPath: /etc/app-0/config-user
           readOnly: true
@@ -53,6 +56,10 @@ spec:
         - name: config-crdb
           configMap:
             name: config-crdb
+            optional: false 
+        - name: config-minio
+          configMap:
+            name: config-minio
             optional: false 
         - name: config-user
           configMap:
