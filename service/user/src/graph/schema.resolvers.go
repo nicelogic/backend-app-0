@@ -118,7 +118,7 @@ func (r *queryResolver) PreSignedAvatarURL(ctx context.Context) (*model.Avatar, 
 	fmt.Printf("user(%v) PreSignedAvatarURL\n", user.Id)
 	presignedURL, err := r.MinioClient.PresignedPutObject(ctx,
 		r.Config.S3_bucket_name,
-		fmt.Sprintf("/users/%s/avatar.png", user.Id),
+		fmt.Sprintf("/users/%s/avatar-%s.png", user.Id, time.Now().Format(time.RFC3339)),
 		time.Duration(r.Config.S3_signed_object_expired_seconds)*time.Second)
 	if err != nil {
 		log.Fatalln(err)
