@@ -32,7 +32,8 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 	changesJsonString := string(changesJson)
 	log.Printf("changes: %s\n", changesJsonString)
 	row := r.CrdbClient.Pool.QueryRow(ctx, sql.UpsertUser, user.Id, changesJsonString)
-	var id, data, name string
+	var id, data string
+	var name *string
 	var update_time time.Time
 	err = row.Scan(&id, &data, &name, &update_time)
 	if err != nil {
@@ -40,9 +41,13 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, changes map[string]in
 		return nil, err
 	}
 	log.Printf("update_time(%v)\n", update_time)
+	emptyString := ""
+	if name == nil{
+		name = &emptyString
+	}
 	updatedUser := &model.User{
 		ID:   id,
-		Name: &name,
+		Name: name,
 		Data: &data,
 	}
 	return updatedUser, err
