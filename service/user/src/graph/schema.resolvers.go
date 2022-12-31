@@ -56,7 +56,8 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	}
 	fmt.Printf("user(%v) query own info\n", user.Id)
 	row := r.CrdbClient.Pool.QueryRow(ctx, sql.QueryMe, user.Id)
-	var id, data, name string
+	var id, data string
+	var name *string
 	var update_time time.Time
 	err = row.Scan(&id, &data, &name, &update_time)
 	if err == pgx.ErrNoRows {
@@ -65,10 +66,14 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 		log.Printf("scan err(%v)", err)
 		return nil, err
 	}
+	emptyString := ""
+	if name == nil{
+		name = &emptyString
+	}
 	log.Printf("update_time(%v)\n", update_time)
 	me := &model.User{
 		ID:   user.Id,
-		Name: &name,
+		Name: name,
 		Data: &data,
 	}
 	return me, nil
