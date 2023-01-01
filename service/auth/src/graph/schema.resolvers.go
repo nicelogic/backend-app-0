@@ -24,7 +24,7 @@ import (
 // SignUpByUserName is the resolver for the signUpByUserName field.
 func (r *mutationResolver) SignUpByUserName(ctx context.Context, userName string, pwd string) (*model.Result, error) {
 	log.Printf("signup by user name: %s\n", userName)
-	canonicID, err := nanoid.Standard(21)
+	canonicID, err := nanoid.Standard(14)
 	if err != nil {
 		log.Printf("nanoid.Standard err: %v\n", err)
 		return nil, err
