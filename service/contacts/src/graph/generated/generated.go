@@ -102,9 +102,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AddContactsApply func(childComplexity int, first *int, after *string) int
-		AddedMe          func(childComplexity int, userID string) int
-		Contacts         func(childComplexity int, first *int, after *string) int
+		AddContactsApplys func(childComplexity int, first *int, after *string) int
+		AddedMe           func(childComplexity int, userID string) int
+		Contacts          func(childComplexity int, first *int, after *string) int
 	}
 
 	Subscription struct {
@@ -120,7 +120,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Contacts(ctx context.Context, first *int, after *string) (*model.ContactsConnection, error)
 	AddedMe(ctx context.Context, userID string) (bool, error)
-	AddContactsApply(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error)
+	AddContactsApplys(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error)
 }
 type SubscriptionResolver interface {
 	AddContactsApplyReceived(ctx context.Context, token string) (<-chan *model.AddContactsApplyNtf, error)
@@ -331,17 +331,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.HasNextPage(childComplexity), true
 
-	case "Query.addContactsApply":
-		if e.complexity.Query.AddContactsApply == nil {
+	case "Query.addContactsApplys":
+		if e.complexity.Query.AddContactsApplys == nil {
 			break
 		}
 
-		args, err := ec.field_Query_addContactsApply_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_addContactsApplys_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.AddContactsApply(childComplexity, args["first"].(*int), args["after"].(*string)), true
+		return e.complexity.Query.AddContactsApplys(childComplexity, args["first"].(*int), args["after"].(*string)), true
 
 	case "Query.addedMe":
 		if e.complexity.Query.AddedMe == nil {
@@ -473,7 +473,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
+  addContactsApplys(first: Int = 100, after: String): AddContactsApplyConnection!
 }
 
 type Subscription {
@@ -622,7 +622,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_addContactsApply_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_addContactsApplys_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *int
@@ -2011,8 +2011,8 @@ func (ec *executionContext) fieldContext_Query_addedMe(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_addContactsApply(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_addContactsApply(ctx, field)
+func (ec *executionContext) _Query_addContactsApplys(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_addContactsApplys(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2025,7 +2025,7 @@ func (ec *executionContext) _Query_addContactsApply(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AddContactsApply(rctx, fc.Args["first"].(*int), fc.Args["after"].(*string))
+		return ec.resolvers.Query().AddContactsApplys(rctx, fc.Args["first"].(*int), fc.Args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2042,7 +2042,7 @@ func (ec *executionContext) _Query_addContactsApply(ctx context.Context, field g
 	return ec.marshalNAddContactsApplyConnection2ᚖcontactsᚋgraphᚋmodelᚐAddContactsApplyConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_addContactsApply(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_addContactsApplys(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2067,7 +2067,7 @@ func (ec *executionContext) fieldContext_Query_addContactsApply(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_addContactsApply_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_addContactsApplys_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4602,7 +4602,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "addContactsApply":
+		case "addContactsApplys":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -4611,7 +4611,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_addContactsApply(ctx, field)
+				res = ec._Query_addContactsApplys(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

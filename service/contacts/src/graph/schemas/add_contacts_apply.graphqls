@@ -5,7 +5,7 @@ extend type Mutation {
 }
 
 extend type Query{
-  addContactsApply(first: Int = 100, after: String): AddContactsApplyConnection!
+  addContactsApplys(first: Int = 100, after: String): AddContactsApplyConnection!
 }
 
 type Subscription {

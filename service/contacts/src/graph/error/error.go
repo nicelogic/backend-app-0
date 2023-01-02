@@ -15,6 +15,8 @@ import (
 
 const (
 	ContactsAddedMe = "contacts added me"
+	CanNotAddMyselfAsFriend = "can not add myself as a friend"
+	InvalidContactsId = "invalid contacts id"
 )
 
 
@@ -38,8 +40,12 @@ func HandleError(server *handler.Server){
 			err.Message = errs.TokenExpired
 		case hasJwtError || err.Message == authutil.AuthUtilErrorHttpHeaderAuthorizationInvalid:
 			err.Message = errs.TokenInvalid
-		case ContactsAddedMe == e.Error():
+		case ContactsAddedMe == err.Message:
 			log.Println(ContactsAddedMe)
+		case CanNotAddMyselfAsFriend == err.Message:
+			log.Println(CanNotAddMyselfAsFriend)
+		case InvalidContactsId == err.Message:
+			log.Println(InvalidContactsId)
 		default:
 			err.Message = errs.ServerInternalError
 		}

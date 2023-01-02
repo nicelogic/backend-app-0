@@ -28,6 +28,15 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	log.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
+	if user.Id == input.ContactsID{
+		err = fmt.Errorf(contactserror.CanNotAddMyselfAsFriend)
+		return false, err 
+	}
+	if input.ContactsID == ""{
+		err = fmt.Errorf(contactserror.InvalidContactsId)
+		return false, err
+	}
+
 	updateTime := time.Now().Format(time.RFC3339)
 	_, err = r.CrdbClient.Pool.Exec(ctx, sql.UpsertContacts, user.Id, input.ContactsID, input.RemarkName, updateTime)
 	if err != nil {
@@ -60,7 +69,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		UserName: input.UserName,
 	}
 	msgId, err := r.PulsarClient.Send(ctx, ntf)
-	if err != nil{
+	if err != nil {
 		log.Printf("pulsar send ntf: %v, err: %v\n", ntf, err)
 	}
 	log.Printf("pulsar send ntf: %v, success, msgId: %v\n", ntf, msgId)
@@ -74,6 +83,12 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 		return false, err
 	}
 	log.Printf("user: %#v reply add contacts apply, isAgree: %v\n", user, input.IsAgree)
+
+	if input.ContactsID == ""{
+		err = fmt.Errorf(contactserror.InvalidContactsId)
+		return false, err
+	}
+
 	if !input.IsAgree {
 		_, err = r.CrdbClient.Pool.Exec(ctx, sql.DeleteAddContactsApply, user.Id, input.ContactsID)
 		if err != nil {
@@ -104,8 +119,51 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 	return true, err
 }
 
-// AddContactsApply is the resolver for the addContactsApply field.
-func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error) {
+// AddContactsApplyReceived is the resolver for the addContactsApplyReceived field.
+func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, token string) (<-chan *model.AddContactsApplyNtf, error) {
+	ch := make(chan *model.AddContactsApplyNtf)
+	go func(token string) {
+		//subscription check user by payload, because playground not work
+		//check flutter client test whether ok, then do optimize
+		user, err := r.AuthUtil.UserFromJwt(token)
+		if err != nil {
+			log.Printf("subscription token err: %v\n", err)
+			return
+		}
+		log.Printf("user: %v subscribe addContactsApply ntf\n", user)
+
+		consumer, err := r.PulsarClient.Client.Subscribe(pulsar.ConsumerOptions{
+			Topic:            r.Config.Pulsar_topic,
+			SubscriptionName: user.Id,
+			Type:             pulsar.Failover,
+		})
+		if err != nil {
+			log.Printf("pulsar subscribe err: %v\n", err)
+			return
+		}
+		defer consumer.Close()
+		for {
+			ntf := &model.AddContactsApplyNtf{}
+			err = r.PulsarClient.Receive(ctx, consumer, ntf)
+			if err != nil {
+				log.Printf("pulsar receive err: %v\n", err)
+				continue
+			}
+			select {
+			case ch <- ntf:
+				log.Printf("send addContactsApplyNtf: %v\n", ntf)
+			case <-ctx.Done():
+				log.Println("ctx done")
+				return
+			}
+
+		}
+	}(token)
+
+	return ch, nil
+}
+
+func (r *queryResolver) AddContactsApplys(ctx context.Context, first *int, after *string) (*model.AddContactsApplyConnection, error) {
 	user, err := authutil.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -151,50 +209,6 @@ func (r *queryResolver) AddContactsApply(ctx context.Context, first *int, after 
 	}
 	addContactsApplyConnection.PageInfo.HasNextPage = addContactsApplyConnection.TotalCount == *first
 	return addContactsApplyConnection, err
-}
-
-// AddContactsApplyReceived is the resolver for the addContactsApplyReceived field.
-func (r *subscriptionResolver) AddContactsApplyReceived(ctx context.Context, token string) (<-chan *model.AddContactsApplyNtf, error) {
-	ch := make(chan *model.AddContactsApplyNtf)
-	go func(token string) {
-		//subscription check user by payload, because playground not work
-		//check flutter client test whether ok, then do optimize
-		user, err := r.AuthUtil.UserFromJwt(token)
-		if err != nil {
-			log.Printf("subscription token err: %v\n", err)
-			return
-		}
-		log.Printf("user: %v subscribe addContactsApply ntf\n", user)
-
-		consumer, err := r.PulsarClient.Client.Subscribe(pulsar.ConsumerOptions{
-			Topic:            r.Config.Pulsar_topic,
-			SubscriptionName: user.Id,
-			Type: pulsar.Failover,
-		})
-		if err != nil {
-			log.Printf("pulsar subscribe err: %v\n", err)
-			return
-		}
-		defer consumer.Close()
-		for {
-			ntf := &model.AddContactsApplyNtf{}
-			err = r.PulsarClient.Receive(ctx, consumer, ntf)
-			if err != nil{
-				log.Printf("pulsar receive err: %v\n", err)
-				continue
-			}
-			select {
-			case ch <- ntf:
-				log.Printf("send addContactsApplyNtf: %v\n", ntf)
-			case <-ctx.Done():
-				log.Println("ctx done")
-				return
-			}
-
-		}
-	}(token)
-
-	return ch, nil
 }
 
 // Subscription returns generated.SubscriptionResolver implementation.
