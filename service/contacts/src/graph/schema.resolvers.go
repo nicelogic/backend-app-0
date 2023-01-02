@@ -81,7 +81,7 @@ func (r *queryResolver) AddedMe(ctx context.Context, userID string) (bool, error
 		return false, err
 	}
 	log.Printf("user: %#v query user: %s did added me\n", user, userID)
-	result, err := r.CrdbClient.Query(ctx, sql.QueryUserAddedMe, userID, user.Id)
+	result, err := r.CrdbClient.Query(ctx, sql.QueryUserAddedContacts, userID, user.Id)
 	if err != nil {
 		return false, err
 	}

@@ -28,11 +28,11 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 	}
 	log.Printf("user: %#v apply add contacts: %#v\n", user, input)
 
-	if user.Id == input.ContactsID{
+	if user.Id == input.ContactsID {
 		err = fmt.Errorf(contactserror.CanNotAddMyselfAsFriend)
-		return false, err 
+		return false, err
 	}
-	if input.ContactsID == ""{
+	if input.ContactsID == "" {
 		err = fmt.Errorf(contactserror.InvalidContactsId)
 		return false, err
 	}
@@ -44,7 +44,7 @@ func (r *mutationResolver) ApplyAddContacts(ctx context.Context, input model.App
 		return false, err
 	}
 	err = r.CrdbClient.Pool.BeginFunc(ctx, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, sql.QueryUserAddedMe, input.ContactsID, user.Id)
+		rows, err := tx.Query(ctx, sql.QueryUserAddedContacts, input.ContactsID, user.Id)
 		if err != nil && rows.Err() != nil {
 			return rows.Err()
 		}
@@ -84,7 +84,7 @@ func (r *mutationResolver) ReplyAddContacts(ctx context.Context, input model.Rep
 	}
 	log.Printf("user: %#v reply add contacts apply, isAgree: %v\n", user, input.IsAgree)
 
-	if input.ContactsID == ""{
+	if input.ContactsID == "" {
 		err = fmt.Errorf(contactserror.InvalidContactsId)
 		return false, err
 	}

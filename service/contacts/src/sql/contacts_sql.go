@@ -15,7 +15,7 @@ values ($1,
 	$4)
 `
 
-const QueryUserAddedMe = `
+const QueryUserAddedContacts = `
 select
 	user_id,
 	contacts_id
