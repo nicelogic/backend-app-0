@@ -365,8 +365,8 @@ github.com/mtibben/percent v0.2.1 h1:5gssi8Nqo8QU/r2pynCm+hBQHpkB/uNK7BJCFogWdzs
 github.com/mtibben/percent v0.2.1/go.mod h1:KG9uO+SZkUp+VkRHsCdYQV3XSZrrSpR3O9ibNBTZrns=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/nicelogic/authutil v0.3.0 h1:x4iDkO9zuCOdLr/2mWQlZHyREwhOg2kLlxj460YYTX4=
-github.com/nicelogic/authutil v0.3.0/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
+github.com/nicelogic/authutil v1.0.1 h1:NojmXT8ipDWcbnG1B986xJ3XCRMI+Rmmj+cJE1ybHwk=
+github.com/nicelogic/authutil v1.0.1/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
 github.com/nicelogic/config v0.1.0 h1:OM+5QvjZmK0DUml99d/H/9CapfU6P3b6S6bqrFzd0C0=
 github.com/nicelogic/config v0.1.0/go.mod h1:qDKz0cJSwmjaPE4S1lE6mqU5CDRL44e6OXKBi9e+kbo=
 github.com/nicelogic/crdb v0.2.0 h1:qtM0RQbxzjFvd9M5eljwYWacvR7nncn/OzmTpsG6qyM=

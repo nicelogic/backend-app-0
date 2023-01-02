@@ -34,7 +34,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
-	github.com/jackc/pgtype v1.12.0 
+	github.com/jackc/pgtype v1.12.0
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/klauspost/compress v1.14.4 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
@@ -62,13 +62,13 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/apache/pulsar-client-go v0.9.0 
+	github.com/apache/pulsar-client-go v0.9.0
 	github.com/go-chi/chi v1.5.4
 	github.com/gorilla/websocket v1.5.0 // direct
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/nicelogic/authutil v0.3.0
+	github.com/nicelogic/authutil v1.0.1
 	github.com/nicelogic/config v0.1.0
 	github.com/nicelogic/crdb v0.2.0
 	github.com/nicelogic/errs v0.1.0
