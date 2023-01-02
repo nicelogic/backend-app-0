@@ -47,7 +47,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/mitchellh/mapstructure v1.3.1 //indirect
-	github.com/nicelogic/authutil v0.3.0
+	github.com/nicelogic/authutil v1.0.1
 	github.com/nicelogic/config v0.1.0
 	github.com/nicelogic/crdb v0.2.0
 	github.com/nicelogic/errs v0.1.0

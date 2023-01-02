@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nicelogic/authutil"
 	"github.com/nicelogic/errs"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -34,7 +35,7 @@ func HandleError(server *handler.Server){
 		switch {
 		case hasJwtError && jwtError.Errors == jwt.ValidationErrorExpired:
 			err.Message = errs.TokenExpired
-		case hasJwtError:
+		case hasJwtError || err.Message == authutil.AuthUtilErrorHttpHeaderAuthorizationInvalid:
 			err.Message = errs.TokenInvalid
 		case err.Message == UserNotExist:
 			log.Printf(err.Message)

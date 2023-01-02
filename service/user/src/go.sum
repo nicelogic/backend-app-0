@@ -135,8 +135,8 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
-github.com/nicelogic/authutil v0.3.0 h1:x4iDkO9zuCOdLr/2mWQlZHyREwhOg2kLlxj460YYTX4=
-github.com/nicelogic/authutil v0.3.0/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
+github.com/nicelogic/authutil v1.0.1 h1:NojmXT8ipDWcbnG1B986xJ3XCRMI+Rmmj+cJE1ybHwk=
+github.com/nicelogic/authutil v1.0.1/go.mod h1:4Gp68R+aOmw2rsOD0L7S245xARsBGIequFHtCH3C2l0=
 github.com/nicelogic/config v0.1.0 h1:OM+5QvjZmK0DUml99d/H/9CapfU6P3b6S6bqrFzd0C0=
 github.com/nicelogic/config v0.1.0/go.mod h1:qDKz0cJSwmjaPE4S1lE6mqU5CDRL44e6OXKBi9e+kbo=
 github.com/nicelogic/crdb v0.2.0 h1:qtM0RQbxzjFvd9M5eljwYWacvR7nncn/OzmTpsG6qyM=
