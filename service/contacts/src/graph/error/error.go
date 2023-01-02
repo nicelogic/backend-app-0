@@ -39,7 +39,7 @@ func HandleError(server *handler.Server){
 		case hasJwtError || err.Message == authutil.AuthUtilErrorHttpHeaderAuthorizationInvalid:
 			err.Message = errs.TokenInvalid
 		case ContactsAddedMe == e.Error():
-			log.Printf("ContactsAlreadyAddedU")
+			log.Println(ContactsAddedMe)
 		default:
 			err.Message = errs.ServerInternalError
 		}
