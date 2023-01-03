@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: contacts
-        image: registry.cn-shanghai.aliyuncs.com/logic-base/contacts:v1.0.4
+        image: registry.cn-shanghai.aliyuncs.com/logic-base/contacts:v1.0.5
         imagePullPolicy: Always
         resources:
           requests:
