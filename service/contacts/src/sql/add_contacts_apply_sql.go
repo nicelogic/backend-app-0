@@ -20,15 +20,19 @@ $4)
 const QueryAddContactsApply = `
 select
 	user_id,
+	contacts_id ,
 	message,
 	update_time
 from
 	add_contacts_apply@default_unique_index
 where
 	contacts_id = $1
-	and update_time < $2 or user_id > $3
+	and (update_time < $2
+		or (update_time = $2
+			and user_id > $3))
 order by
-	update_time desc, user_id asc
+	update_time desc,
+	user_id asc
 limit $4
 `
 
