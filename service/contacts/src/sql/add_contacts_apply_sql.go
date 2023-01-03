@@ -20,7 +20,6 @@ $4)
 const QueryAddContactsApply = `
 select
 	user_id,
-	contacts_id ,
 	message,
 	update_time
 from
